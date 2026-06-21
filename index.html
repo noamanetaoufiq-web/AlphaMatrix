@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Real-time Firebase Core CDN SDK Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -41,12 +40,14 @@
             max-width: 900px;
             width: 100%;
             position: relative;
+            box-sizing: border-box;
         }
 
         .mode-banner {
             display: flex; justify-content: space-between; align-items: center;
             background-color: #111827; padding: 8px 15px; border-radius: 8px;
             margin-bottom: 15px; font-size: 0.85em; border: 1px solid var(--border);
+            gap: 10px;
         }
         .status-indicator { display: flex; align-items: center; gap: 8px; font-weight: bold; }
         .status-indicator.viewer { color: #fbbf24; }
@@ -68,28 +69,33 @@
         .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
         .stat-card { background-color: #111827; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
         .stat-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-value { font-size: 1.25em; font-weight: bold; }
+        .stat-value { font-size: 1.25em; font-weight: bold; word-break: break-all; }
         .text-profit { color: var(--green-profit); }
         .text-loss { color: var(--red-loss); }
 
-        .risk-params { background-color: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 0.85em; color: #cbd5e1; }
+        .risk-params { background-color: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 0.85em; color: #cbd5e1; gap: 10px; }
         .calc-box { background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #4b5563; }
         .calc-title { font-size: 0.85em; font-weight: bold; color: #fbbf24; margin-bottom: 10px; text-transform: uppercase;}
-        .calc-grid { display: flex; gap: 15px; align-items: center; }
-        .calc-input-group { display: flex; flex-direction: column; gap: 5px; }
+        .calc-grid { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .calc-input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 80px; }
         .calc-input-group label { font-size: 0.8em; color: #9ca3af; }
-        .calc-input-group input { background: #1f2937; border: 1px solid #4b5563; padding: 6px 10px; border-radius: 4px; color: #fff; font-weight: bold; text-align: center; }
-        .live-result { font-size: 0.9em; color: #34d399; font-weight: bold; margin-left: auto; background: #064e3b; padding: 8px 12px; border-radius: 6px;}
+        .calc-input-group input { background: #1f2937; border: 1px solid #4b5563; padding: 6px 10px; border-radius: 4px; color: #fff; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; }
+        .live-result { font-size: 0.9em; color: #34d399; font-weight: bold; background: #064e3b; padding: 8px 12px; border-radius: 6px; text-align: center; width: 100%; box-sizing: border-box; margin-top: 5px; }
+        
+        @media (min-width: 600px) {
+            .live-result { width: auto; margin-top: 0; margin-left: auto; }
+        }
+
         .progress-container { background-color: var(--border); border-radius: 10px; height: 12px; margin-bottom: 25px; overflow: hidden; }
         .progress-bar { background: linear-gradient(90deg, #4ade80, #22c55e); height: 100%; width: 0%; transition: width 0.4s ease; }
         
-        .goal-item { background-color: var(--bg-card); border: 1px solid var(--border); border-left: 6px solid #64748b; padding: 15px; margin-bottom: 12px; border-radius: 4px 12px 12px 4px; display: flex; align-items: center; justify-content: space-between; }
+        .goal-item { background-color: var(--bg-card); border: 1px solid var(--border); border-left: 6px solid #64748b; padding: 15px; margin-bottom: 12px; border-radius: 4px 12px 12px 4px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .checkbox-container input { width: 24px; height: 24px; cursor: pointer; accent-color: var(--green-profit); }
-        .goal-details { flex-grow: 1; margin-left: 15px; }
-        .goal-header { display: flex; justify-content: space-between; align-items: center; }
+        .goal-details { flex-grow: 1; margin-left: 5px; }
+        .goal-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         .goal-title { font-weight: bold; font-size: 1.1em; color: #f1f5f9; }
         .goal-math { font-size: 0.88em; color: #f59e0b; margin-top: 4px; font-family: monospace; }
-        .metrics-row { display: flex; gap: 10px; margin-top: 6px; }
+        .metrics-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
         .metric-badge { font-size: 0.78em; padding: 2px 8px; border-radius: 4px; background-color: #334155; color: #94a3b8; font-weight: 500; }
         .metric-badge.lot { color: var(--accent); border: 1px solid #0284c7; }
         .metric-badge.loss { color: #f87171; border: 1px solid #991b1b; }
@@ -104,13 +110,23 @@
         .calendar-month-title { font-weight: bold; font-size: 1.1em; color: var(--accent); display: flex; align-items: center; gap: 10px; }
         .nav-arrow { background: var(--border); border: none; color: #fff; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9em; transition: background 0.2s;}
         .nav-arrow:hover { background: #475569; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
-        .weekday-label { text-align: center; font-size: 0.8em; font-weight: bold; color: var(--text-muted); padding-bottom: 5px; text-transform: uppercase; }
-        .calendar-day { background-color: #111827; border: 1px solid var(--border); border-radius: 8px; min-height: 75px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: all 0.2s ease; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+        .weekday-label { text-align: center; font-size: 0.75em; font-weight: bold; color: var(--text-muted); padding-bottom: 5px; text-transform: uppercase; }
+        .calendar-day { background-color: #111827; border: 1px solid var(--border); border-radius: 8px; min-height: 65px; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box; }
         .calendar-day:hover { background-color: #1e293b; border-color: var(--accent); }
-        .day-number { font-size: 0.8em; font-weight: bold; color: var(--text-muted); }
-        .day-pnl { font-size: 0.85em; font-weight: bold; text-align: center; margin-top: auto; font-family: monospace; }
-        .day-trades-count { font-size: 0.68em; color: var(--text-muted); text-align: right; }
+        .day-number { font-size: 0.75em; font-weight: bold; color: var(--text-muted); }
+        .day-pnl { font-size: 0.78em; font-weight: bold; text-align: center; margin-top: auto; font-family: monospace; word-break: break-all; }
+        .day-trades-count { font-size: 0.6em; color: var(--text-muted); text-align: right; display: none; }
+        
+        @media (min-width: 450px) {
+            .calendar-day { min-height: 75px; padding: 6px; }
+            .day-number { font-size: 0.8em; }
+            .day-pnl { font-size: 0.85em; }
+            .day-trades-count { display: block; }
+            .weekday-label { font-size: 0.8em; }
+            .calendar-grid { gap: 8px; }
+        }
+        
         .calendar-day.profit-day { background-color: #064e3b; border-color: var(--green-profit); }
         .calendar-day.profit-day .day-pnl { color: #4ade80; }
         .calendar-day.loss-day { background-color: #4c1d15; border-color: var(--red-loss); }
@@ -118,7 +134,8 @@
         .calendar-day.empty-day { opacity: 0.15; pointer-events: none; border-style: dashed; }
 
         /* Page 3 Analytics Layout */
-        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .analytics-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+        @media (min-width: 768px) { .analytics-grid { grid-template-columns: 1fr 1fr; } }
         .analytics-box { background: #111827; border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
         .analytics-title { font-size: 0.95em; font-weight: bold; color: var(--accent); border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; }
         .metric-row-flex { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b; font-size: 0.9em; }
@@ -127,35 +144,58 @@
         .radar-poly { position: absolute; background: rgba(34, 197, 94, 0.2); border: 2px solid var(--green-profit); width: 70px; height: 65px; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
 
         /* Page 4 Rules Leaks */
-        .missed-form { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 15px; background: #111827; padding: 12px; border-radius: 8px; }
+        .missed-form { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; background: #111827; padding: 12px; border-radius: 8px; }
+        @media (min-width: 600px) { .missed-form { grid-template-columns: 2fr 1fr 1fr; } }
         .missed-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
         .missed-table th { background: #111827; padding: 10px; text-align: left; color: var(--text-muted); border-bottom: 2px solid var(--border); }
         .missed-table td { padding: 10px; border-bottom: 1px solid var(--border); }
+        .missed-table-wrapper { width: 100%; overflow-x: auto; }
 
         /* Structural Security Modes */
         body.viewer-mode .checkbox-container, body.viewer-mode .missed-form, body.viewer-mode .missed-btn-action { pointer-events: none; opacity: 0.4; }
         body.viewer-mode .calendar-day { cursor: default; }
         body.viewer-mode .calendar-day:hover { border-color: var(--border); background-color: #111827; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; display: none; }
-        .modal-box { background-color: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; max-width: 320px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; display: none; padding: 15px; box-sizing: border-box; }
+        .modal-box { background-color: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; max-width: 320px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); box-sizing: border-box; }
         .modal-title { font-size: 1.1em; font-weight: bold; color: var(--accent); margin-bottom: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
         .form-group label { font-size: 0.85em; color: var(--text-muted); }
-        .form-group input, .form-group select { background: #111827; border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; color: #fff; font-weight: bold; }
+        .form-group input, .form-group select { background: #111827; border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; color: #fff; font-weight: bold; width: 100%; box-sizing: border-box; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
         .btn-container { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
-        .btn { border: none; padding: 12px 25px; font-size: 1em; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .download-btn { background-color: #0284c7; color: white; }
+        .btn { border: none; padding: 12px 25px; font-size: 1em; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); text-align: center; }
+        .download-btn { background-color: #0284c7; color: white; width: 100%; }
+        @media (min-width: 450px) { .download-btn { width: auto; } }
         .download-btn:hover { background-color: #0369a1; }
-        .add-btn { background-color: var(--accent); color: #0f172a; font-size: 0.85em; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none;}
+        .add-btn { background-color: var(--accent); color: #0f172a; font-size: 0.85em; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; text-align: center; }
+
+        /* PHONE RESPONSIVE ENGINE MEDIA QUERIES */
+        @media (max-width: 768px) {
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+            body { padding: 10px; }
+            .container { padding: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .navigation-tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .tab-btn { font-size: 0.82em; padding: 8px 4px; }
+            h1 { font-size: 1.4em; }
+            .subtitle { font-size: 0.85em; margin-bottom: 15px; }
+            .risk-params { flex-direction: column; text-align: center; gap: 4px; font-size: 0.78em; }
+            .mode-banner { flex-direction: column; text-align: center; padding: 10px; font-size: 0.78em; }
+            .nav-arrow { width: 100%; text-align: center; padding: 6px; }
+            .goal-item { padding: 10px; }
+            .goal-title { font-size: 0.95em; }
+            .goal-math { font-size: 0.78em; }
+        }
     </style>
 </head>
 <body class="viewer-mode">
 
 <div class="container" id="content-to-print">
-    <!-- Security Header -->
     <div class="mode-banner">
         <div class="status-indicator viewer" id="status-badge">
             <i class="fa-solid fa-eye"></i> Viewer Mode (Read Only)
@@ -166,7 +206,6 @@
     <h1>ALPHAMATRIX WORKSPACE</h1>
     <div class="subtitle">📈 Enterprise Cloud Sync Framework</div>
 
-    <!-- Live Performance Cards -->
     <div class="dashboard">
         <div class="stat-card">
             <div class="stat-label">Win Rate</div>
@@ -186,15 +225,13 @@
         </div>
     </div>
 
-    <!-- Navigation Menu System -->
     <div class="navigation-tabs">
         <button class="tab-btn active" onclick="switchPage('goals-page', this)"><i class="fa-solid fa-bullseye"></i> Milestones</button>
         <button class="tab-btn" onclick="switchPage('journal-page', this)"><i class="fa-solid fa-calendar-days"></i> Calendar</button>
         <button class="tab-btn" onclick="switchPage('analytics-page', this)"><i class="fa-solid fa-chart-pie"></i> Analytics</button>
-        <button class="tab-btn" onclick="switchPage('missed-page', this)"><i class="fa-solid fa-triangle-exclamation"></i> Missed Trades</button>
+        <button class="tab-btn" onclick="switchPage('missed-page', this)"><i class="fa-solid fa-triangle-exclamation"></i> Missed</button>
     </div>
 
-    <!-- PAGE 1: MILESTONES -->
     <div id="goals-page" class="page-content active">
         <div class="risk-params">
             <span><strong>Risk Profile:</strong> 1% Per Setup Matrix</span>
@@ -228,7 +265,7 @@
                 <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
                 <div class="goal-details">
                     <div class="goal-header"><span class="goal-title">Level 2: Target 300 $</span><span class="status-badge">Locked</span></div>
-                    <div class="goal-math">Base: 131.83$ -> Profit Needed: +168.17$</div>
+                    <div class="goal-math">Base: 250.00$ -> Profit Needed: +50.00$</div>
                     <div class="metrics-row"><span class="metric-badge lot" id="lot-2">--</span><span class="metric-badge loss" id="loss-2">--</span></div>
                 </div>
             </div>
@@ -236,29 +273,83 @@
                 <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
                 <div class="goal-details">
                     <div class="goal-header"><span class="goal-title">Level 3: Target 400 $</span><span class="status-badge">Locked</span></div>
-                    <div class="goal-math">Base: 168.17$ -> Profit Needed: +231.83$</div>
+                    <div class="goal-math">Base: 300.00$ -> Profit Needed: +100.00$</div>
                     <div class="metrics-row"><span class="metric-badge lot" id="lot-3">--</span><span class="metric-badge loss" id="loss-3">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="4" data-secure="200.00" data-target="600">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 4: Target 600 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 400.00$ -> Profit Needed: +200.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-4">--</span><span class="metric-badge loss" id="loss-4">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="5" data-secure="300.00" data-target="900">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 5: Target 900 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 600.00$ -> Profit Needed: +300.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-5">--</span><span class="metric-badge loss" id="loss-5">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="6" data-secure="400.00" data-target="1300">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 6: Target 1,300 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 900.00$ -> Profit Needed: +400.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-6">--</span><span class="metric-badge loss" id="loss-6">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="7" data-secure="600.00" data-target="2000">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 7: Target 2,000 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 1,300.00$ -> Profit Needed: +700.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-7">--</span><span class="metric-badge loss" id="loss-7">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="8" data-secure="900.00" data-target="3000">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 8: Target 3,000 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 2,000.00$ -> Profit Needed: +1,000.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-8">--</span><span class="metric-badge loss" id="loss-8">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="9" data-secure="1500.00" data-target="5000">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 9: Target 5,000 $</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 3,000.00$ -> Profit Needed: +2,000.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-9">--</span><span class="metric-badge loss" id="loss-9">--</span></div>
+                </div>
+            </div>
+            <div class="goal-item locked" data-id="10" data-secure="3000.00" data-target="10000">
+                <div class="checkbox-container"><input type="checkbox" onchange="updateSystemUI(true)"></div>
+                <div class="goal-details">
+                    <div class="goal-header"><span class="goal-title">Level 10: Target 10,000 $ 🔥</span><span class="status-badge">Locked</span></div>
+                    <div class="goal-math">Base: 5,000.00$ -> Profit Needed: +5,000.00$</div>
+                    <div class="metrics-row"><span class="metric-badge lot" id="lot-10">--</span><span class="metric-badge loss" id="loss-10">--</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 2: CALENDAR -->
     <div id="journal-page" class="page-content">
         <div class="calendar-header">
             <button class="nav-arrow" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> Prev</button>
             <span class="calendar-month-title" id="calendar-month-year-label">Month Year</span>
             <button class="nav-arrow" onclick="changeMonth(1)">Next <i class="fa-solid fa-chevron-right"></i></button>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 5px;">
-            <div class="weekday-label">Mon</div><div class="weekday-label">Tue</div><div class="weekday-label">Wed</div>
-            <div class="weekday-label">Thu</div><div class="weekday-label">Fri</div><div class="weekday-label">Sat</div>
-            <div class="weekday-label">Sun</div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 5px;">
+            <div class="weekday-label">M</div><div class="weekday-label">T</div><div class="weekday-label">W</div>
+            <div class="weekday-label">T</div><div class="weekday-label">F</div><div class="weekday-label">S</div>
+            <div class="weekday-label">S</div>
         </div>
         <div class="calendar-grid" id="calendar-days-container"></div>
     </div>
 
-    <!-- PAGE 3: ADVANCED PERFORMANCE -->
     <div id="analytics-page" class="page-content">
         <div class="analytics-grid">
             <div class="analytics-box">
@@ -273,20 +364,19 @@
                 <div class="metric-row-flex"><span>Total Account Days:</span><span id="stat-total-days">0 Days</span></div>
                 <div class="metric-row-flex"><span>Total Trades Logs:</span><span id="stat-total-trades">0 Trades</span></div>
                 <div class="radar-placeholder">
-                    <span style="font-size: 0.7em; color: var(--text-muted); position: absolute; top:5px;">Performance Profile Graph (Live Engine)</span>
+                    <span style="font-size: 0.7em; color: var(--text-muted); position: absolute; top:5px; text-align: center;">Performance Profile Graph (Live Engine)</span>
                     <div class="radar-shape"><div class="radar-poly"></div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 4: RULE INFRACTIONS / LEAKS -->
     <div id="missed-page" class="page-content">
         <div class="analytics-box">
             <div class="analytics-title"><i class="fa-solid fa-ban"></i> Leaked Capital Log Ledger</div>
             <div class="missed-form">
                 <div class="calc-input-group">
-                    <label>Infraction Type / Setup Reason</label>
+                    <label>Infraction Type / Reason</label>
                     <input type="text" id="missed-reason" placeholder="e.g. FOMO Buy on Gold">
                 </div>
                 <div class="calc-input-group">
@@ -295,10 +385,12 @@
                 </div>
                 <button class="add-btn missed-btn-action" onclick="saveMissedTradeToCloud()">+ Push Log</button>
             </div>
-            <table class="missed-table">
-                <thead><tr><th>Reason/Rule Break</th><th>Lost Capital ($)</th><th class="missed-btn-action">Action</th></tr></thead>
-                <tbody id="missed-table-body"></tbody>
-            </table>
+            <div class="missed-table-wrapper">
+                <table class="missed-table">
+                    <thead><tr><th>Reason/Rule Break</th><th>Lost Capital ($)</th><th class="missed-btn-action">Action</th></tr></thead>
+                    <tbody id="missed-table-body"></tbody>
+                </table>
+            </div>
             <div style="margin-top: 15px; text-align: right; font-weight: bold; color: var(--red-loss);">
                 Total Leaked Capital: <span id="total-leaked-display">0.00 $</span>
             </div>
@@ -310,7 +402,6 @@
     </div>
 </div>
 
-<!-- Modal Dialog -->
 <div class="modal-overlay" id="modal-entry">
     <div class="modal-box">
         <div class="modal-title" id="modal-date-title">Log Performance</div>
@@ -395,7 +486,7 @@
             isAdminAuthenticated = false;
             document.body.classList.add('viewer-mode');
             document.getElementById('status-badge').className = "status-indicator viewer";
-            document.getElementById('status-badge').innerHTML = '<i class="fa-solid fa-eye"></i> Viewer Mode (Read Only)';
+            document.getElementById('status-badge').innerHTML = '<i class="fa-solid fa-eye"></i> Viewer Mode';
             document.getElementById('lock-toggle-btn').textContent = "Unlock Write Access";
             return;
         }
@@ -404,7 +495,7 @@
             isAdminAuthenticated = true;
             document.body.classList.remove('viewer-mode');
             document.getElementById('status-badge').className = "status-indicator admin";
-            document.getElementById('status-badge').innerHTML = '<i class="fa-solid fa-unlock-keyhole"></i> Admin Mode (Unlocked)';
+            document.getElementById('status-badge').innerHTML = '<i class="fa-solid fa-unlock-keyhole"></i> Admin Mode';
             document.getElementById('lock-toggle-btn').textContent = "Lock View Mode";
         } else if (inputCode !== null) { alert("Wrong passcode."); }
     }
@@ -427,7 +518,7 @@
         const year = currentActiveDate.getFullYear();
         const month = currentActiveDate.getMonth();
 
-        document.getElementById('calendar-month-year-label').innerHTML = `<i class="fa-regular fa-calendar"></i> ${monthNames[month]} ${year}`;
+        document.getElementById('calendar-month-year-label').innerHTML = `<i class="fa-regular fa-calendar"></i> ${monthNames[month].substring(0,3)} ${year}`;
 
         let firstDayIndex = new Date(year, month, 1).getDay();
         let paddingDays = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
@@ -474,7 +565,7 @@
         const month = currentActiveDate.getMonth();
         activeTargetKey = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        document.getElementById('modal-date-title').textContent = `Log Performance: ${monthNames[month]} ${day}`;
+        document.getElementById('modal-date-title').textContent = `Log: ${monthNames[month].substring(0,3)} ${day}`;
         if (calendarDatabase[activeTargetKey]) {
             document.getElementById('input-pnl').value = calendarDatabase[activeTargetKey].pnl;
             document.getElementById('input-trades').value = calendarDatabase[activeTargetKey].trades;
@@ -518,7 +609,7 @@
         } else {
             pnlTxt.textContent = `${log.pnl}$`; pnlTxt.style.color = '#94a3b8';
         }
-        trdTxt.textContent = log.trades > 0 ? `${log.trades} Trds` : '';
+        trdTxt.textContent = log.trades > 0 ? `${log.trades} T` : '';
     }
 
     function calculateDatabaseAnalytics() {
@@ -595,7 +686,6 @@
         items.forEach((item, index) => {
             const checkbox = item.querySelector('input[type="checkbox"]');
             const badge = item.querySelector('.status-badge');
-            const secureAmount = parseFloat(item.getAttribute('data-secure'));
             const targetAmount = parseFloat(item.getAttribute('data-target'));
             const id = item.getAttribute('data-id');
 
@@ -607,20 +697,23 @@
                     item.classList.add('locked'); checkbox.checked = false; badge.textContent = 'Locked';
                 }
             }
+
             let currentLevelBase = INITIAL_CAPITAL;
-            if (index > 0) currentLevelBase = parseFloat(items[index - 1].getAttribute('data-target')) - totalSecured;
+            if (index > 0) {
+                currentLevelBase = parseFloat(items[index - 1].getAttribute('data-target'));
+            }
 
             document.getElementById(`lot-${id}`).textContent = `Rec. Lot (20p): ${( (currentLevelBase * 0.01) / 200 ).toFixed(2)}`;
             document.getElementById(`loss-${id}`).textContent = `Max Loss: -${(currentLevelBase * 0.05).toFixed(2)}$`;
 
             if (checkbox.checked) {
                 item.classList.add('completed'); badge.textContent = 'Secured!';
-                totalSecured += secureAmount; activeBalance = targetAmount - secureAmount;
+                activeBalance = targetAmount;
                 checkedCount++; saveObj[id] = true;
             } else { item.classList.remove('completed'); }
         });
 
-        if (checkedCount === 0) { activeBalance = INITIAL_CAPITAL; totalSecured = 0; }
+        if (checkedCount === 0) { activeBalance = INITIAL_CAPITAL; }
         GLOBAL_ACTIVE_BALANCE = activeBalance;
         document.getElementById('live-balance').textContent = activeBalance.toFixed(2) + ' $';
         document.getElementById('progress').style.width = ((checkedCount / items.length) * 100) + '%';
@@ -634,7 +727,7 @@
     function recalculateCustomLot() {
         const customSl = parseFloat(document.getElementById('custom-sl').value) || 20;
         const customRiskPercent = parseFloat(document.getElementById('custom-risk').value) || 1;
-        document.getElementById('custom-lot-display').textContent = `Current Lot Setup: ${( (GLOBAL_ACTIVE_BALANCE * (customRiskPercent / 100)) / (customSl * 10) ).toFixed(2)}`;
+        document.getElementById('custom-lot-display').textContent = `Lot Setup: ${( (GLOBAL_ACTIVE_BALANCE * (customRiskPercent / 100)) / (customSl * 10) ).toFixed(2)}`;
     }
 
     function downloadPDF() {
