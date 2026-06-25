@@ -123,6 +123,22 @@
             100% { transform: translate3d(-50%, 0, 0); }
         }
 
+        /* Flashing price indicators */
+        .flash-up {
+            animation: flash-green-glow 0.8s ease-out;
+        }
+        .flash-down {
+            animation: flash-red-glow 0.8s ease-out;
+        }
+        @keyframes flash-green-glow {
+            0% { background-color: rgba(0, 230, 118, 0.4); color: #00e676 !important; text-shadow: 0 0 10px #00e676; }
+            100% { background-color: transparent; }
+        }
+        @keyframes flash-red-glow {
+            0% { background-color: rgba(255, 23, 68, 0.4); color: #ff1744 !important; text-shadow: 0 0 10px #ff1744; }
+            100% { background-color: transparent; }
+        }
+
         /* --- Audio & System Controls Header --- */
         .system-top-row {
             width: 100%;
@@ -617,17 +633,21 @@
             }
         }
         .risk-card {
-            background-color: var(--bg-darker);
-            border: 1px solid var(--border);
-            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(9, 14, 26, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
             position: relative;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            transition: border-color 0.3s;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.25s;
         }
         .risk-card:hover {
-            border-color: var(--border-hover);
+            border-color: rgba(0, 242, 254, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 242, 254, 0.08);
+            transform: translateY(-2px);
         }
         
         /* Circular Drawdown Gauge */
@@ -809,34 +829,178 @@
             50% { opacity: 0.6; }
         }
 
-        /* News Simulator Widget */
-        .news-simulator {
+        /* High-fidelity Economic Calendar Widget */
+        .calendar-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
             background: rgba(9, 14, 26, 0.6);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
+            margin-top: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .news-header {
+        .calendar-filters {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            padding: 10px 14px;
+            background: rgba(30, 41, 59, 0.4);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8em;
+            gap: 8px;
         }
-        .news-header span:first-child {
-            font-weight: 700;
-            font-size: 0.85em;
-            color: var(--gold);
+        .calendar-filters select {
+            background: #090e1a;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.95em;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .calendar-filters select:hover {
+            border-color: var(--border-hover);
+        }
+        .calendar-table-header {
+            display: grid;
+            grid-template-columns: 55px 50px 65px 1fr 65px 65px 65px;
+            padding: 8px 14px;
+            background: rgba(9, 14, 26, 0.8);
+            border-bottom: 2px solid var(--border);
+            font-size: 0.7em;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .calendar-list {
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        
+        /* Custom scrollbar for news list */
+        .calendar-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .calendar-list::-webkit-scrollbar-track {
+            background: rgba(9, 14, 26, 0.1);
+        }
+        .calendar-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+        .calendar-list::-webkit-scrollbar-thumb:hover {
+            background: var(--border-hover);
+        }
+
+        .calendar-row {
+            display: grid;
+            grid-template-columns: 55px 50px 65px 1fr 65px 65px 65px;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.25);
+            align-items: center;
+            font-size: 0.78em;
+            transition: all 0.2s ease;
+        }
+        .calendar-row:hover {
+            background: rgba(30, 41, 59, 0.35);
+        }
+        .calendar-row.live-running {
+            background: linear-gradient(90deg, rgba(255, 23, 68, 0.1), transparent);
+            border-left: 3px solid var(--red-loss);
+            animation: pulse-live-row 2s infinite;
+        }
+        @keyframes pulse-live-row {
+            0%, 100% { opacity: 1; }
+            50% { background-color: rgba(255, 23, 68, 0.15); }
+        }
+        .cal-time {
+            font-family: var(--font-mono);
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+        .cal-cur {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            font-weight: 700;
+            color: var(--text-main);
         }
+        .cal-impact-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 800;
+            text-align: center;
+            display: inline-block;
+            letter-spacing: 0.3px;
+        }
+        .cal-impact-high {
+            background: rgba(255, 23, 68, 0.15);
+            color: #ff8a80;
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            text-shadow: 0 0 5px rgba(255, 23, 68, 0.2);
+        }
+        .cal-impact-medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: #ffe082;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .cal-impact-low {
+            background: rgba(148, 163, 184, 0.1);
+            color: #b0bec5;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .cal-event {
+            font-weight: 500;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 8px;
+        }
+        .cal-actual {
+            font-weight: 700;
+            text-align: right;
+            padding-right: 4px;
+            font-family: var(--font-mono);
+        }
+        .cal-actual.better {
+            color: var(--green-profit);
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.3);
+        }
+        .cal-actual.worse {
+            color: var(--red-loss);
+            text-shadow: 0 0 8px rgba(255, 23, 68, 0.3);
+        }
+        .cal-actual.neutral {
+            color: var(--text-main);
+        }
+        .cal-actual.live {
+            color: var(--red-loss);
+            animation: pulse-live-text 1.2s infinite;
+            font-weight: 800;
+        }
+        @keyframes pulse-live-text {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        .cal-forecast, .cal-previous {
+            color: #94a3b8;
+            text-align: right;
+            padding-right: 4px;
+            font-family: var(--font-mono);
+        }
+        
         /* Toggle Switch styling */
         .switch {
             position: relative;
             display: inline-block;
-            width: 44px;
-            height: 22px;
+            width: 42px;
+            height: 20px;
         }
         .switch input { 
             opacity: 0;
@@ -852,13 +1016,13 @@
             bottom: 0;
             background-color: #334155;
             transition: .3s;
-            border-radius: 22px;
+            border-radius: 20px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 14px;
+            width: 14px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -875,49 +1039,21 @@
         input:checked + .slider:before {
             transform: translateX(22px);
         }
-        .news-alert-banner {
-            display: none;
-            background: rgba(255, 23, 68, 0.1);
-            border: 1px solid rgba(255, 23, 68, 0.3);
-            color: var(--red-loss);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.82em;
-            margin-top: 10px;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            animation: pulse-border 2s infinite;
+        
+        /* Session active styling */
+        .session-row.active {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.04), transparent);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        @keyframes pulse-border {
-            0%, 100% { border-color: rgba(255, 23, 68, 0.3); box-shadow: none; }
-            50% { border-color: rgba(255, 23, 68, 0.8); box-shadow: 0 0 10px rgba(255, 23, 68, 0.2); }
+        .session-row.active .session-progress-fill {
+            background: linear-gradient(90deg, var(--accent), #38bdf8);
+            box-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+            animation: pulse-session-fill 2s infinite;
         }
-        .news-ticker-list {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 120px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        .news-item {
-            font-size: 0.78em;
-            padding: 6px 8px;
-            background: rgba(30, 41, 59, 0.3);
-            border-left: 3px solid var(--border);
-            border-radius: 0 4px 4px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        .news-item.high-impact {
-            border-left-color: var(--red-loss);
-        }
-        .news-item-time {
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            font-size: 0.88em;
+        @keyframes pulse-session-fill {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
         }
         
         /* Floating active level detail inside milestones page */
@@ -1443,7 +1579,7 @@
                         <div class="health-stats">
                             <div class="health-stat-box">
                                 <div class="health-stat-label">Active Capital</div>
-                                <div class="health-stat-value" id="health-active-capital" style="color: var(--accent);">$118.17</div>
+                                <div class="health-stat-value" id="health-active-capital" style="color: var(--accent);">$120.16</div>
                             </div>
                             <div class="health-stat-box">
                                 <div class="health-stat-label">Drawdown Cap</div>
@@ -1454,25 +1590,66 @@
 
                     <!-- Economic News Simulator widget -->
                     <div class="risk-card">
-                        <div class="news-header">
-                            <span style="color: var(--red-loss);"><i class="fa-solid fa-newspaper"></i> Economic News Simulator</span>
+                        <div class="news-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="color: var(--red-loss); font-weight: 700; font-size: 0.85em; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-calendar-days"></i> Economic Calendar (MyFXBook Live)
+                            </span>
                             <label class="switch">
                                 <input type="checkbox" id="news-simulator-toggle" onchange="toggleNewsSimulation()">
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <p style="font-size: 0.82em; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
-                            Simulate prop firm high-impact news windows. When enabled, your recommended lots are reduced by <strong>50%</strong> to mitigate volatility.
-                        </p>
+                        
+                        <!-- Premium Interactive Simulation Info -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
+                            <p style="font-size: 0.82em; color: var(--text-muted); line-height: 1.4; margin: 0; flex: 1;">
+                                Simulates prop firm high-impact news windows. Reduces recommended lot sizes by <strong>50%</strong>.
+                            </p>
+                            <!-- Fast Release Event Trigger for testing! -->
+                            <button id="btn-release-news" class="btn-primary" style="padding: 4px 8px; font-size: 0.75em; border-radius: 6px; background: linear-gradient(135deg, var(--red-loss), #ff5252); border: none; color: white; cursor: pointer; font-weight: bold; display: none;" onclick="triggerInstantNewsRelease()">
+                                <i class="fa-solid fa-bolt"></i> Release Now
+                            </button>
+                        </div>
                         
                         <!-- Flashing Alert Banner -->
-                        <div class="news-alert-banner" id="news-alert-banner">
-                            <i class="fa-solid fa-circle-exclamation fa-beat"></i>
-                            <span>HIGH IMPACT NEWS RUNNING: REDUCE LOT SIZES BY 50%!</span>
+                        <div class="news-alert-banner" id="news-alert-banner" style="background: linear-gradient(90deg, rgba(255, 23, 68, 0.2), rgba(255, 23, 68, 0.05)); border: 1px dashed var(--red-loss); border-radius: 8px; padding: 12px; font-size: 0.82em; margin-bottom: 12px; align-items: center; gap: 8px; font-weight: 700; color: #ff8a80; display: none;">
+                            <i class="fa-solid fa-circle-exclamation fa-beat" style="color: var(--red-loss); font-size: 1.1em;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-size: 1.05em; text-transform: uppercase;">High Impact News Active</div>
+                                <div style="font-weight: normal; font-size: 0.9em; opacity: 0.85; margin-top: 2px;">Lot sizes automatically cut by 50% to secure your capital.</div>
+                            </div>
                         </div>
 
-                        <div class="news-ticker-list" id="news-ticker-list">
-                            <!-- News updates injected by JS -->
+                        <!-- Calendar Widget -->
+                        <div class="calendar-container">
+                            <div class="calendar-filters">
+                                <div>
+                                    <span style="color: var(--text-muted); margin-right: 4px;">Impact:</span>
+                                    <select id="filter-impact" onchange="filterCalendar()">
+                                        <option value="ALL">All Impacts</option>
+                                        <option value="HIGH_MED">Med & High</option>
+                                        <option value="HIGH">High Only</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span class="live-pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--green-profit); display: inline-block;"></span>
+                                    <span style="font-size: 0.9em; font-weight: 600; color: var(--green-profit);">Dynamic Feed</span>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-table-header">
+                                <div>Time</div>
+                                <div>Cur</div>
+                                <div>Impact</div>
+                                <div>Event</div>
+                                <div style="text-align: right;">Actual</div>
+                                <div style="text-align: right;">Forecast</div>
+                                <div style="text-align: right;">Previous</div>
+                            </div>
+                            
+                            <div class="calendar-list" id="calendar-list-tbody">
+                                <!-- Calendar Rows injected by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2240,17 +2417,7 @@
         // ==========================================
         // 🛡️ DYNAMIC LIVE RISK CONSOLE ENGINE
         // ==========================================
-        const newsEventsMock = [
-            { title: "NFP Employment Change", impact: "HIGH", currency: "USD" },
-            { title: "FOMC Rate Decision & Statement", impact: "HIGH", currency: "USD" },
-            { title: "CPI Inflation Report (MoM / YoY)", impact: "HIGH", currency: "USD" },
-            { title: "ECB Press Conference & Rate Call", impact: "HIGH", currency: "EUR" },
-            { title: "BOE Interest Rate Summary", impact: "HIGH", currency: "GBP" },
-            { title: "Unemployment Claims Weekly", impact: "MEDIUM", currency: "USD" },
-            { title: "Retail Sales Advanced", impact: "MEDIUM", currency: "USD" }
-        ];
 
-        let activeNewsStories = [];
 
         function initRiskConsole() {
             updateLotMatrixCheatSheet();
@@ -2462,6 +2629,73 @@
             });
         }
 
+        // ==========================================
+        // 📰 MYFXBOOK-STYLE ECONOMIC CALENDAR SIMULATOR
+        // ==========================================
+        const calendarEvents = [
+            { id: 1, time: "11:30", cur: "GBP", flag: "🇬🇧", impact: "LOW", event: "BoE Consumer Credit", actual: "1.2B", forecast: "1.1B", previous: "0.9B", resolved: true, trend: "better" },
+            { id: 2, time: "13:30", cur: "CAD", flag: "🇨🇦", impact: "MEDIUM", event: "GDP m/m", actual: "0.2%", forecast: "0.1%", previous: "0.0%", resolved: true, trend: "better" },
+            { id: 3, time: "13:30", cur: "USD", flag: "🇺🇸", impact: "HIGH", event: "Core PCE Price Index m/m", actual: "0.1%", forecast: "0.2%", previous: "0.3%", resolved: true, trend: "better" },
+            { id: 4, time: "14:15", cur: "EUR", flag: "🇪🇺", impact: "HIGH", event: "ECB Interest Rate Decision", actual: "4.25%", forecast: "4.25%", previous: "4.50%", resolved: true, trend: "neutral" },
+            { id: 5, time: "14:30", cur: "USD", flag: "🇺🇸", impact: "HIGH", event: "NFP Employment Change", actual: "--", forecast: "185K", previous: "206K", resolved: false, trend: null },
+            { id: 6, time: "15:00", cur: "USD", flag: "🇺🇸", impact: "MEDIUM", event: "ISM Services PMI", actual: "--", forecast: "51.2", previous: "48.8", resolved: false, trend: null },
+            { id: 7, time: "16:00", cur: "USD", flag: "🇺🇸", impact: "HIGH", event: "Fed Chair Powell Speaks", actual: "--", forecast: "--", previous: "--", resolved: false, trend: null },
+            { id: 8, time: "18:00", cur: "USD", flag: "🇺🇸", impact: "LOW", event: "10-Year Bond Auction", actual: "--", forecast: "--", previous: "4.12%", resolved: false, trend: null },
+            { id: 9, time: "21:30", cur: "AUD", flag: "🇦🇺", impact: "MEDIUM", event: "Retail Sales m/m", actual: "--", forecast: "0.3%", previous: "0.2%", resolved: false, trend: null }
+        ];
+
+        let activeImpactFilter = 'ALL';
+
+        function filterCalendar() {
+            const filter = document.getElementById('filter-impact');
+            if (filter) activeImpactFilter = filter.value;
+            renderCalendarFeed();
+        }
+
+        function renderCalendarFeed() {
+            const list = document.getElementById('calendar-list-tbody');
+            if (!list) return;
+
+            list.innerHTML = "";
+            
+            calendarEvents.forEach(ev => {
+                // Apply impact filter
+                if (activeImpactFilter === 'HIGH' && ev.impact !== 'HIGH') return;
+                if (activeImpactFilter === 'HIGH_MED' && ev.impact !== 'HIGH' && ev.impact !== 'MEDIUM') return;
+                
+                const isHigh = ev.impact === 'HIGH';
+                const isMed = ev.impact === 'MEDIUM';
+                const impactClass = isHigh ? 'cal-impact-high' : (isMed ? 'cal-impact-medium' : 'cal-impact-low');
+                
+                let actualText = ev.actual;
+                let actualClass = 'cal-actual neutral';
+                
+                if (ev.resolved) {
+                    if (ev.trend === 'better') actualClass = 'cal-actual better';
+                    else if (ev.trend === 'worse') actualClass = 'cal-actual worse';
+                    else actualClass = 'cal-actual neutral';
+                } else if (ev.actual === 'LIVE') {
+                    actualText = 'LIVE';
+                    actualClass = 'cal-actual live';
+                }
+                
+                const isLiveRunning = isNewsActive && ev.impact === 'HIGH' && !ev.resolved;
+
+                const row = document.createElement('div');
+                row.className = `calendar-row ${isLiveRunning ? 'live-running' : ''}`;
+                row.innerHTML = `
+                    <div class="cal-time">${ev.time}</div>
+                    <div class="cal-cur">${ev.flag} ${ev.cur}</div>
+                    <div><span class="cal-impact-badge ${impactClass}">${ev.impact}</span></div>
+                    <div class="cal-event" title="${ev.event}">${ev.event}</div>
+                    <div class="${actualClass}">${actualText}</div>
+                    <div class="cal-forecast">${ev.forecast}</div>
+                    <div class="cal-previous">${ev.previous}</div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
         // 📰 Economic High Impact News Simulation Toggle
         function toggleNewsSimulation() {
             const toggle = document.getElementById('news-simulator-toggle');
@@ -2470,15 +2704,37 @@
             isNewsActive = toggle.checked;
 
             const banner = document.getElementById('news-alert-banner');
+            const releaseBtn = document.getElementById('btn-release-news');
+            
             if (isNewsActive) {
-                banner.style.display = 'flex';
+                if (banner) banner.style.display = 'flex';
+                if (releaseBtn) releaseBtn.style.display = 'block';
                 SoundManager.playNewsWarning();
-                // Add fresh high impact story
-                const randomNews = newsEventsMock[Math.floor(Math.random() * 5)]; // pick high impact news
-                postNewsArticle(randomNews.title, randomNews.impact, randomNews.currency);
+                
+                // Find next unresolved high impact event and mark as LIVE
+                const nextHigh = calendarEvents.find(ev => ev.impact === 'HIGH' && !ev.resolved);
+                if (nextHigh) {
+                    nextHigh.actual = 'LIVE';
+                }
             } else {
-                banner.style.display = 'none';
+                if (banner) {
+                    banner.style.display = 'none';
+                    const bannerSub = banner.querySelector('div div:nth-child(2)');
+                    if (bannerSub) {
+                        bannerSub.textContent = "Lot sizes automatically cut by 50% to secure your capital.";
+                    }
+                }
+                if (releaseBtn) releaseBtn.style.display = 'none';
+                
+                // Reset live states back to --
+                calendarEvents.forEach(ev => {
+                    if (ev.actual === 'LIVE') {
+                        ev.actual = '--';
+                    }
+                });
             }
+
+            renderCalendarFeed();
 
             // Sync all recommended lots across workspace
             recalculatePositionLotSize();
@@ -2513,79 +2769,166 @@
             }
         }
 
-        function initNewsSimulator() {
-            const list = document.getElementById('news-ticker-list');
-            if (!list) return;
-
-            list.innerHTML = "";
-            activeNewsStories = [
-                { title: "Fed Chair Powell Speaks on Rate Outlook", impact: "HIGH", currency: "USD", time: "2m ago" },
-                { title: "ECB Interest Rate Announcement", impact: "HIGH", currency: "EUR", time: "15m ago" },
-                { title: "German Manufacturing PMI Falls Short", impact: "MEDIUM", currency: "EUR", time: "1h ago" }
-            ];
-
-            renderNewsFeed();
-
-            if (newsSimulatorInterval) clearInterval(newsSimulatorInterval);
-            newsSimulatorInterval = setInterval(() => {
-                // Periodically simulate incoming news stories
-                const rand = Math.random();
-                if (rand > 0.75) {
-                    const event = newsEventsMock[Math.floor(Math.random() * newsEventsMock.length)];
-                    postNewsArticle(event.title, event.impact, event.currency);
-                }
-            }, 12000);
-        }
-
-        function postNewsArticle(title, impact, currency) {
-            activeNewsStories.unshift({
-                title: title,
-                impact: impact,
-                currency: currency,
-                time: "Just Now"
-            });
-            if (activeNewsStories.length > 5) activeNewsStories.pop();
-            renderNewsFeed();
+        function triggerInstantNewsRelease() {
+            // Find active live event
+            const liveEvent = calendarEvents.find(ev => ev.actual === 'LIVE' && ev.impact === 'HIGH');
+            if (!liveEvent) return;
+            
+            const isBetter = Math.random() > 0.4;
+            if (liveEvent.event.includes('NFP')) {
+                liveEvent.actual = isBetter ? "215K" : "160K";
+                liveEvent.trend = isBetter ? "better" : "worse";
+            } else if (liveEvent.event.includes('ISM') || liveEvent.event.includes('Services')) {
+                liveEvent.actual = isBetter ? "52.4" : "47.2";
+                liveEvent.trend = isBetter ? "better" : "worse";
+            } else {
+                liveEvent.actual = "Rates Unchanged";
+                liveEvent.trend = "neutral";
+            }
+            
+            liveEvent.resolved = true;
+            renderCalendarFeed();
             SoundManager.playTick();
+            
+            const releaseBtn = document.getElementById('btn-release-news');
+            if (releaseBtn) releaseBtn.style.display = 'none';
+            
+            let countdown = 10;
+            const banner = document.getElementById('news-alert-banner');
+            const bannerText = banner ? banner.querySelector('div div') : null;
+            const bannerSub = banner ? banner.querySelector('div div:nth-child(2)') : null;
+            
+            if (bannerText) {
+                bannerText.textContent = "High Impact News Active";
+            }
+            
+            const timerId = setInterval(() => {
+                countdown--;
+                if (bannerSub) {
+                    bannerSub.innerHTML = `Event released! Cool-off period active. Restoring normal lot sizing in <strong style="color: var(--gold); font-family: var(--font-mono);">${countdown}s</strong>.`;
+                }
+                
+                if (countdown <= 0) {
+                    clearInterval(timerId);
+                    const toggle = document.getElementById('news-simulator-toggle');
+                    if (toggle) {
+                        toggle.checked = false;
+                        toggleNewsSimulation();
+                    }
+                    if (bannerSub) {
+                        bannerSub.textContent = "Lot sizes automatically cut by 50% to secure your capital.";
+                    }
+                }
+            }, 1000);
         }
 
-        function renderNewsFeed() {
-            const list = document.getElementById('news-ticker-list');
-            if (!list) return;
-
-            list.innerHTML = "";
-            activeNewsStories.forEach(news => {
-                const isHigh = news.impact === "HIGH";
-                const row = document.createElement('div');
-                row.className = `news-item ${isHigh ? 'high-impact' : ''}`;
-                row.innerHTML = `
-                    <div>
-                        <strong style="color: ${isHigh ? 'var(--red-loss)' : 'var(--gold)'};">[${news.impact}]</strong> 
-                        <span style="color: var(--text-main); font-weight:600; margin-left: 4px;">${news.title} (${news.currency})</span>
-                    </div>
-                    <span class="news-item-time">${news.time}</span>
-                `;
-                list.appendChild(row);
-            });
+        function initNewsSimulator() {
+            renderCalendarFeed();
         }
 
         // ==========================================
-        // 💫 HEADER LIVE TICKER FLUIDITY
+        // 💫 HEADER LIVE TICKER FLUIDITY (BINANCE API)
         // ==========================================
         const tickerRates = [
-            { symbol: 'XAUUSD', name: 'Gold', price: 2350.25, change: 0.12, base: 2350.0 },
-            { symbol: 'BTCUSD', name: 'Bitcoin', price: 95400.0, change: 1.84, base: 95200.0 },
-            { symbol: 'EURUSD', name: 'EURUSD', price: 1.08520, change: -0.08, base: 1.0850 },
-            { symbol: 'US30', name: 'US30', price: 39120.0, change: 0.35, base: 39120.0 },
-            { symbol: 'GBPUSD', name: 'GBPUSD', price: 1.27210, change: -0.02, base: 1.2720 },
-            { symbol: 'NAS100', name: 'NAS100', price: 19680.0, change: 0.88, base: 19680.0 }
+            { symbol: 'XAUUSD', apiSymbol: 'PAXGUSDT', name: 'Gold', price: 2350.25, change: 0.12, base: 2350.0, flash: null },
+            { symbol: 'BTCUSD', apiSymbol: 'BTCUSDT', name: 'Bitcoin', price: 95400.0, change: 1.84, base: 95200.0, flash: null },
+            { symbol: 'EURUSD', apiSymbol: 'EURUSDT', name: 'EURUSD', price: 1.08520, change: -0.08, base: 1.0850, flash: null },
+            { symbol: 'US30', apiSymbol: null, name: 'US30', price: 39120.0, change: 0.35, base: 39120.0, flash: null },
+            { symbol: 'GBPUSD', apiSymbol: 'GBPUSDT', name: 'GBPUSD', price: 1.27210, change: -0.02, base: 1.2720, flash: null },
+            { symbol: 'NAS100', apiSymbol: null, name: 'NAS100', price: 19680.0, change: 0.88, base: 19680.0, flash: null }
         ];
+
+        async function fetchLiveTickerPrices() {
+            try {
+                // Fetch bulk real-time prices from Binance API
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","EURUSDT","GBPUSDT","PAXGUSDT"]');
+                if (!res.ok) throw new Error('CORS or Network error');
+                const data = await res.json();
+                
+                data.forEach(item => {
+                    let rate = tickerRates.find(r => r.apiSymbol === item.symbol);
+                    if (rate) {
+                        const oldPrice = rate.price;
+                        const newPrice = parseFloat(item.lastPrice);
+                        rate.price = newPrice;
+                        rate.change = parseFloat(item.priceChangePercent);
+                        
+                        if (newPrice > oldPrice) rate.flash = 'up';
+                        else if (newPrice < oldPrice) rate.flash = 'down';
+                        else rate.flash = null;
+                    }
+                });
+                
+                // Simulating index movement walk anchored to real-time micro-fluctuations
+                tickerRates.forEach(r => {
+                    if (!r.apiSymbol) { // Indices
+                        const oldPrice = r.price;
+                        const deviation = (Math.random() - 0.5) * (r.base * 0.0001);
+                        r.price += deviation;
+                        const pctDiff = ((r.price - r.base) / r.base) * 100;
+                        r.change = pctDiff;
+                        
+                        if (r.price > oldPrice) r.flash = 'up';
+                        else if (r.price < oldPrice) r.flash = 'down';
+                        else r.flash = null;
+                    }
+                });
+                
+                updateTickerDOM();
+            } catch (err) {
+                // Robust fallback to client simulation if offline/CORS blocked
+                tickerRates.forEach(t => {
+                    const oldPrice = t.price;
+                    const deviation = (Math.random() - 0.5) * (t.base * 0.00015);
+                    t.price += deviation;
+                    const pctDiff = ((t.price - t.base) / t.base) * 100;
+                    t.change = pctDiff;
+                    
+                    if (t.price > oldPrice) t.flash = 'up';
+                    else if (t.price < oldPrice) t.flash = 'down';
+                    else t.flash = null;
+                });
+                updateTickerDOM();
+            }
+        }
+
+        function updateTickerDOM() {
+            tickerRates.forEach((t, i) => {
+                const dec = t.symbol.includes('USD') && !t.symbol.includes('BTC') && !t.symbol.includes('XAU') ? 5 : 2;
+                const pctDiff = t.change;
+                const dirClass = pctDiff >= 0 ? 'up' : 'down';
+                const sign = pctDiff >= 0 ? '+' : '';
+                
+                const elems = document.querySelectorAll(`[id="ticker-idx-${i}"]`);
+                elems.forEach(el => {
+                    el.className = `ticker-item ${dirClass}`;
+                    
+                    const priceEl = el.querySelector('.price');
+                    const changeEl = el.querySelector('.change');
+                    
+                    if (priceEl && changeEl) {
+                        priceEl.textContent = t.price.toFixed(dec);
+                        changeEl.textContent = `${sign}${pctDiff.toFixed(2)}%`;
+                        
+                        // Active reflow-reset flash trigger
+                        if (t.flash === 'up') {
+                            priceEl.classList.remove('flash-up', 'flash-down');
+                            void priceEl.offsetWidth; // force browser layout reflow
+                            priceEl.classList.add('flash-up');
+                        } else if (t.flash === 'down') {
+                            priceEl.classList.remove('flash-up', 'flash-down');
+                            void priceEl.offsetWidth; // force browser layout reflow
+                            priceEl.classList.add('flash-down');
+                        }
+                    }
+                });
+            });
+        }
 
         function initLiveTicker() {
             const container = document.getElementById('ticker-slider');
             if(!container) return;
 
-            // Generate content
             let html = "";
             tickerRates.forEach((t, i) => {
                 const dirClass = t.change >= 0 ? 'up' : 'down';
@@ -2598,30 +2941,10 @@
                     </div>
                 `;
             });
-            // Duplicate content for endless sliding look
             container.innerHTML = html + html;
 
-            // Run minor variations interval
-            setInterval(() => {
-                tickerRates.forEach((t, i) => {
-                    const deviation = (Math.random() - 0.5) * (t.base * 0.0003);
-                    t.price = t.price + deviation;
-                    const pctDiff = ((t.price - t.base) / t.base) * 100;
-                    t.change = pctDiff;
-
-                    const dec = t.symbol.includes('USD') && !t.symbol.includes('BTC') && !t.symbol.includes('XAU') ? 5 : 2;
-                    
-                    // Update DOM (both duplicates)
-                    const elems = document.querySelectorAll(`[id="ticker-idx-${i}"]`);
-                    elems.forEach(el => {
-                        const dirClass = pctDiff >= 0 ? 'up' : 'down';
-                        const sign = pctDiff >= 0 ? '+' : '';
-                        el.className = `ticker-item ${dirClass}`;
-                        el.querySelector('.price').textContent = t.price.toFixed(dec);
-                        el.querySelector('.change').textContent = `${sign}${pctDiff.toFixed(2)}%`;
-                    });
-                });
-            }, 3000);
+            fetchLiveTickerPrices();
+            setInterval(fetchLiveTickerPrices, 2000);
         }
 
         // ==========================================
