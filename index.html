@@ -59,6 +59,9 @@
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         /* --- Custom Scrollbar --- */
@@ -627,11 +630,7 @@
             grid-template-columns: 1.2fr 0.8fr;
             gap: 20px;
         }
-        @media (max-width: 768px) {
-            .risk-console-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+
         .risk-card {
             background: linear-gradient(135deg, rgba(9, 14, 26, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
             backdrop-filter: blur(12px);
@@ -1202,11 +1201,123 @@
             box-shadow: 0 0 15px var(--accent-glow);
             transform: translateY(-1px);
         }
+
+        /* --------------------------------------------------------------
+           1️⃣ MOBILE – ≤ 768px (Hada huwa li ghadi y-gadd telfoun)
+           -------------------------------------------------------------- */
+        /* Wrapper dyal telfaza bsh may-t-jbedsh site bzzaf */
+        .responsive-wrapper {
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Layout l-3adi dyal PC: Sidebar + Content */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr; /* Set to 1fr because there is no sidebar in the HTML. Use 320px 1fr if a sidebar is added in the future */
+            gap: 20px;
+            width: 100%;
+            max-width: 1050px;
+        }
+
+        /* L-container li fih l-mochkil rj3nah flexible */
+        .main-workspace-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --------------------------------------------------------------
+           1️⃣ MOBILE BREAKPOINT (≤ 768px) - Telfoun
+           -------------------------------------------------------------- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Padding sghir fl-mobile */
+            }
+
+            .app-layout {
+                grid-template-columns: 1fr; /* Rj3na kulchi 3amoud wa7ed */
+                gap: 15px;
+            }
+
+            .main-workspace-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+
+            /* Les stats cards dyal win rate, total p&l... */
+            .grid-cols-5, .dashboard {
+                grid-template-columns: repeat(2, 1fr) !important; /* Y-rj3o 2 f satter f blast 5 */
+                gap: 10px !important;
+            }
+
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                padding: 15px 10px !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Navigation tabs wrapping on mobile */
+            .navigation-tabs {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+            }
+            .tab-btn {
+                flex: 1 1 40% !important;
+                font-size: 0.8em !important;
+                padding: 8px 5px !important;
+            }
+
+            /* Les cartes dyal grid d dda7el */
+            .risk-console-grid, .grid, .lot-matrix, .missed-form {
+                grid-template-columns: 1fr !important;
+                width: 100% !important;
+            }
+
+            .calc-grid-new {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .calc-output-card {
+                grid-column: span 1 !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            /* Ensure modal/dialogs use full width */
+            .modal-box {
+                width: 95% !important;
+                margin: 0 auto !important;
+            }
+        }
+
+        /* --------------------------------------------------------------
+           2️⃣ TV & LARGE SCREENS BREAKPOINT (≥ 1920px) - Telfaza
+           -------------------------------------------------------------- */
+        @media (min-width: 1920px) {
+            html {
+                font-size: 18px; /* Kat-kber l-kitaba automatic proportional fl-TV bsh t-ban mn b3id */
+            }
+            .responsive-wrapper {
+                max-width: 1600px; /* Jme3na site fl-wost bsh may-t-jbedch f les écrans 4K */
+            }
+        }
     </style>
 </head>
 <body class="viewer-mode">
+    <div class="responsive-wrapper">
+        <div class="app-layout">
+            <div class="main-workspace-container">
 
-    <!-- ⚡ Ticking Rates Header -->
+                <!-- ⚡ Ticking Rates Header -->
     <div class="ticker-wrap">
         <div class="ticker-content" id="ticker-slider">
             <!-- Items injected by JS and duplicated for smooth loop -->
@@ -1236,7 +1347,7 @@
         <div class="subtitle">📈 Professional Prop Console & Sync Matrix</div>
 
         <!-- Real-time Dashboard Cards -->
-        <div class="dashboard">
+        <div class="dashboard grid-cols-5">
             <div class="stat-card">
                 <div class="stat-label">Win Rate</div>
                 <div id="global-winrate" class="stat-value text-profit">0.0%</div>
@@ -1706,6 +1817,9 @@
             <button class="btn download-btn" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf"></i> Export Strategy Report (PDF)</button>
         </div>
     </div>
+            </div> <!-- Closes .main-workspace-container -->
+        </div> <!-- Closes .app-layout -->
+    </div> <!-- Closes .responsive-wrapper -->
 
     <!-- Log Modal -->
     <div class="modal-overlay" id="modal-entry">
