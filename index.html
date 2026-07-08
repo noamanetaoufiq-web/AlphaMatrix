@@ -3,1137 +3,914 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlphaMatrix Enterprise | Level Master Console</title>
+    <title>AlphaMatrix Enterprise | Console</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
+    <!-- Chart.js for Equity Curve -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-dark: #030508;
-            --glass-bg: rgba(10, 15, 25, 0.65);
-            --glass-border: rgba(0, 243, 255, 0.15);
-            --cyan: #00F3FF;
-            --emerald: #00FF9D;
-            --magenta: #FF0055;
-            --gold: #FFD700;
-            --text-main: #E0E6ED;
-            --text-muted: #5A6A85;
-            --glow-cyan: 0 0 20px rgba(0, 243, 255, 0.8), 0 0 40px rgba(0, 243, 255, 0.4);
-            --glow-emerald: 0 0 20px rgba(0, 255, 157, 0.8), 0 0 40px rgba(0, 255, 157, 0.4);
-            --glow-magenta: 0 0 20px rgba(255, 0, 85, 0.8), 0 0 40px rgba(255, 0, 85, 0.4);
-            --glow-gold: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+            --bg: #050505; --card: rgba(15, 20, 30, 0.8); --border: rgba(0, 243, 255, 0.2);
+            --cyan: #00F3FF; --emerald: #00FF9D; --magenta: #FF0055; --gold: #FFD700;
+            --text: #E0E6ED; --muted: #6B7280;
+            --glow-c: 0 0 10px rgba(0, 243, 255, 0.5); --glow-e: 0 0 10px rgba(0, 255, 157, 0.5);
+            --glow-m: 0 0 10px rgba(255, 0, 85, 0.5); --glow-g: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: linear-gradient(135deg, #030508 0%, #0a0f1a 100%);
-            background-attachment: fixed;
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 1;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(0, 243, 255, 0.02) 50%, transparent 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glass::before {
-            content: "";
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .glass:hover::before { left: 100%; }
-
-        .glass:hover {
-            border-color: rgba(0, 243, 255, 0.4);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px 0 rgba(0, 243, 255, 0.2);
-        }
-
-        /* Top Bar */
-        .top-bar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-            z-index: 100;
-            background: rgba(5, 8, 12, 0.9);
-            backdrop-filter: blur(20px);
-            border-bottom: 2px solid var(--glass-border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .status-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .badge {
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 1.5px;
-            border: 2px solid;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .badge.magenta { border-color: var(--magenta); color: var(--magenta); background: rgba(255, 0, 85, 0.15); box-shadow: var(--glow-magenta); }
-        .badge.emerald { border-color: var(--emerald); color: var(--emerald); background: rgba(0, 255, 157, 0.15); box-shadow: var(--glow-emerald); }
-        .badge.cyan { border-color: var(--cyan); color: var(--cyan); background: rgba(0, 243, 255, 0.15); box-shadow: var(--glow-cyan); }
-        .badge.gold { border-color: var(--gold); color: var(--gold); background: rgba(255, 215, 0, 0.15); box-shadow: var(--glow-gold); }
-
-        /* ============================================ */
-        /* 🔧 FIXED SIDEBAR WITH SCROLL                */
-        /* ============================================ */
-        .sidebar {
-            width: 260px;
-            height: calc(100vh - 70px); /* Take full height minus top bar */
-            position: fixed;
-            left: 0;
-            top: 70px;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-            border-right: 2px solid var(--glass-border);
-            background: rgba(5, 8, 12, 0.95);
-            backdrop-filter: blur(20px);
-            
-            /* ✅ SCROLL FIX */
-            overflow-y: auto;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-
-        /* Custom Scrollbar for Sidebar (Cyberpunk Style) */
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 3px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--cyan), var(--emerald));
-            border-radius: 3px;
-            box-shadow: var(--glow-cyan);
-        }
-        .sidebar::-webkit-scrollbar-thumb:hover {
-            background: var(--cyan);
-        }
-        /* Firefox */
-        .sidebar {
-            scrollbar-width: thin;
-            scrollbar-color: var(--cyan) rgba(0, 0, 0, 0.3);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            border-bottom: 2px solid var(--glass-border);
-            padding-bottom: 1.5rem;
-            flex-shrink: 0; /* Prevent logo from shrinking */
-        }
-
-        .logo i {
-            font-size: 3rem;
-            color: var(--cyan);
-            filter: drop-shadow(var(--glow-cyan));
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .logo h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
-            color: #fff;
-            margin-top: 1rem;
-            letter-spacing: 3px;
-            font-weight: 700;
-        }
-
-        .logo span {
-            color: var(--cyan);
-            text-shadow: var(--glow-cyan);
-        }
-
-        .nav-list {
-            flex: 1;
-            padding-bottom: 1rem;
-        }
-
-        .nav-item {
-            list-style: none;
-            padding: 1rem 1.2rem;
-            margin-bottom: 0.8rem;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 1rem;
-            color: var(--text-muted);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--cyan);
-            transform: scaleY(0);
-            transition: transform 0.3s;
-        }
-
-        .nav-item:hover {
-            background: rgba(0, 243, 255, 0.08);
-            color: var(--cyan);
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: rgba(0, 243, 255, 0.15);
-            color: var(--cyan);
-            box-shadow: inset 4px 0 0 var(--cyan), 0 4px 15px rgba(0, 243, 255, 0.3);
-            text-shadow: var(--glow-cyan);
-        }
-
-        .nav-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .nav-item i {
-            width: 24px;
-            font-size: 1.3rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            margin-top: 70px;
-            flex: 1;
-            padding: 2.5rem;
-            width: calc(100% - 260px);
-            position: relative;
-            z-index: 3;
-        }
-
-        .view {
-            display: none;
-            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h2.neon-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-
-        .cyan { color: var(--cyan); text-shadow: var(--glow-cyan); }
-        .emerald { color: var(--emerald); text-shadow: var(--glow-emerald); }
-        .magenta { color: var(--magenta); text-shadow: var(--glow-magenta); }
-        .gold { color: var(--gold); text-shadow: var(--glow-gold); }
-        .text-muted { color: var(--text-muted); font-size: 0.9rem; }
-
-        /* Grid Layouts */
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.8rem; margin-bottom: 2.5rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem; margin-bottom: 2.5rem; }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.8rem; margin-bottom: 2.5rem; }
-
-        .card {
-            padding: 2rem;
-            position: relative;
-        }
-
-        .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-top: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        .stat.huge {
-            font-size: 3.5rem;
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-
-        /* Level Master Progress */
-        .level-master {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1) 0%, rgba(0, 255, 157, 0.1) 100%);
-            padding: 3rem;
-            margin-bottom: 3rem;
-            border: 2px solid var(--cyan);
-            box-shadow: var(--glow-cyan);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .level-master::before {
-            content: "";
-            position: absolute;
-            top: -50%; right: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0, 243, 255, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .level-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .level-badge {
-            background: linear-gradient(135deg, var(--cyan), var(--emerald));
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #000;
-            box-shadow: 0 8px 30px rgba(0, 243, 255, 0.6);
-            letter-spacing: 2px;
-        }
-
-        .level-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--cyan);
-            text-shadow: var(--glow-cyan);
-            letter-spacing: 3px;
-        }
-
-        .progress-container {
-            position: relative;
-            z-index: 2;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid var(--cyan);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--cyan), var(--emerald));
-            border-radius: 15px;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 20px var(--cyan);
-        }
-
-        .progress-fill::before {
-            content: "";
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            to { left: 100%; }
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-            letter-spacing: 1px;
-        }
-
-        .level-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .level-stat {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .level-stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .level-stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--cyan);
-            text-shadow: var(--glow-cyan);
-        }
-
-        /* Forms */
-        .form-control {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 1rem;
-            border-radius: 10px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            margin-bottom: 1.2rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 1rem 2rem;
-            border: 2px solid var(--cyan);
-            background: transparent;
-            color: var(--cyan);
-            font-family: 'Orbitron', sans-serif;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: "";
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 0; height: 0;
-            border-radius: 50%;
-            background: var(--cyan);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn:hover {
-            color: var(--bg-dark);
-            box-shadow: var(--glow-cyan);
-        }
-
-        .btn span {
-            position: relative;
-            z-index: 1;
-        }
-
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(5,5,5,0.95); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; backdrop-filter: blur(10px); }
+        .sidebar { width: 240px; height: 100vh; position: fixed; left: 0; top: 60px; background: rgba(10,10,15,0.95); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        .main { margin-left: 240px; margin-top: 60px; padding: 30px; flex: 1; width: calc(100% - 240px); }
+        
+        .glass { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: 0.3s; }
+        .glass:hover { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0,243,255,0.1); }
+        .grid { display: grid; gap: 20px; }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+        
+        h2 { font-family: 'Orbitron', sans-serif; color: var(--cyan); margin-bottom: 20px; letter-spacing: 1px; font-size: 1.5rem; text-shadow: var(--glow-c); }
+        h3 { font-family: 'Orbitron', sans-serif; color: #fff; margin-bottom: 15px; font-size: 1.1rem; }
+        .stat { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
+        .stat-huge { font-size: 3rem; text-align: center; margin: 20px 0; }
+        .cyan { color: var(--cyan); text-shadow: var(--glow-c); }
+        .emerald { color: var(--emerald); text-shadow: var(--glow-e); }
+        .magenta { color: var(--magenta); text-shadow: var(--glow-m); }
+        .gold { color: var(--gold); text-shadow: var(--glow-g); }
+        .muted { color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .logo i { font-size: 2rem; color: var(--cyan); text-shadow: var(--glow-c); }
+        .nav-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; color: var(--muted); display: flex; align-items: center; gap: 12px; transition: 0.2s; font-weight: 600; }
+        .nav-item:hover { background: rgba(0,243,255,0.1); color: var(--cyan); }
+        .nav-item.active { background: rgba(0,243,255,0.2); color: var(--cyan); box-shadow: inset 3px 0 0 var(--cyan); }
+        
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani'; font-size: 1rem; }
+        .form-control:focus { border-color: var(--cyan); outline: none; box-shadow: 0 0 8px rgba(0,243,255,0.3); }
+        .btn { padding: 12px 20px; border: 1px solid var(--cyan); background: transparent; color: var(--cyan); font-family: 'Orbitron'; cursor: pointer; border-radius: 6px; font-weight: 700; letter-spacing: 1px; transition: 0.2s; width: 100%; text-transform: uppercase; font-size: 0.85rem; }
+        .btn:hover { background: var(--cyan); color: #000; box-shadow: var(--glow-c); }
         .btn-emerald { border-color: var(--emerald); color: var(--emerald); }
-        .btn-emerald::before { background: var(--emerald); }
-        .btn-emerald:hover { box-shadow: var(--glow-emerald); }
-
+        .btn-emerald:hover { background: var(--emerald); color: #000; box-shadow: var(--glow-e); }
         .btn-magenta { border-color: var(--magenta); color: var(--magenta); }
-        .btn-magenta::before { background: var(--magenta); }
-        .btn-magenta:hover { box-shadow: var(--glow-magenta); }
-
-        .btn-full { width: 100%; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn:disabled:hover::before { width: 0; height: 0; }
-
-        /* Viewer Mode */
-        body.viewer-mode .interactive:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-            pointer-events: none;
+        .btn-magenta:hover { background: var(--magenta); color: #fff; box-shadow: var(--glow-m); }
+        .btn-gold { border-color: var(--gold); color: var(--gold); }
+        .btn-gold:hover { background: var(--gold); color: #000; box-shadow: var(--glow-g); }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; background: transparent !important; box-shadow: none !important; }
+        .btn-sm { padding: 8px 16px; font-size: 0.75rem; }
+        
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-family: 'Orbitron'; border: 1px solid; display: inline-flex; align-items: center; gap: 6px; }
+        .badge-m { border-color: var(--magenta); color: var(--magenta); background: rgba(255,0,85,0.1); }
+        .badge-e { border-color: var(--emerald); color: var(--emerald); background: rgba(0,255,157,0.1); }
+        .badge-g { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.1); }
+        
+        .level-master { background: linear-gradient(135deg, rgba(0,243,255,0.05), rgba(0,255,157,0.05)); border: 1px solid var(--cyan); position: relative; overflow: hidden; }
+        .progress-bar { height: 24px; background: #000; border-radius: 12px; border: 1px solid var(--cyan); overflow: hidden; position: relative; margin: 15px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); transition: width 1s ease; box-shadow: 0 0 15px var(--cyan); }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-shadow: 0 0 5px #000; z-index: 2; }
+        
+        /* Chart Container */
+        .chart-container { position: relative; height: 400px; margin-top: 20px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .chart-stat { text-align: center; padding: 10px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border); }
+        .chart-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .chart-stat-value { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; margin-top: 5px; }
+        
+        /* Calendar with Days Header */
+        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+        .month-card { padding: 20px; }
+        .days-header { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 6px; 
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
         }
-
-        body.viewer-mode .card::after {
-            content: "\f023";
-            font-family: "Font Awesome 6 Free";
+        .day-label {
+            text-align: center;
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
             font-weight: 900;
-            position: absolute;
-            top: 20px; right: 20px;
-            color: var(--magenta);
-            opacity: 0.6;
-            font-size: 1.5rem;
-            z-index: 10;
+            letter-spacing: 1px;
+            padding: 4px 0;
         }
-
-        body.viewer-mode .card.no-lock::after { display: none; }
-
-        /* Targets */
-        .target-card.completed {
-            border-color: var(--emerald);
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
-        }
-
-        .target-card.active-target {
-            border-color: var(--cyan);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
-            animation: activePulse 2s ease-in-out infinite;
-        }
-
-        @keyframes activePulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); }
-            50% { box-shadow: 0 0 50px rgba(0, 243, 255, 0.6); }
-        }
-
-        .target-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            font-size: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .target-details span { color: var(--text-muted); font-weight: 500; }
-        .target-details strong { color: #fff; font-family: 'Orbitron', sans-serif; font-size: 1rem; }
-
-        /* Calendar */
-        .calendar-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 1rem;
-        }
-
-        .calendar-carousel {
-            display: flex;
-            gap: 2rem;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            padding: 1.5rem 1rem 3rem 1rem;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .calendar-carousel::-webkit-scrollbar { height: 12px; }
-        .calendar-carousel::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.4); border-radius: 6px; }
-        .calendar-carousel::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--cyan), var(--emerald)); border-radius: 6px; box-shadow: var(--glow-cyan); }
-
-        .month-card {
-            flex: 0 0 340px;
-            scroll-snap-align: center;
-            padding: 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-        }
-
-        .month-card h4 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--cyan);
-            margin-bottom: 1.5rem;
-            text-align: center;
-            text-shadow: var(--glow-cyan);
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-        }
-
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
-
-        .day {
-            aspect-ratio: 1;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+        .day-label.weekday { color: var(--cyan); text-shadow: var(--glow-c); }
+        .day-label.weekend { color: var(--magenta); text-shadow: var(--glow-m); }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day { 
+            aspect-ratio: 1; 
+            background: #111; 
+            border-radius: 6px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            border: 1px solid #222;
+            transition: 0.2s;
             padding: 4px;
-            overflow: hidden;
         }
-
-        .day:hover {
-            border-color: var(--cyan);
-            transform: scale(1.15);
-            z-index: 5;
-            box-shadow: 0 0 20px var(--cyan);
-        }
-
-        .day .day-num { font-size: 0.75rem; opacity: 0.9; line-height: 1; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
-        .day .day-amt { font-size: 0.7rem; font-weight: 900; font-family: 'Orbitron', sans-serif; line-height: 1; margin-top: 3px; word-break: break-all; text-align: center; }
-
-        .day.logged-win {
-            background: linear-gradient(135deg, var(--emerald), #00cc7a);
-            color: #000;
-            border-color: var(--emerald);
-            box-shadow: 0 0 15px var(--emerald);
-        }
-
-        .day.logged-loss {
-            background: linear-gradient(135deg, var(--magenta), #cc0044);
-            color: #fff;
-            border-color: var(--magenta);
-            box-shadow: 0 0 15px var(--magenta);
-        }
-
-        /* Tables */
-        .cyber-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
-        .cyber-table th { text-align: left; padding: 1.2rem; color: var(--cyan); border-bottom: 2px solid var(--glass-border); font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 1.5px; text-transform: uppercase; }
-        .cyber-table td { padding: 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .cyber-table tr:hover { background: rgba(0, 243, 255, 0.08); }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(20px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            padding: 3rem;
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            border: 2px solid var(--cyan);
-            box-shadow: var(--glow-cyan);
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-        }
-
-        /* Strikes & Absences */
-        .strikes-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem; }
-
-        .strike-btn, .abs-btn {
-            flex: 1;
-            min-width: 50px;
-            padding: 12px 6px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            border: 2px solid var(--text-muted);
-            background: transparent;
-            color: var(--text-muted);
-            border-radius: 8px;
+        .day:hover { border-color: var(--cyan); transform: scale(1.05); z-index: 5; box-shadow: 0 0 10px var(--cyan); }
+        .day-num { font-family: 'Orbitron'; font-size: 0.9rem; }
+        .day-amt { font-size: 0.7rem; font-family: 'Orbitron'; margin-top: 2px; font-weight: 700; }
+        .day.win { background: var(--emerald); color: #000; border-color: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
+        .day.loss { background: var(--magenta); color: #fff; border-color: var(--magenta); box-shadow: 0 0 10px var(--magenta); }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--cyan); border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; }
+        td { padding: 12px; border-bottom: 1px solid #222; }
+        
+        .strike-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .strike-btn { 
+            flex: 1; 
+            min-width: 45px; 
+            padding: 10px 4px; 
+            font-family: 'Orbitron'; 
+            font-size: 0.8rem; 
+            border: 1px solid #444; 
+            background: transparent; 
+            color: #666; 
+            border-radius: 4px; 
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
+            transition: 0.2s;
         }
-
-        .strike-btn:hover { border-color: var(--magenta); color: var(--magenta); box-shadow: var(--glow-magenta); }
-        .strike-btn.active { background: linear-gradient(135deg, var(--magenta), #cc0044); border-color: var(--magenta); color: #fff; box-shadow: var(--glow-magenta); font-weight: 900; }
-
-        .abs-btn:hover { border-color: var(--gold); color: var(--gold); box-shadow: var(--glow-gold); }
-        .abs-btn.active { background: linear-gradient(135deg, var(--gold), #ccaa00); border-color: var(--gold); color: #000; box-shadow: var(--glow-gold); font-weight: 900; }
-
-        .pagination-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 12px; }
-
-        .page-nav-btn {
-            flex: 1;
-            padding: 12px 8px;
-            font-size: 0.85rem;
-            border: 2px solid var(--cyan);
-            background: rgba(0, 243, 255, 0.08);
-            color: var(--cyan);
-            border-radius: 8px;
+        .strike-btn:hover:not(:disabled) { border-color: var(--magenta); color: var(--magenta); }
+        .strike-btn.active { background: var(--magenta); border-color: var(--magenta); color: #fff; box-shadow: var(--glow-m); }
+        .abs-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+        .abs-btn.active { background: var(--gold); border-color: var(--gold); color: #000; box-shadow: var(--glow-g); }
+        .strike-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .pagination-row { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
+        .page-btn { 
+            flex: 1; 
+            padding: 8px; 
+            background: rgba(0,243,255,0.1); 
+            border: 1px solid var(--cyan); 
+            color: var(--cyan); 
+            border-radius: 4px; 
             cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 1.5px;
-            text-align: center;
-            font-weight: 600;
-            pointer-events: auto !important;
-            opacity: 1 !important;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            transition: 0.2s;
         }
-
-        .page-nav-btn:hover:not(:disabled) {
-            background: var(--cyan);
-            color: var(--bg-dark);
-            box-shadow: var(--glow-cyan);
-            transform: translateY(-2px);
-        }
-
-        .page-nav-btn:disabled {
-            opacity: 0.3 !important;
-            cursor: not-allowed;
-            pointer-events: none !important;
-            background: transparent;
-            border-color: var(--text-muted);
-            color: var(--text-muted);
-        }
-
-        .page-indicator {
-            font-size: 0.9rem;
-            font-family: 'Orbitron', sans-serif;
-            color: var(--gold);
-            text-shadow: var(--glow-gold);
-            white-space: nowrap;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar { width: 80px; }
-            .logo h1, .nav-item span { display: none; }
-            .nav-item { justify-content: center; padding: 1rem; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 1.5rem; }
-            .top-bar { padding: 0 1rem; }
-            .month-card { flex: 0 0 90vw; }
-            .level-title { font-size: 1.8rem; }
-            .level-badge { font-size: 1.2rem; padding: 0.8rem 1.5rem; }
-        }
+        .page-btn:hover:not(:disabled) { background: var(--cyan); color: #000; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-indicator { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--gold); text-align: center; flex: 1; }
+        
+        .wallet-display { text-align: center; padding: 60px 20px; }
+        .wallet-icon { font-size: 5rem; color: var(--gold); text-shadow: var(--glow-g); margin-bottom: 30px; }
+        .wallet-amount { font-size: 4rem; font-family: 'Orbitron'; font-weight: 900; color: var(--gold); text-shadow: var(--glow-g); margin: 20px 0; }
+        .wallet-label { font-family: 'Orbitron'; color: var(--muted); font-size: 1rem; letter-spacing: 2px; }
+        
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: var(--glow-c); }
 
         @media (max-width: 768px) {
-            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-            .level-master { padding: 2rem 1.5rem; }
+            .sidebar { width: 70px; } .sidebar span { display: none; } .main { margin-left: 70px; width: calc(100% - 70px); padding: 15px; }
+            .calendar-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 300px; }
         }
     </style>
 </head>
-<body class="viewer-mode">
+<body>
 
     <header class="top-bar">
-        <div class="status-group">
-            <span id="mode-badge" class="badge magenta"><i class="fas fa-eye"></i> Viewer Mode</span>
-            <span id="db-status" class="badge gold"><i class="fas fa-database"></i> Syncing...</span>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <span class="badge badge-m" id="mode-badge"><i class="fas fa-eye"></i> VIEWER MODE</span>
+            <span class="badge badge-g" id="db-badge"><i class="fas fa-database"></i> SYNCING</span>
         </div>
-        <button id="admin-toggle" class="btn btn-emerald unlock-btn" onclick="openAdminModal()">
-            <span><i class="fas fa-lock-open"></i> Unlock Admin</span>
+        <button class="btn btn-sm" style="width:auto; padding:8px 16px;" onclick="openAdminModal()">
+            <i class="fas fa-lock-open"></i> UNLOCK ADMIN
         </button>
     </header>
 
-    <!-- ✅ FIXED SIDEBAR WITH SCROLL -->
     <aside class="sidebar">
-        <div class="logo">
-            <i class="fas fa-cube"></i>
-            <h1>ALPHA<span>MATRIX</span></h1>
-        </div>
-        <ul class="nav-list" style="list-style: none;">
-            <li class="nav-item active" data-view="dashboard"><i class="fas fa-rocket"></i> <span>Command Center</span></li>
-            <li class="nav-item" data-view="targets"><i class="fas fa-bullseye"></i> <span>Milestones</span></li>
-            <li class="nav-item" data-view="logger"><i class="fas fa-cloud-upload-alt"></i> <span>Trade Log</span></li>
-            <li class="nav-item" data-view="team"><i class="fas fa-users"></i> <span>Team Rules</span></li>
-            <li class="nav-item" data-view="absences"><i class="fas fa-user-slash"></i> <span>Absences</span></li>
-            <li class="nav-item" data-view="risk"><i class="fas fa-calculator"></i> <span>Risk Console</span></li>
-            <li class="nav-item" data-view="analytics"><i class="fas fa-chart-bar"></i> <span>Analytics</span></li>
-            <li class="nav-item" data-view="calendar"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></li>
-            <li class="nav-item" data-view="settings"><i class="fas fa-cog"></i> <span>Settings</span></li>
-        </ul>
+        <div class="logo"><i class="fas fa-cube"></i><h3 style="margin-top:10px;">ALPHA<span class="cyan">MATRIX</span></h3></div>
+        <div id="nav-list"></div>
     </aside>
 
-    <main class="main-content">
+    <main class="main" id="app-container"></main>
+
+    <div class="modal" id="admin-modal">
+        <div class="modal-box">
+            <h3 class="cyan"><i class="fas fa-shield-alt"></i> ADMIN ACCESS</h3>
+            <p class="muted" style="margin:15px 0;">ENTER MASTER KEY TO UNLOCK WRITE ACCESS</p>
+            <input type="password" id="admin-pass" class="form-control" placeholder="MASTER KEY" onkeypress="if(event.key==='Enter') verifyAdmin()">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-emerald" onclick="verifyAdmin()">UNLOCK</button>
+                <button class="btn btn-magenta" onclick="closeModal('admin-modal')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="day-modal">
+        <div class="modal-box">
+            <h3 class="cyan" id="day-title">LOG DAY</h3>
+            <div style="display:flex; gap:10px; margin:20px 0;">
+                <button class="btn btn-emerald" onclick="setOutcome('win')">🟢 WIN</button>
+                <button class="btn btn-magenta" onclick="setOutcome('loss')">🔴 LOSS</button>
+            </div>
+            <input type="number" id="day-amt" class="form-control" placeholder="AMOUNT ($)">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-emerald" onclick="saveDay()">SAVE</button>
+                <button class="btn btn-magenta" onclick="clearDay()">CLEAR</button>
+                <button class="btn" onclick="closeModal('day-modal')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const ADMIN_KEY = "ALPHA2026";
+    let isAdmin = localStorage.getItem('alpha_admin') === 'true';
+    let db;
+    let equityChart = null; // Chart instance
+    
+    let state = {
+        activeBalance: 150.00, 
+        binanceWallet: 0.00,
+        targets: [
+            { id: 1, goal: 320, withdraw: 150, newBalance: 170, completed: false },
+            { id: 2, goal: 400, withdraw: 200, newBalance: 200, completed: false },
+            { id: 3, goal: 500, withdraw: 250, newBalance: 250, completed: false },
+            { id: 4, goal: 750, withdraw: 375, newBalance: 375, completed: false },
+            { id: 5, goal: 1000, withdraw: 500, newBalance: 500, completed: false },
+            { id: 6, goal: 1500, withdraw: 750, newBalance: 750, completed: false },
+            { id: 7, goal: 2000, withdraw: 1000, newBalance: 1000, completed: false },
+            { id: 8, goal: 3000, withdraw: 1500, newBalance: 1500, completed: false },
+            { id: 9, goal: 4000, withdraw: 2000, newBalance: 2000, completed: false },
+            { id: 10, goal: 5000, withdraw: 2500, newBalance: 2500, completed: false }
+        ],
+        trades: [], 
+        leaks: [], 
+        calendar: {},
+        strikes: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
+        absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 }
+    };
+    const team = ['NOAMANE', 'HOSSAM', 'YASSINE', 'MONCEF', 'TAHA', 'AMINE'];
+    const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+    const dayLabels = [
+        { name: 'MON', type: 'weekday' },
+        { name: 'TUE', type: 'weekday' },
+        { name: 'WED', type: 'weekday' },
+        { name: 'THU', type: 'weekday' },
+        { name: 'FRI', type: 'weekday' },
+        { name: 'SAT', type: 'weekend' },
+        { name: 'SUN', type: 'weekend' }
+    ];
+    
+    let ui = { 
+        view: 'dashboard', 
+        dayKey: null, 
+        outcome: null,
+        pages: { strikes: {}, absences: {} }
+    };
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBPFG8TJEMrtgRPpKJekUgaB4Qy47N2-64",
+        authDomain: "alpha-matrix-57042.firebaseapp.com",
+        databaseURL: "https://alpha-matrix-57042-default-rtdb.firebaseio.com",
+        projectId: "alpha-matrix-57042"
+    };
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        db.ref('alphaMatrix_v12').on('value', snap => {
+            if(snap.val()) {
+                state = { ...state, ...snap.val() };
+                renderAll();
+                document.getElementById('db-badge').innerHTML = '<i class="fas fa-check"></i> SYNCED';
+                document.getElementById('db-badge').className = 'badge badge-e';
+            }
+        });
+    } catch(e) { console.log("Offline Mode"); }
+
+    function save() {
+        if(db) db.ref('alphaMatrix_v12').set(state);
+        else localStorage.setItem('alphaMatrix_local', JSON.stringify(state));
+    }
+
+    function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
+    function verifyAdmin() {
+        if(document.getElementById('admin-pass').value === ADMIN_KEY) {
+            isAdmin = true;
+            localStorage.setItem('alpha_admin', 'true');
+            document.getElementById('mode-badge').innerHTML = '<i class="fas fa-user-shield"></i> ADMIN MODE';
+            document.getElementById('mode-badge').className = 'badge badge-e';
+            closeModal('admin-modal');
+            renderAll();
+        } else {
+            alert("❌ ACCESS DENIED");
+        }
+    }
+
+    const navItems = [
+        { id: 'dashboard', icon: 'fa-rocket', label: 'COMMAND CENTER' },
+        { id: 'performance', icon: 'fa-chart-line', label: 'EQUITY CURVE' },
+        { id: 'targets', icon: 'fa-bullseye', label: 'MILESTONES' },
+        { id: 'wallet', icon: 'fa-bitcoin', label: 'BINANCE WALLET' },
+        { id: 'logger', icon: 'fa-cloud-upload-alt', label: 'TRADE LOG' },
+        { id: 'team', icon: 'fa-users', label: 'TEAM RULES' },
+        { id: 'absences', icon: 'fa-user-slash', label: 'ABSENCES' },
+        { id: 'risk', icon: 'fa-calculator', label: 'RISK CONSOLE' },
+        { id: 'calendar', icon: 'fa-calendar-alt', label: 'CALENDAR' },
+        { id: 'analytics', icon: 'fa-chart-bar', label: 'ANALYTICS' },
+        { id: 'settings', icon: 'fa-cog', label: 'SETTINGS' }
+    ];
+
+    function renderNav() {
+        document.getElementById('nav-list').innerHTML = navItems.map(n => `
+            <div class="nav-item ${ui.view === n.id ? 'active' : ''}" onclick="switchView('${n.id}')">
+                <i class="fas ${n.icon}"></i> <span>${n.label}</span>
+            </div>
+        `).join('');
+    }
+
+    function switchView(id) {
+        ui.view = id;
+        renderNav();
+        renderAll();
+    }
+
+    function renderAll() {
+        const app = document.getElementById('app-container');
+        app.innerHTML = '';
         
-        <section id="dashboard" class="view active">
-            <h2 class="neon-text cyan"><i class="fas fa-rocket"></i> COMMAND CENTER</h2>
+        // Destroy previous chart instance to avoid memory leaks
+        if (equityChart) {
+            equityChart.destroy();
+            equityChart = null;
+        }
+        
+        if(ui.view === 'dashboard') app.innerHTML = renderDashboard();
+        if(ui.view === 'performance') { app.innerHTML = renderPerformance(); renderEquityCurve(); }
+        if(ui.view === 'targets') app.innerHTML = renderTargets();
+        if(ui.view === 'wallet') app.innerHTML = renderWallet();
+        if(ui.view === 'logger') app.innerHTML = renderLogger();
+        if(ui.view === 'team') app.innerHTML = renderTeam('strikes');
+        if(ui.view === 'absences') app.innerHTML = renderTeam('absences');
+        if(ui.view === 'risk') app.innerHTML = renderRisk();
+        if(ui.view === 'calendar') app.innerHTML = renderCalendar();
+        if(ui.view === 'analytics') app.innerHTML = renderAnalytics();
+        if(ui.view === 'settings') app.innerHTML = renderSettings();
+        
+        updateStats();
+    }
+
+    function renderDashboard() {
+        const completed = state.targets.filter(t => t.completed).length;
+        const progress = (completed / 10) * 100;
+        const nextTarget = state.targets.find(t => !t.completed);
+        
+        return `
+            <h2><i class="fas fa-rocket"></i> COMMAND CENTER</h2>
+            <div class="glass level-master">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0;">LEVEL MASTER PROGRESS</h3>
+                    <div style="background:var(--cyan); color:#000; padding:5px 15px; border-radius:20px; font-family:'Orbitron'; font-weight:900;">LVL ${completed + 1}</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${progress}%"></div>
+                    <div class="progress-text">${Math.round(progress)}% COMPLETED</div>
+                </div>
+                <div class="grid grid-4" style="margin-top:20px;">
+                    <div><div class="muted">CURRENT BALANCE</div><div class="stat emerald">$${state.activeBalance.toFixed(2)}</div></div>
+                    <div><div class="muted">NEXT TARGET</div><div class="stat cyan">$${nextTarget ? nextTarget.goal : 'MASTER'}</div></div>
+                    <div><div class="muted">BINANCE WALLET</div><div class="stat gold">$${state.binanceWallet.toFixed(2)}</div></div>
+                    <div><div class="muted">WIN RATE</div><div class="stat cyan" id="dash-wr">0%</div></div>
+                </div>
+            </div>
+            <div class="grid grid-4">
+                <div class="glass"><div class="muted">TOTAL P&L</div><div class="stat" id="dash-pnl">$0.00</div></div>
+                <div class="glass"><div class="muted">ACTIVE CAPITAL</div><div class="stat emerald">$${state.activeBalance.toFixed(2)}</div></div>
+                <div class="glass"><div class="muted">SECURED PROFITS</div><div class="stat gold">$${state.binanceWallet.toFixed(2)}</div></div>
+                <div class="glass"><div class="muted">TARGETS DONE</div><div class="stat cyan">${completed}/10</div></div>
+            </div>
+        `;
+    }
+
+    // NEW: Performance / Equity Curve Page
+    function renderPerformance() {
+        return `
+            <h2><i class="fas fa-chart-line"></i> EQUITY CURVE & PERFORMANCE</h2>
+            <div class="glass">
+                <div class="chart-header">
+                    <h3 style="margin:0;"><i class="fas fa-chart-area"></i> DAILY P&L PROGRESSION</h3>
+                    <div style="display:flex; gap:10px;">
+                        <div class="chart-stat">
+                            <div class="chart-stat-label">Peak Balance</div>
+                            <div class="chart-stat-value emerald" id="peak-bal">$150.00</div>
+                        </div>
+                        <div class="chart-stat">
+                            <div class="chart-stat-label">Current P&L</div>
+                            <div class="chart-stat-value" id="cur-pnl">$0.00</div>
+                        </div>
+                        <div class="chart-stat">
+                            <div class="chart-stat-label">Trading Days</div>
+                            <div class="chart-stat-value cyan" id="total-days">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="equityChart"></canvas>
+                </div>
+            </div>
+            <div class="grid grid-3">
+                <div class="glass">
+                    <div class="muted">Best Day</div>
+                    <div class="stat emerald" id="best-day">$0.00</div>
+                </div>
+                <div class="glass">
+                    <div class="muted">Worst Day</div>
+                    <div class="stat magenta" id="worst-day">$0.00</div>
+                </div>
+                <div class="glass">
+                    <div class="muted">Average Day</div>
+                    <div class="stat cyan" id="avg-day">$0.00</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderTargets() {
+        const activeIdx = state.targets.findIndex(t => !t.completed);
+        return `
+            <h2><i class="fas fa-bullseye"></i> MILESTONES MATRIX</h2>
+            <div class="grid grid-3">
+                ${state.targets.map((t, i) => {
+                    const isActive = i === activeIdx;
+                    const isLocked = i > activeIdx;
+                    let btn = '';
+                    if(t.completed) btn = `<button class="btn btn-emerald" disabled><i class="fas fa-check"></i> SECURED</button>`;
+                    else if(isLocked) btn = `<button class="btn" disabled><i class="fas fa-lock"></i> LOCKED</button>`;
+                    else if(isActive && isAdmin) btn = `<button class="btn btn-emerald" onclick="withdraw(${i})"><i class="fas fa-rocket"></i> EXECUTE WITHDRAWAL</button>`;
+                    else btn = `<button class="btn" disabled><i class="fas fa-eye"></i> VIEW ONLY</button>`;
+
+                    return `
+                        <div class="glass" style="border-color:${isActive ? 'var(--cyan)' : (t.completed ? 'var(--emerald)' : '#333')}">
+                            <h3>LEVEL ${t.id}</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0;">
+                                <div><span class="muted">GOAL</span><br><strong>$${t.goal}</strong></div>
+                                <div><span class="muted">WITHDRAW</span><br><strong class="gold">$${t.withdraw}</strong></div>
+                                <div><span class="muted">REMAIN</span><br><strong class="emerald">$${t.newBalance}</strong></div>
+                            </div>
+                            ${btn}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function renderWallet() {
+        const totalWithdrawn = state.binanceWallet;
+        const withdrawalHistory = state.targets.filter(t => t.completed).map(t => ({
+            level: t.id,
+            amount: t.withdraw
+        }));
+
+        return `
+            <h2><i class="fab fa-bitcoin"></i> BINANCE WALLET TRACKER</h2>
+            <div class="glass wallet-display">
+                <div class="wallet-icon"><i class="fab fa-bitcoin"></i></div>
+                <div class="wallet-label">TOTAL ACCUMULATED BALANCE</div>
+                <div class="wallet-amount">$${totalWithdrawn.toFixed(2)}</div>
+                <div class="muted" style="margin-top:20px;">Auto-synced from Target Withdrawals</div>
+            </div>
             
-            <div class="level-master glass">
-                <div class="level-header">
-                    <div>
-                        <div class="level-title">LEVEL MASTER</div>
-                        <div class="text-muted" style="margin-top: 0.5rem; font-size: 1.1rem;">Your Trading Journey Progress</div>
-                    </div>
-                    <div class="level-badge">LEVEL <span id="current-level">1</span></div>
-                </div>
-                
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="level-progress" style="width: 0%"></div>
-                        <div class="progress-text" id="progress-text">0%</div>
-                    </div>
-                </div>
-
-                <div class="level-stats">
-                    <div class="level-stat">
-                        <div class="level-stat-label">Current Balance</div>
-                        <div class="level-stat-value" id="dash-balance">$150.00</div>
-                    </div>
-                    <div class="level-stat">
-                        <div class="level-stat-label">Next Target</div>
-                        <div class="level-stat-value" id="next-target">$320</div>
-                    </div>
-                    <div class="level-stat">
-                        <div class="level-stat-label">Binance Wallet</div>
-                        <div class="level-stat-value gold" id="dash-wallet">$0.00</div>
-                    </div>
-                    <div class="level-stat">
-                        <div class="level-stat-label">Win Rate</div>
-                        <div class="level-stat-value cyan" id="dash-wr">0.0%</div>
-                    </div>
-                </div>
+            <div class="glass">
+                <h3><i class="fas fa-history"></i> WITHDRAWAL HISTORY</h3>
+                <table>
+                    <thead>
+                        <tr><th>LEVEL</th><th>AMOUNT</th><th>STATUS</th></tr>
+                    </thead>
+                    <tbody>
+                        ${withdrawalHistory.length > 0 ? withdrawalHistory.map(w => `
+                            <tr>
+                                <td><strong class="cyan">Level ${w.level}</strong></td>
+                                <td><strong class="gold">$${w.amount.toFixed(2)}</strong></td>
+                                <td><span class="badge badge-e"><i class="fas fa-check"></i> SECURED</span></td>
+                            </tr>
+                        `).join('') : '<tr><td colspan="3" style="text-align:center; color:var(--muted);">No withdrawals yet</td></tr>'}
+                    </tbody>
+                </table>
             </div>
+        `;
+    }
 
-            <div class="grid-4">
-                <div class="card glass no-lock">
-                    <div class="card-icon cyan"><i class="fas fa-chart-line"></i></div>
-                    <div class="card-title cyan">TOTAL P&L</div>
-                    <p class="text-muted">Net Performance</p>
-                    <p class="stat" id="dash-pnl">$0.00</p>
+    function renderLogger() {
+        return `
+            <h2><i class="fas fa-cloud-upload-alt"></i> TRADE LOGGER</h2>
+            <div class="grid grid-2">
+                <div class="glass">
+                    <h3>PUSH NEW TRADE</h3>
+                    ${isAdmin ? `
+                        <select id="log-sym" class="form-control"><option>XAUUSD</option><option>EURUSD</option><option>US30</option></select>
+                        <select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option></select>
+                        <input type="number" id="log-pnl" class="form-control" placeholder="PROFIT / LOSS ($)">
+                        <button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH TO CLOUD</button>
+                    ` : `<div style="text-align:center; padding:40px; color:var(--magenta);"><i class="fas fa-lock" style="font-size:3rem; margin-bottom:15px;"></i><br>ADMIN ACCESS REQUIRED</div>`}
                 </div>
-                <div class="card glass no-lock">
-                    <div class="card-icon emerald"><i class="fas fa-wallet"></i></div>
-                    <div class="card-title emerald">ACTIVE BALANCE</div>
-                    <p class="text-muted">Trading Capital</p>
-                    <p class="stat emerald" id="dash-active-bal">$150.00</p>
-                </div>
-                <div class="card glass no-lock">
-                    <div class="card-icon gold"><i class="fab fa-bitcoin"></i></div>
-                    <div class="card-title gold">SECURED PROFITS</div>
-                    <p class="text-muted">Withdrawn to Binance</p>
-                    <p class="stat gold" id="dash-secured">$0.00</p>
-                </div>
-                <div class="card glass no-lock">
-                    <div class="card-icon cyan"><i class="fas fa-trophy"></i></div>
-                    <div class="card-title cyan">TARGETS COMPLETED</div>
-                    <p class="text-muted">Milestones Achieved</p>
-                    <p class="stat cyan" id="dash-targets-done">0/10</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="targets" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-bullseye"></i> MILESTONES MATRIX</h2>
-            <div class="grid-3" id="targets-container"></div>
-        </section>
-
-        <section id="logger" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-cloud-upload-alt"></i> TRADE LOGGER</h2>
-            <div class="grid-2">
-                <div class="card glass">
-                    <div class="card-icon cyan"><i class="fas fa-plus-circle"></i></div>
-                    <div class="card-title cyan">PUSH NEW TRADE</div>
-                    <select id="log-symbol" class="form-control interactive">
-                        <option value="XAUUSD">Gold (XAUUSD)</option>
-                        <option value="EURUSD">Forex (EURUSD)</option>
-                        <option value="US30">Indices (US30)</option>
-                    </select>
-                    <select id="log-outcome" class="form-control interactive">
-                        <option value="win">🟢 WIN</option>
-                        <option value="loss">🔴 LOSS</option>
-                    </select>
-                    <input type="number" id="log-pnl" class="form-control interactive" placeholder="Profit / Loss ($)">
-                    <button class="btn btn-emerald btn-full interactive" onclick="addTrade()">
-                        <span><i class="fas fa-cloud-upload-alt"></i> Push Trade</span>
-                    </button>
-                </div>
-                <div class="card glass no-lock">
-                    <div class="card-icon cyan"><i class="fas fa-history"></i></div>
-                    <div class="card-title cyan">RECENT LEDGER</div>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        <table class="cyber-table">
-                            <thead><tr><th>Symbol</th><th>P&L</th><th>Status</th></tr></thead>
-                            <tbody id="trade-log-body"></tbody>
+                <div class="glass">
+                    <h3>RECENT LEDGER</h3>
+                    <div style="max-height:400px; overflow-y:auto;">
+                        <table>
+                            <thead><tr><th>SYM</th><th>P&L</th><th>STATUS</th></tr></thead>
+                            <tbody>
+                                ${state.trades.slice(0,10).map(t => `
+                                    <tr>
+                                        <td>${t.symbol}</td>
+                                        <td class="${t.pnl >= 0 ? 'emerald' : 'magenta'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+                                        <td>${t.outcome === 'win' ? '🟢' : '🔴'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </section>
+        `;
+    }
 
-        <section id="team" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-users"></i> TEAM RULES</h2>
-            <p class="text-muted" style="margin-bottom: 2rem;">Track infractions dynamically. <span class="magenta">3+ = High Risk Warning</span></p>
-            <div class="grid-3" id="team-container"></div>
-        </section>
+    function renderTeam(type) {
+        const isStrikes = type === 'strikes';
+        const color = isStrikes ? 'magenta' : 'gold';
+        const title = isStrikes ? 'TEAM INFRACTIONS (STRIKES)' : 'TEAM ABSENCES';
+        const icon = isStrikes ? 'fa-exclamation-triangle' : 'fa-user-slash';
+        
+        return `
+            <h2><i class="fas ${icon}"></i> ${title}</h2>
+            <p class="muted" style="margin-bottom:20px;">Click buttons to toggle. Navigation persists your position.</p>
+            <div class="grid grid-3">
+                ${team.map(name => {
+                    const count = state[type][name] || 0;
+                    let currentPage = ui.pages[type][name] !== undefined ? ui.pages[type][name] : Math.max(0, Math.ceil(count / 5) - 1);
+                    const maxPage = Math.max(0, Math.ceil(count / 5) - 1);
+                    if (currentPage < 0) currentPage = 0;
+                    if (currentPage > maxPage + 1) currentPage = maxPage + 1;
+                    
+                    const startRange = currentPage * 5 + 1;
+                    const endRange = startRange + 4;
+                    
+                    const btns = [];
+                    for(let i = startRange; i <= endRange; i++) {
+                        const active = i <= count;
+                        btns.push(`<button class="strike-btn ${isStrikes ? '' : 'abs-btn'} ${active ? 'active' : ''}" ${!isAdmin ? 'disabled' : ''} onclick="toggleTrack('${type}', '${name}', ${i})">${i}</button>`);
+                    }
+                    
+                    return `
+                        <div class="glass">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                                <h3 style="margin:0;">${name}</h3>
+                                <span class="badge badge-${isStrikes ? 'm' : 'g'}">${count} TOTAL</span>
+                            </div>
+                            <div class="strike-row">${btns.join('')}</div>
+                            <div class="pagination-row">
+                                <button class="page-btn" ${currentPage === 0 || !isAdmin ? 'disabled' : ''} onclick="changePage('${type}', '${name}', ${currentPage - 1})">
+                                    <i class="fas fa-arrow-left"></i> PREV
+                                </button>
+                                <div class="page-indicator">PAGE ${currentPage + 1}</div>
+                                <button class="page-btn" ${!isAdmin ? 'disabled' : ''} onclick="changePage('${type}', '${name}', ${currentPage + 1})">
+                                    NEXT <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            ${count >= 3 ? `<div style="margin-top:15px; color:var(--${color}); font-family:'Orbitron'; font-size:0.8rem; text-align:center;"><i class="fas fa-bell"></i> WARNING THRESHOLD REACHED</div>` : ''}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
 
-        <section id="absences" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-user-slash"></i> ABSENCES TRACKER</h2>
-            <p class="text-muted" style="margin-bottom: 2rem;">Track absences dynamically. <span class="gold">3+ = Warning</span></p>
-            <div class="grid-3" id="absences-container"></div>
-        </section>
-
-        <section id="risk" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-calculator"></i> RISK CONSOLE</h2>
-            <div class="grid-2">
-                <div class="card glass">
-                    <div class="card-icon cyan"><i class="fas fa-sliders-h"></i></div>
-                    <div class="card-title cyan">POSITION SIZE CALCULATOR</div>
-                    <label class="text-muted">Risk Basis %</label>
-                    <input type="number" id="calc-risk" class="form-control interactive" value="1.0" step="0.1">
-                    <label class="text-muted">Stop Loss (Pips)</label>
-                    <input type="number" id="calc-sl" class="form-control interactive" value="20">
-                    <div style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 12px; text-align: center; border: 2px dashed var(--cyan); margin-top:1.5rem;">
-                        <p class="text-muted">Recommended Lot Size</p>
-                        <p class="stat huge cyan" id="calc-result">0.00</p>
+    function renderRisk() {
+        return `
+            <h2><i class="fas fa-calculator"></i> RISK CONSOLE</h2>
+            <div class="grid grid-2">
+                <div class="glass">
+                    <h3>POSITION SIZE CALCULATOR</h3>
+                    <label class="muted">RISK %</label>
+                    <input type="number" id="r-risk" class="form-control" value="1.0" step="0.1" oninput="calcLot()">
+                    <label class="muted">STOP LOSS (PIPS)</label>
+                    <input type="number" id="r-sl" class="form-control" value="20" oninput="calcLot()">
+                    <div style="background:#000; padding:20px; border-radius:8px; text-align:center; border:1px dashed var(--cyan); margin-top:20px;">
+                        <div class="muted">RECOMMENDED LOT SIZE</div>
+                        <div class="stat-huge cyan" id="r-res">0.00</div>
                     </div>
                 </div>
-                <div class="card glass no-lock">
-                    <div class="card-icon cyan"><i class="fas fa-table"></i></div>
-                    <div class="card-title cyan">MATRIX GUIDELINE (1%)</div>
-                    <table class="cyber-table">
-                        <thead><tr><th>Asset</th><th>10 Pips</th><th>20 Pips</th><th>50 Pips</th></tr></thead>
-                        <tbody id="matrix-body"></tbody>
-                    </table>
+                <div class="glass">
+                    <h3>MATRIX GUIDELINE (1% RISK)</h3>
+                    <table id="matrix-tbl"></table>
                 </div>
             </div>
-        </section>
+        `;
+    }
 
-        <section id="analytics" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-chart-bar"></i> PERFORMANCE ANALYTICS</h2>
-            <div class="grid-2">
-                <div class="card glass no-lock">
-                    <div class="card-icon cyan"><i class="fas fa-percentage"></i></div>
-                    <div class="card-title cyan">PERFORMANCE RATIOS</div>
-                    <ul style="list-style: none; font-size: 1.2rem; line-height: 2.5;">
-                        <li>Gross Profits: <strong class="emerald" id="an-gross-win">$0.00</strong></li>
-                        <li>Gross Losses: <strong class="magenta" id="an-gross-loss">$0.00</strong></li>
-                        <li>Total Trades: <strong class="cyan" id="an-total">0</strong></li>
+    // ENHANCED CALENDAR WITH DAYS HEADER
+    function renderCalendar() {
+        return `
+            <h2><i class="fas fa-calendar-alt"></i> YEARLY P&L LOG</h2>
+            <p class="muted" style="margin-bottom:20px;">Click days to log WIN/LOSS with amounts. <span class="cyan">Weekdays</span> & <span class="magenta">Weekends</span> clearly marked.</p>
+            <div class="calendar-grid">
+                ${months.map((m, idx) => `
+                    <div class="glass month-card">
+                        <h3 style="text-align:center; margin-bottom:15px;">${m}</h3>
+                        <div class="days-header">
+                            ${dayLabels.map(d => `<div class="day-label ${d.type}">${d.name}</div>`).join('')}
+                        </div>
+                        <div class="days-grid">
+                            ${Array.from({length:31}, (_,i) => i+1).map(d => {
+                                const key = `${idx}-${d}`;
+                                const log = state.calendar[key];
+                                let cls = 'day';
+                                let content = `<div class="day-num">${d}</div>`;
+                                if(log) {
+                                    cls += log.outcome === 'win' ? ' win' : ' loss';
+                                    const amt = Math.abs(log.amount);
+                                    const display = amt >= 1000 ? (amt/1000).toFixed(1)+'k' : amt;
+                                    content += `<div class="day-amt">${log.outcome === 'win' ? '+' : '-'}$${display}</div>`;
+                                }
+                                return `<div class="${cls}" ${isAdmin ? `onclick="openDay('${key}', ${d})"` : ''}>${content}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderAnalytics() {
+        let grossW = 0, grossL = 0, leaked = 0;
+        state.trades.forEach(t => t.pnl > 0 ? grossW += t.pnl : grossL += Math.abs(t.pnl));
+        state.leaks.forEach(l => leaked += l.amt);
+        
+        return `
+            <h2><i class="fas fa-chart-bar"></i> PERFORMANCE ANALYTICS</h2>
+            <div class="grid grid-2">
+                <div class="glass">
+                    <h3>RATIOS</h3>
+                    <ul style="list-style:none; line-height:2.5;">
+                        <li>Gross Profits: <strong class="emerald">$${grossW.toFixed(2)}</strong></li>
+                        <li>Gross Losses: <strong class="magenta">-$${grossL.toFixed(2)}</strong></li>
+                        <li>Total Trades: <strong class="cyan">${state.trades.length}</strong></li>
                     </ul>
                 </div>
-                <div class="card glass">
-                    <div class="card-icon magenta"><i class="fas fa-exclamation-triangle"></i></div>
-                    <div class="card-title magenta">LEAKED CAPITAL LOG</div>
-                    <input type="text" id="leak-reason" class="form-control interactive" placeholder="Infraction (e.g. FOMO)">
-                    <input type="number" id="leak-amount" class="form-control interactive" placeholder="Lost $">
-                    <button class="btn btn-magenta btn-full interactive" onclick="addLeak()">
-                        <span><i class="fas fa-plus"></i> Push Log</span>
-                    </button>
-                    <table class="cyber-table" style="margin-top:1.5rem;">
-                        <thead><tr><th>Reason</th><th>Lost</th></tr></thead>
-                        <tbody id="leak-body"></tbody>
+                <div class="glass">
+                    <h3 class="magenta">LEAKED CAPITAL LOG</h3>
+                    ${isAdmin ? `
+                        <input type="text" id="lk-r" class="form-control" placeholder="REASON (e.g. FOMO)">
+                        <input type="number" id="lk-a" class="form-control" placeholder="AMOUNT LOST ($)">
+                        <button class="btn btn-magenta" onclick="addLeak()"><i class="fas fa-plus"></i> LOG INFRACTION</button>
+                    ` : ''}
+                    <table style="margin-top:20px;">
+                        <thead><tr><th>REASON</th><th>LOST</th></tr></thead>
+                        <tbody>${state.leaks.map(l => `<tr><td>${l.reason}</td><td class="magenta">-$${l.amt.toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
+                    <div style="margin-top:15px; text-align:right;">Total Leaked: <strong class="magenta">$${leaked.toFixed(2)}</strong></div>
                 </div>
             </div>
-        </section>
+        `;
+    }
 
-        <section id="calendar" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-calendar-alt"></i> YEARLY P&L CALENDAR</h2>
-            <div class="calendar-controls no-lock">
-                <button class="btn interactive" onclick="scrollCalendar(-1)">
-                    <span><i class="fas fa-arrow-left"></i> Prev Month</span>
-                </button>
-                <p class="text-muted">Scroll horizontally or use arrows. Click a day to log P&L.</p>
-                <button class="btn interactive" onclick="scrollCalendar(1)">
-                    <span>Next Month <i class="fas fa-arrow-right"></i></span>
-                </button>
-            </div>
-            <div class="calendar-carousel" id="calendar-carousel"></div>
-        </section>
-
-        <section id="settings" class="view">
-            <h2 class="neon-text cyan"><i class="fas fa-cog"></i> SYSTEM SETTINGS</h2>
-            <div class="grid-2">
-                <div class="card glass">
-                    <div class="card-icon cyan"><i class="fas fa-database"></i></div>
-                    <div class="card-title cyan">CLOUD SYNC STATUS</div>
-                    <p class="text-muted" style="margin: 1rem 0;">Firebase Realtime Database Connection</p>
-                    <div id="sync-status-display" class="stat cyan">CONNECTED</div>
+    function renderSettings() {
+        return `
+            <h2><i class="fas fa-cog"></i> SYSTEM SETTINGS</h2>
+            <div class="grid grid-2">
+                <div class="glass">
+                    <h3><i class="fas fa-database"></i> CLOUD SYNC STATUS</h3>
+                    <p class="muted" style="margin:15px 0;">Firebase Realtime Database Connection</p>
+                    <div class="stat cyan" id="sync-status">${db ? 'CONNECTED' : 'OFFLINE MODE'}</div>
+                    <p class="muted" style="margin-top:15px;">Data Path: <code>alphaMatrix_v12</code></p>
                 </div>
-                <div class="card glass">
-                    <div class="card-icon magenta"><i class="fas fa-trash-alt"></i></div>
-                    <div class="card-title magenta">RESET SYSTEM</div>
-                    <p class="text-muted" style="margin: 1rem 0;">Clear all data and reset to initial state</p>
-                    <button class="btn btn-magenta btn-full" onclick="if(confirm('Reset all data?')) { localStorage.clear(); location.reload(); }">
-                        <span><i class="fas fa-power-off"></i> Reset All</span>
-                    </button>
+                <div class="glass">
+                    <h3 class="magenta"><i class="fas fa-trash-alt"></i> DANGER ZONE</h3>
+                    <p class="muted" style="margin:15px 0;">Clear all data and reset to initial state.</p>
+                    ${isAdmin ? `
+                        <button class="btn btn-magenta" onclick="clearAllData()">
+                            <i class="fas fa-power-off"></i> RESET ALL DATA
+                        </button>
+                        <p class="muted" style="margin-top:15px; font-size:0.8rem;">⚠️ This will delete all trades, calendar logs, strikes, and reset balances.</p>
+                    ` : `<div style="text-align:center; padding:20px; color:var(--magenta);"><i class="fas fa-lock" style="font-size:2rem;"></i><br>Admin Access Required</div>`}
                 </div>
             </div>
-        </section>
+        `;
+    }
 
-    </main>
+    // --- EQUITY CURVE LOGIC ---
+    function buildEquityData() {
+        // Aggregate all logs by date-like key
+        // Calendar uses "monthIdx-day" format - we'll create sequential trading days
+        const dailyData = {};
+        
+        // From calendar: key is "monthIdx-day"
+        Object.keys(state.calendar).forEach(key => {
+            const log = state.calendar[key];
+            if (log && log.amount !== undefined) {
+                if (!dailyData[key]) dailyData[key] = 0;
+                dailyData[key] += parseFloat(log.amount);
+            }
+        });
+        
+        // Sort by month then day
+        const sortedKeys = Object.keys(dailyData).sort((a, b) => {
+            const [ma, da] = a.split('-').map(Number);
+            const [mb, db] = b.split('-').map(Number);
+            if (ma !== mb) return ma - mb;
+            return da - db;
+        });
+        
+        const labels = [];
+        const cumulative = [];
+        let running = 150; // Starting balance
+        
+        sortedKeys.forEach(key => {
+            const [mIdx, day] = key.split('-').map(Number);
+            labels.push(`${months[mIdx].substring(0,3)} ${day}`);
+            running += dailyData[key];
+            cumulative.push(running);
+        });
+        
+        // Include trades
+        state.trades.slice().reverse().forEach((t, idx) => {
+            labels.push(`Trade ${idx+1}`);
+            running += t.pnl;
+            cumulative.push(running);
+        });
+        
+        return { labels, cumulative, dailyData, sortedKeys };
+    }
 
-    <div id="admin-modal" class="modal-overlay">
-        <div class="modal-content glass">
-            <h3 class="cyan" style="font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 1rem;">
-                <i class="fas fa-shield-alt"></i> Admin Authentication
-            </h3>
-            <p class="text-muted" style="margin: 1.5rem 0; font-size: 1.1rem;">Enter Master Key to unlock Write Access</p>
-            <input type="password" id="admin-pass" class="form-control" placeholder="Master Key" onkeypress="if(event.key==='Enter') verifyAdmin()">
-            <div style="display:flex; gap:12px; margin-top:1.5rem;">
-                <button class="btn btn-emerald btn-full" onclick="verifyAdmin()">
-                    <span><i class="fas fa-unlock"></i> Unlock</span>
-                </button>
-                <button class="btn btn-magenta btn-full" onclick="closeAdminModal()">
-                    <span><i class="fas fa-times"></i> Cancel</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    function renderEquityCurve() {
+        const canvas = document.getElementById('equityChart');
+        if (!canvas) return;
+        
+        const { labels, cumulative, dailyData, sortedKeys } = buildEquityData();
+        
+        // Calculate stats
+        const dailyValues = Object.values(dailyData);
+        const bestDay = dailyValues.length > 0 ? Math.max(...dailyValues) : 0;
+        const worstDay = dailyValues.length > 0 ? Math.min(...dailyValues) : 0;
+        const avgDay = dailyValues.length > 0 ? (dailyValues.reduce((a,b) => a+b, 0) / dailyValues.length) : 0;
+        const peak = cumulative.length > 0 ? Math.max(...cumulative) : 150;
+        const curPnl = cumulative.length > 0 ? cumulative[cumulative.length-1] - 150 : 0;
+        
+        document.getElementById('peak-bal').textContent = `$${peak.toFixed(2)}`;
+        document.getElementById('cur-pnl').textContent = `${curPnl >= 0 ? '+' : ''}$${curPnl.toFixed(2)}`;
+        document.getElementById('cur-pnl').className = `chart-stat-value ${curPnl >= 0 ? 'emerald' : 'magenta'}`;
+        document.getElementById('total-days').textContent = labels.length;
+        
+        document.getElementById('best-day').textContent = `${bestDay >= 0 ? '+' : ''}$${bestDay.toFixed(2)}`;
+        document.getElementById('worst-day').textContent = `${worstDay >= 0 ? '+' : ''}$${worstDay.toFixed(2)}`;
+        document.getElementById('avg-day').textContent = `${avgDay >= 0 ? '+' : ''}$${avgDay.toFixed(2)}`;
+        
+        // If no data, show empty state
+        if (labels.length === 0) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '16px Orbitron';
+            ctx.textAlign = 'center';
+            ctx.fillText('No trading data yet. Log days in Calendar or push trades.', canvas.width/2, canvas.height/2);
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        if (curPnl >= 0) {
+            gradient.addColorStop(0, 'rgba(0, 255, 157, 0.4)');
+            gradient.addColorStop(1, 'rgba(0, 255, 157, 0.0)');
+        } else {
+            gradient.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
+            gradient.addColorStop(1, 'rgba(255, 0, 85, 0.0)');
+        }
+        
+        equityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Equity ($)',
+                    data: cumulative,
+                    borderColor: curPnl >= 0 ? '#00FF9D' : '#FF0055',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: curPnl >= 0 ? '#00FF9D' : '#FF0055',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(5,5,5,0.95)',
+                        titleColor: '#00F3FF',
+                        bodyColor: '#E0E6ED',
+                        borderColor: '#00F3FF',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: (ctx) => `Balance: $${ctx.parsed.y.toFixed(2)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(0,243,255,0.1)' },
+                        ticks: { 
+                            color: '#6B7280',
+                            callback: (v) => '$' + v.toFixed(0)
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#6B7280', maxRotation: 45 }
+                    }
+                }
+            }
+        });
+    }
 
-    <div id="day-modal" class="modal-overlay">
-        <div class="modal-content glass">
-            <h3 class="cyan" id="day-modal-title" style="font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 1rem;">Log Day</h3>
-            <p class="text-muted" style="margin: 1rem 0;">Select Outcome & Enter P&L Amount</p>
-            <div style="display: flex; gap: 12px; margin: 1.5rem 0;">
-                <button id="btn-win" class="btn btn-emerald btn-full outcome-btn" onclick="setDayOutcome('win')">
-                    <span>🟢 WIN</span>
-                </button>
-                <button id="btn-loss" class="btn btn-magenta btn-full outcome-btn" onclick="setDayOutcome('loss')">
-                    <span>🔴 LOSS</span>
-                </button>
-            </div>
-            <input type="number" id="day-amount" class="form-control" placeholder="P&L Amount (e.g. 50 or -20)">
-            <div style="display: flex; gap: 12px; margin-top: 1.5rem;">
-                <button class="btn btn-emerald btn-full" onclick="saveDayLog()">
-                    <span><i class="fas fa-save"></i> Save Log</span>
-                </button>
-                <button class="btn btn-magenta btn-full" onclick="clearDayLog()">
-                    <span><i class="fas fa-trash"></i> Clear Day</span>
-                </button>
-            </div>
-            <button class="btn btn-full" style="margin-top: 12px; border-color: var(--text-muted); color: var(--text-muted);" onclick="closeDayModal()">
-                <span>Cancel</span>
-            </button>
-        </div>
-    </div>
-
-    <script>
-        const ADMIN_KEY = "ALPHA2026"; 
-        let isAdmin = false;
-        let isFirebaseActive = false;
-        let db;
-        let currentDayKey = null;
-        let currentDayOutcome = null;
-
-        let uiPages = { strikes: {}, absences: {} };
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBPFG8TJEMrtgRPpKJekUgaB4Qy47N2-64",
-            authDomain: "alpha-matrix-57042.firebaseapp.com",
-            databaseURL: "https://alpha-matrix-57042-default-rtdb.firebaseio.com",
-            projectId: "alpha-matrix-57042",
-            storageBucket: "alpha-matrix-57042.firebasestorage.app",
-            messagingSenderId: "1061748421309",
-            appId: "1:1061748421309:web:15d1dbef811fc4af5efdd4",
-            measurementId: "G-CE68CK41C4"
-        };
-
-        let state = {
-            activeBalance: 150.00, binanceWallet: 0.00,
+    // --- ACTIONS ---
+    window.switchView = switchView;
+    window.withdraw = (i) => {
+        if(!isAdmin) return;
+        const t = state.targets[i];
+        state.activeBalance = t.newBalance;
+        state.binanceWallet += t.withdraw;
+        t.completed = true;
+        save(); renderAll();
+    };
+    window.addTrade = () => {
+        if(!isAdmin) return;
+        const sym = document.getElementById('log-sym').value;
+        const out = document.getElementById('log-out').value;
+        const pnl = parseFloat(document.getElementById('log-pnl').value);
+        if(!pnl) return alert("Enter valid amount");
+        state.trades.unshift({ symbol: sym, outcome: out, pnl });
+        state.activeBalance += pnl;
+        save(); renderAll();
+    };
+    window.toggleTrack = (type, name, lvl) => {
+        if(!isAdmin) return;
+        const cur = state[type][name] || 0;
+        state[type][name] = (cur === lvl) ? lvl - 1 : lvl;
+        const newLevel = state[type][name];
+        const targetPage = Math.max(0, Math.ceil(newLevel / 5) - 1);
+        ui.pages[type][name] = targetPage;
+        save(); renderAll();
+    };
+    window.changePage = (type, name, newPage) => {
+        if(!isAdmin) return;
+        if(!ui.pages[type]) ui.pages[type] = {};
+        ui.pages[type][name] = newPage;
+        renderAll();
+    };
+    window.openDay = (k, d) => {
+        if(!isAdmin) return;
+        ui.dayKey = k;
+        document.getElementById('day-title').innerText = `LOG DAY ${d}`;
+        document.getElementById('day-amt').value = state.calendar[k] ? state.calendar[k].amount : '';
+        ui.outcome = state.calendar[k] ? state.calendar[k].outcome : null;
+        document.getElementById('day-modal').style.display = 'flex';
+    };
+    window.setOutcome = (o) => { ui.outcome = o; };
+    window.saveDay = () => {
+        if(!ui.outcome) return alert("Select Outcome");
+        const amt = parseFloat(document.getElementById('day-amt').value);
+        if(!amt) return alert("Enter Amount");
+        state.calendar[ui.dayKey] = { outcome: ui.outcome, amount: amt };
+        closeModal('day-modal'); save(); renderAll();
+    };
+    window.clearDay = () => { delete state.calendar[ui.dayKey]; closeModal('day-modal'); save(); renderAll(); };
+    window.addLeak = () => {
+        const r = document.getElementById('lk-r').value;
+        const a = parseFloat(document.getElementById('lk-a').value);
+        if(!r || !a) return alert("Fill both fields");
+        state.leaks.unshift({ reason: r, amt: a });
+        save(); renderAll();
+    };
+    window.clearAllData = () => {
+        if(!isAdmin) return;
+        if(!confirm("⚠️ WARNING: This will delete ALL data. Are you sure?")) return;
+        if(!confirm("This action CANNOT be undone. Confirm reset?")) return;
+        
+        state = {
+            activeBalance: 150.00, 
+            binanceWallet: 0.00,
             targets: [
                 { id: 1, goal: 320, withdraw: 150, newBalance: 170, completed: false },
                 { id: 2, goal: 400, withdraw: 200, newBalance: 200, completed: false },
@@ -1150,390 +927,55 @@
             strikes: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
             absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 }
         };
+        ui.pages = { strikes: {}, absences: {} };
+        save(); renderAll();
+        alert("✅ All data has been reset!");
+    };
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const teamMembers = ['NOAMANE', 'HOSSAM', 'YASSINE', 'MONCEF', 'TAHA', 'AMINE'];
-
-        try {
-            if (typeof firebase !== 'undefined') {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.database();
-                isFirebaseActive = true;
-                
-                db.ref('alphaMatrix_live').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) { 
-                        state = { ...state, ...data }; 
-                        renderAll(); 
-                    }
-                    document.getElementById('db-status').innerHTML = '<i class="fas fa-check-circle"></i> Cloud Synced';
-                    document.getElementById('db-status').className = 'badge emerald';
-                }, (error) => {
-                    console.error("Firebase Sync Error:", error);
-                    document.getElementById('db-status').innerHTML = '<i class="fas fa-exclamation-triangle"></i> DB Error';
-                    document.getElementById('db-status').className = 'badge magenta';
-                });
-                console.log("✅ Connected to Firebase Cloud Database!");
-            }
-        } catch(e) { 
-            console.error("⚠️ Firebase Initialization Error:", e); 
-            document.getElementById('db-status').innerHTML = '<i class="fas fa-times-circle"></i> Offline Mode';
-            document.getElementById('db-status').className = 'badge magenta';
-        }
-
-        function saveToCloud() {
-            if (isFirebaseActive) { 
-                db.ref('alphaMatrix_live').set(state).catch(e => console.error("Save Error:", e)); 
-            } else { 
-                localStorage.setItem('alphaMatrix_local', JSON.stringify(state)); 
-            }
-        }
-
-        function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
-        function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
-
-        function verifyAdmin() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === ADMIN_KEY) {
-                isAdmin = true; sessionStorage.setItem('isAdmin', 'true'); unlockUI(); closeAdminModal();
-            } else { alert("❌ Access Denied"); }
-        }
-
-        function lockUI() {
-            document.body.classList.add('viewer-mode');
-            document.getElementById('mode-badge').innerHTML = '<i class="fas fa-eye"></i> Viewer Mode';
-            document.getElementById('mode-badge').className = 'badge magenta';
-        }
-
-        function unlockUI() {
-            document.body.classList.remove('viewer-mode');
-            document.getElementById('mode-badge').innerHTML = '<i class="fas fa-user-shield"></i> Admin Control';
-            document.getElementById('mode-badge').className = 'badge emerald';
-        }
-
-        function getActiveTargetIndex() {
-            for(let i=0; i<state.targets.length; i++) if(!state.targets[i].completed) return i;
-            return state.targets.length - 1;
-        }
-
-        function updateLevelMaster() {
-            const activeIdx = getActiveTargetIndex();
-            const currentLevel = activeIdx + 1;
-            const completedTargets = state.targets.filter(t => t.completed).length;
-            const progress = (completedTargets / state.targets.length) * 100;
-            
-            document.getElementById('current-level').textContent = currentLevel;
-            document.getElementById('level-progress').style.width = progress + '%';
-            document.getElementById('progress-text').textContent = Math.round(progress) + '%';
-            
-            if (activeIdx < state.targets.length) {
-                document.getElementById('next-target').textContent = '$' + state.targets[activeIdx].goal;
-            } else {
-                document.getElementById('next-target').textContent = 'MASTER';
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('dash-balance').textContent = `$${state.activeBalance.toFixed(2)}`;
-            document.getElementById('dash-wallet').textContent = `$${state.binanceWallet.toFixed(2)}`;
-            document.getElementById('dash-active-bal').textContent = `$${state.activeBalance.toFixed(2)}`;
-            document.getElementById('dash-secured').textContent = `$${state.binanceWallet.toFixed(2)}`;
-            
-            const completedTargets = state.targets.filter(t => t.completed).length;
-            document.getElementById('dash-targets-done').textContent = `${completedTargets}/10`;
-
-            let totalPnl = 0, wins = 0, grossWin = 0, grossLoss = 0;
-            state.trades.forEach(t => {
-                totalPnl += t.pnl;
-                if(t.outcome === 'win') { wins++; grossWin += t.pnl; }
-                else { grossLoss += Math.abs(t.pnl); }
-            });
-            
-            Object.values(state.calendar).forEach(log => {
-                if(log && log.amount) totalPnl += parseFloat(log.amount);
-            });
-
-            const totalTrades = state.trades.length;
-            const wr = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : "0.0";
-
-            document.getElementById('dash-wr').textContent = `${wr}%`;
-            const pnlEl = document.getElementById('dash-pnl');
-            pnlEl.textContent = `$${totalPnl.toFixed(2)}`;
-            pnlEl.className = `stat ${totalPnl >= 0 ? 'emerald' : 'magenta'}`;
-
-            document.getElementById('an-gross-win').textContent = `$${grossWin.toFixed(2)}`;
-            document.getElementById('an-gross-loss').textContent = `-$${grossLoss.toFixed(2)}`;
-            document.getElementById('an-total').textContent = totalTrades;
-
-            calculateLotSize(); renderMatrix();
-            updateLevelMaster();
-            if(isAdmin) saveToCloud();
-        }
-
-        function renderTargets() {
-            const container = document.getElementById('targets-container');
-            container.innerHTML = '';
-            const activeIdx = getActiveTargetIndex();
-            state.targets.forEach((t, idx) => {
-                const isLocked = idx > activeIdx;
-                const isActive = idx === activeIdx;
-                const card = document.createElement('div');
-                card.className = `target-card glass ${t.completed ? 'completed' : ''} ${isActive ? 'active-target' : ''} ${!isAdmin ? 'no-lock' : ''}`;
-                card.innerHTML = `
-                    <div class="card-icon cyan"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="card-title cyan">LEVEL ${t.id}</div>
-                    <div class="target-details">
-                        <span>Goal:</span><strong>$${t.goal}</strong>
-                        <span>Withdraw:</span><strong class="gold">$${t.withdraw}</strong>
-                        <span>Remain:</span><strong class="emerald">$${t.newBalance}</strong>
-                    </div>
-                    <button class="btn btn-emerald btn-full interactive" ${t.completed || isLocked || !isAdmin ? 'disabled' : ''} onclick="executeWithdraw(${idx})">
-                        <span>${t.completed ? '<i class="fas fa-check"></i> SECURED' : (isLocked ? '<i class="fas fa-lock"></i> LOCKED' : '<i class="fas fa-rocket"></i> EXECUTE')}</span>
-                    </button>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.executeWithdraw = function(idx) {
-            if(!isAdmin) return;
-            const t = state.targets[idx];
-            state.activeBalance = t.newBalance; state.binanceWallet += t.withdraw; t.completed = true; renderAll();
-        }
-
-        window.addTrade = function() {
-            if(!isAdmin) return;
-            const symbol = document.getElementById('log-symbol').value;
-            const outcome = document.getElementById('log-outcome').value;
-            const pnl = parseFloat(document.getElementById('log-pnl').value);
-            if(isNaN(pnl) || pnl === 0) return;
-            state.trades.unshift({ symbol, outcome, pnl }); state.activeBalance += pnl;
-            document.getElementById('log-pnl').value = ''; renderAll();
-        }
-
-        window.addLeak = function() {
-            if(!isAdmin) return;
-            const reason = document.getElementById('leak-reason').value;
-            const amt = parseFloat(document.getElementById('leak-amount').value);
-            if(!reason || isNaN(amt)) return;
-            state.leaks.unshift({ reason, amt });
-            document.getElementById('leak-reason').value = ''; document.getElementById('leak-amount').value = ''; renderAll();
-        }
-
-        function renderTrackingModule(containerId, stateKey, btnClass, warningThreshold, warningColor, warningMsg, uiKey) {
-            const container = document.getElementById(containerId);
-            if(!container) return;
-            container.innerHTML = '';
-            
-            teamMembers.forEach(name => {
-                const currentCount = state[stateKey][name] || 0;
-                const calculatedMaxPage = Math.max(0, Math.ceil(currentCount / 5) - 1);
-                let storedPage = uiPages[uiKey][name];
-                let currentPage = (storedPage !== undefined) ? storedPage : calculatedMaxPage;
-                if (currentPage < 0) currentPage = 0;
-                const maxAllowedPage = calculatedMaxPage + 2; 
-                if (currentPage > maxAllowedPage) currentPage = maxAllowedPage;
-                
-                const startRange = currentPage * 5 + 1;
-                const endRange = startRange + 4;
-                
-                let btnsHtml = '';
-                for(let i = startRange; i <= endRange; i++) {
-                    const isActive = i <= currentCount;
-                    const cls = isActive ? `${btnClass} active interactive` : `${btnClass} interactive`;
-                    btnsHtml += `<button class="${cls}" ${!isAdmin ? 'disabled' : ''} onclick="toggleTracking('${stateKey}', '${uiKey}', '${name}', ${i})">${i}</button>`;
-                }
-                
-                const isPrevDisabled = currentPage === 0;
-                const isNextDisabled = currentPage >= maxAllowedPage;
-
-                let navHtml = `
-                    <div class="pagination-row">
-                        <button class="page-nav-btn" ${isPrevDisabled ? 'disabled' : ''} onclick="changePage('${uiKey}', '${name}', ${currentPage - 1})">
-                            <i class="fas fa-arrow-left"></i> PREV
-                        </button>
-                        <span class="page-indicator">PAGE ${currentPage + 1}</span>
-                        <button class="page-nav-btn" ${isNextDisabled ? 'disabled' : ''} onclick="changePage('${uiKey}', '${name}', ${currentPage + 1})">
-                            NEXT <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                `;
-
-                const card = document.createElement('div');
-                card.className = 'card glass';
-                const iconName = stateKey === 'strikes' ? 'fa-exclamation-circle' : 'fa-user-clock';
-                card.innerHTML = `
-                    <div class="card-icon ${warningColor}"><i class="fas ${iconName}"></i></div>
-                    <div class="card-title ${warningColor}">${name}</div>
-                    <p class="text-muted" style="margin-bottom: 1rem;">Total: <strong>${currentCount}</strong></p>
-                    <div class="strikes-row">${btnsHtml}</div>
-                    ${navHtml}
-                    ${currentCount >= warningThreshold ? `<p style="margin-top:1.5rem; color:${warningColor}; font-family:Orbitron; font-size:0.9rem; text-align: center;"><i class="fas fa-exclamation-triangle"></i> ${warningMsg}</p>` : ''}
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.changePage = function(uiKey, name, newPage) {
-            if(!isAdmin) return;
-            if(!uiPages[uiKey]) uiPages[uiKey] = {};
-            uiPages[uiKey][name] = newPage;
-            if (uiKey === 'strikes') renderTrackingModule('team-container', 'strikes', 'strike-btn', 3, 'var(--magenta)', 'WARNING: High Infraction Risk!', 'strikes');
-            if (uiKey === 'absences') renderTrackingModule('absences-container', 'absences', 'abs-btn', 3, 'var(--gold)', 'WARNING: High Absence Rate!', 'absences');
-        }
-
-        window.toggleTracking = function(stateKey, uiKey, name, level) {
-            if(!isAdmin) return;
-            const current = state[stateKey][name] || 0;
-            state[stateKey][name] = (current === level) ? level - 1 : level;
-            const newLevel = state[stateKey][name];
-            const targetPage = Math.max(0, Math.ceil(newLevel / 5) - 1);
-            if(!uiPages[uiKey]) uiPages[uiKey] = {};
-            uiPages[uiKey][name] = targetPage;
-            
-            if (uiKey === 'strikes') renderTrackingModule('team-container', 'strikes', 'strike-btn', 3, 'var(--magenta)', 'WARNING: High Infraction Risk!', 'strikes');
-            if (uiKey === 'absences') renderTrackingModule('absences-container', 'absences', 'abs-btn', 3, 'var(--gold)', 'WARNING: High Absence Rate!', 'absences');
-            if(isAdmin) saveToCloud();
-        }
-
-        window.scrollCalendar = function(direction) {
-            const carousel = document.getElementById('calendar-carousel');
-            const cardWidth = carousel.querySelector('.month-card').offsetWidth + 32;
-            carousel.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
-        }
-
-        window.openDayModal = function(key, dayNum) {
-            if(!isAdmin) return;
-            currentDayKey = key;
-            const log = state.calendar[key];
-            document.getElementById('day-modal-title').textContent = `Log Day ${dayNum}`;
-            document.getElementById('day-amount').value = log ? log.amount : '';
-            currentDayOutcome = log ? log.outcome : null;
-            
-            document.querySelectorAll('.outcome-btn').forEach(b => b.style.opacity = '0.5');
-            if(currentDayOutcome) document.getElementById(`btn-${currentDayOutcome}`).style.opacity = '1';
-            
-            document.getElementById('day-modal').style.display = 'flex';
-        }
-
-        window.setDayOutcome = function(outcome) {
-            currentDayOutcome = outcome;
-            document.querySelectorAll('.outcome-btn').forEach(b => b.style.opacity = '0.5');
-            document.getElementById(`btn-${outcome}`).style.opacity = '1';
-        }
-
-        window.saveDayLog = function() {
-            if(!isAdmin || !currentDayKey) return;
-            const amt = parseFloat(document.getElementById('day-amount').value);
-            if(!currentDayOutcome) return alert("Please select WIN or LOSS");
-            if(isNaN(amt)) return alert("Please enter P&L amount");
-            
-            state.calendar[currentDayKey] = { outcome: currentDayOutcome, amount: amt };
-            closeDayModal(); renderCalendar(); updateUI();
-        }
-
-        window.clearDayLog = function() {
-            if(!isAdmin || !currentDayKey) return;
-            delete state.calendar[currentDayKey];
-            closeDayModal(); renderCalendar(); updateUI();
-        }
-
-        window.closeDayModal = function() {
-            document.getElementById('day-modal').style.display = 'none';
-            currentDayKey = null; currentDayOutcome = null;
-        }
-
-        function renderTradeLog() {
-            document.getElementById('trade-log-body').innerHTML = state.trades.slice(0, 10).map(t => `
-                <tr><td>${t.symbol}</td><td class="${t.pnl >= 0 ? 'emerald' : 'magenta'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td><td>${t.outcome === 'win' ? '🟢' : '🔴'}</td></tr>
-            `).join('');
-        }
-
-        function renderLeaks() {
-            document.getElementById('leak-body').innerHTML = state.leaks.map(l => `
-                <tr><td>${l.reason}</td><td class="magenta">-$${l.amt.toFixed(2)}</td></tr>
-            `).join('');
-        }
-
-        function renderCalendar() {
-            const carousel = document.getElementById('calendar-carousel');
-            carousel.innerHTML = '';
-            months.forEach((m, idx) => {
-                const card = document.createElement('div');
-                card.className = 'month-card';
-                let daysHtml = '';
-                for(let i=1; i<=31; i++) {
-                    const key = `${idx}-${i}`;
-                    const log = state.calendar[key];
-                    let cls = 'day interactive';
-                    let content = `<div class="day-num">${i}</div>`;
-                    
-                    if(log && log.outcome) {
-                        const prefix = log.outcome === 'win' ? '+' : '-';
-                        const absAmt = Math.abs(log.amount);
-                        let displayAmt = absAmt;
-                        if(absAmt >= 1000) displayAmt = (absAmt/1000).toFixed(1) + 'k';
-                        
-                        if(log.outcome === 'win') {
-                            cls += ' logged-win';
-                            content += `<div class="day-amt" title="$${absAmt}">${prefix}$${displayAmt}</div>`;
-                        } else {
-                            cls += ' logged-loss';
-                            content += `<div class="day-amt" title="$${absAmt}">${prefix}$${displayAmt}</div>`;
-                        }
-                    }
-                    daysHtml += `<div class="${cls}" ${!isAdmin ? 'style="pointer-events:none;"' : ''} onclick="openDayModal('${key}', ${i})">${content}</div>`;
-                }
-                card.innerHTML = `<h4>${m}</h4><div class="days-grid">${daysHtml}</div>`;
-                carousel.appendChild(card);
-            });
-        }
-
-        function calculateLotSize() {
-            const riskPct = parseFloat(document.getElementById('calc-risk').value) / 100 || 0;
-            const sl = parseFloat(document.getElementById('calc-sl').value) || 1;
-            const riskAmt = state.activeBalance * riskPct;
-            document.getElementById('calc-result').textContent = (riskAmt / (sl * 10)).toFixed(2);
-        }
-
-        function renderMatrix() {
-            const riskAmt = state.activeBalance * 0.01;
-            document.getElementById('matrix-body').innerHTML = ['Gold', 'Forex', 'US30'].map(a => `
-                <tr><td style="color:var(--cyan)">${a}</td>
-                <td>${(riskAmt / 100).toFixed(2)}</td>
-                <td>${(riskAmt / 200).toFixed(2)}</td>
-                <td>${(riskAmt / 500).toFixed(2)}</td></tr>
-            `).join('');
-        }
-
-        function renderAll() {
-            renderTargets(); renderTradeLog(); renderLeaks(); renderCalendar(); 
-            renderTrackingModule('team-container', 'strikes', 'strike-btn', 3, 'var(--magenta)', 'WARNING: High Infraction Risk!', 'strikes');
-            renderTrackingModule('absences-container', 'absences', 'abs-btn', 3, 'var(--gold)', 'WARNING: High Absence Rate!', 'absences');
-            updateUI();
-        }
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById(item.dataset.view).classList.add('active');
-            });
-        });
-
-        ['calc-risk', 'calc-sl'].forEach(id => document.getElementById(id).addEventListener('input', calculateLotSize));
-
-        if(!isFirebaseActive) {
-            const saved = localStorage.getItem('alphaMatrix_local');
-            if (saved) state = { ...state, ...JSON.parse(saved) };
-        }
+    function updateStats() {
+        let pnl = 0, wins = 0;
+        state.trades.forEach(t => { pnl += t.pnl; if(t.outcome === 'win') wins++; });
+        Object.values(state.calendar).forEach(l => pnl += l.amount);
         
-        if(!state.strikes) state.strikes = { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 };
-        if(!state.absences) state.absences = { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 };
+        const wr = state.trades.length > 0 ? ((wins/state.trades.length)*100).toFixed(1) : 0;
+        const pnlEl = document.getElementById('dash-pnl');
+        const wrEl = document.getElementById('dash-wr');
+        if(pnlEl) {
+            pnlEl.innerText = `$${pnl.toFixed(2)}`;
+            pnlEl.className = `stat ${pnl >= 0 ? 'emerald' : 'magenta'}`;
+        }
+        if(wrEl) wrEl.innerText = `${wr}%`;
+        
+        calcLot();
+    }
 
-        if (sessionStorage.getItem('isAdmin') === 'true') { isAdmin = true; unlockUI(); } else { lockUI(); }
-        renderAll();
-    </script>
+    function calcLot() {
+        const r = parseFloat(document.getElementById('r-risk')?.value || 1) / 100;
+        const sl = parseFloat(document.getElementById('r-sl')?.value || 1);
+        const lot = (state.activeBalance * r) / (sl * 10);
+        const res = document.getElementById('r-res');
+        if(res) res.innerText = lot.toFixed(2);
+        
+        const tbl = document.getElementById('matrix-tbl');
+        if(tbl) {
+            const risk = state.activeBalance * 0.01;
+            tbl.innerHTML = `
+                <thead><tr><th>ASSET</th><th>10 PIPS</th><th>20 PIPS</th><th>50 PIPS</th></tr></thead>
+                <tbody>
+                    <tr><td class="cyan">GOLD</td><td>${(risk/100).toFixed(2)}</td><td>${(risk/200).toFixed(2)}</td><td>${(risk/500).toFixed(2)}</td></tr>
+                    <tr><td class="cyan">FOREX</td><td>${(risk/100).toFixed(2)}</td><td>${(risk/200).toFixed(2)}</td><td>${(risk/500).toFixed(2)}</td></tr>
+                    <tr><td class="cyan">US30</td><td>${(risk/100).toFixed(2)}</td><td>${(risk/200).toFixed(2)}</td><td>${(risk/500).toFixed(2)}</td></tr>
+                </tbody>
+            `;
+        }
+    }
+
+    if(isAdmin) {
+        document.getElementById('mode-badge').innerHTML = '<i class="fas fa-user-shield"></i> ADMIN MODE';
+        document.getElementById('mode-badge').className = 'badge badge-e';
+    }
+    renderNav();
+    renderAll();
+</script>
 </body>
 </html>
