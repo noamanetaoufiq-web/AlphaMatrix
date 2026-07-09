@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlphaMatrix Enterprise | Auto-Broadcast Console</title>
+    <title>AlphaMatrix Enterprise | Console</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -24,15 +24,7 @@
         .sidebar { width: 240px; height: 100vh; position: fixed; left: 0; top: 60px; background: rgba(10,10,15,0.95); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
         .main { margin-left: 240px; margin-top: 60px; padding: 30px; flex: 1; width: calc(100% - 240px); }
         
-        /* Notification Banner */
-        .notif-banner {
-            position: fixed; top: 70px; left: 260px; right: 20px;
-            background: linear-gradient(135deg, var(--orange), var(--red));
-            color: #fff; padding: 15px 20px; border-radius: 10px;
-            display: none; align-items: center; gap: 15px; z-index: 99;
-            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
-            animation: slideDown 0.5s ease;
-        }
+        .notif-banner { position: fixed; top: 70px; left: 260px; right: 20px; background: linear-gradient(135deg, var(--orange), var(--red)); color: #fff; padding: 15px 20px; border-radius: 10px; display: none; align-items: center; gap: 15px; z-index: 99; box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4); animation: slideDown 0.5s ease; }
         .notif-banner.show { display: flex; }
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
         .notif-banner .btn-sm { padding: 6px 14px; background: #fff; color: var(--red); border: none; border-radius: 5px; font-weight: 700; cursor: pointer; }
@@ -133,7 +125,6 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .modal-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; }
 
-        /* News Tag Styling */
         .news-tag { display: inline-block; padding: 4px 10px; background: rgba(231,76,60,0.2); color: var(--red); border: 1px solid var(--red); border-radius: 4px; font-size: 0.75rem; font-family: 'Orbitron'; margin: 2px; }
 
         @media (max-width: 768px) {
@@ -155,12 +146,11 @@
         </button>
     </header>
 
-    <!-- Smart Notification Banner -->
     <div class="notif-banner" id="notif-banner">
         <i class="fas fa-bell" style="font-size:1.5rem;"></i>
         <div style="flex:1;">
-            <strong id="notif-title">Daily Recap Pending</strong>
-            <div style="font-size:0.85rem; opacity:0.9;" id="notif-msg">You have trades logged today. Send the daily recap to Discord?</div>
+            <strong id="notif-title">Report Ready</strong>
+            <div style="font-size:0.85rem; opacity:0.9;" id="notif-msg">Send to Discord?</div>
         </div>
         <button class="btn-sm" onclick="triggerSmartSend()">SEND NOW</button>
         <button class="btn-sm" style="background:rgba(0,0,0,0.3); color:#fff;" onclick="dismissNotif()">✕</button>
@@ -193,7 +183,7 @@
                 <button class="btn btn-magenta" onclick="setOutcome('loss')">🔴 LOSS</button>
             </div>
             <input type="number" id="day-amt" class="form-control" placeholder="AMOUNT ($)">
-            <textarea id="day-news" class="form-control" placeholder="📰 High Impact News Context (Optional): e.g., CPI caused Gold 250 pips move"></textarea>
+            <textarea id="day-news" class="form-control" placeholder="📰 High Impact News Context (Optional)"></textarea>
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn btn-emerald" onclick="saveDay()">SAVE</button>
                 <button class="btn btn-magenta" onclick="clearDay()">CLEAR</button>
@@ -258,7 +248,7 @@
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        db.ref('alphaMatrix_v14').on('value', snap => {
+        db.ref('alphaMatrix_v15').on('value', snap => {
             if(snap.val()) {
                 state = { ...state, ...snap.val() };
                 if(!state.trades) state.trades = [];
@@ -273,7 +263,7 @@
     } catch(e) { console.log("Offline Mode"); }
 
     function save() {
-        if(db) db.ref('alphaMatrix_v14').set(state);
+        if(db) db.ref('alphaMatrix_v15').set(state);
         else localStorage.setItem('alphaMatrix_local', JSON.stringify(state));
     }
 
@@ -297,26 +287,19 @@
     // --- SMART NOTIFICATIONS ---
     function checkSmartNotifications() {
         if (!isAdmin) return;
-        
         const now = new Date();
         const today = now.toISOString().split('T')[0];
         const isSunday = now.getDay() === 0;
         const hour = now.getUTCHours();
         
-        // Get today's trades
-        const todayTrades = state.trades.filter(t => {
-            if(!t.date) return false;
-            return t.date.split('T')[0] === today;
-        });
+        const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
         
-        // Daily check: after 20:00 UTC or has trades but not sent today
         if (todayTrades.length > 0 && state.lastDailySent !== today) {
             ui.smartSendType = 'daily';
             showNotif('📊 Daily Recap Ready', `You logged ${todayTrades.length} trade(s) today. Send recap to Discord?`);
             return;
         }
         
-        // Weekly check: Sunday after 20:00 UTC
         if (isSunday && hour >= 20 && state.lastWeeklySent !== today) {
             ui.smartSendType = 'weekly';
             showNotif('🏆 Weekly Report Ready', "It's Sunday night. Send weekly performance report?");
@@ -450,18 +433,9 @@
                 </div>
             </div>
             <div class="grid grid-3">
-                <div class="glass">
-                    <div class="muted">Best Day</div>
-                    <div class="stat emerald" id="best-day">$0.00</div>
-                </div>
-                <div class="glass">
-                    <div class="muted">Worst Day</div>
-                    <div class="stat magenta" id="worst-day">$0.00</div>
-                </div>
-                <div class="glass">
-                    <div class="muted">Average Day</div>
-                    <div class="stat cyan" id="avg-day">$0.00</div>
-                </div>
+                <div class="glass"><div class="muted">Best Day</div><div class="stat emerald" id="best-day">$0.00</div></div>
+                <div class="glass"><div class="muted">Worst Day</div><div class="stat magenta" id="worst-day">$0.00</div></div>
+                <div class="glass"><div class="muted">Average Day</div><div class="stat cyan" id="avg-day">$0.00</div></div>
             </div>
         `;
     }
@@ -535,7 +509,7 @@
                         <select id="log-sym" class="form-control"><option>XAUUSD</option><option>EURUSD</option><option>US30</option></select>
                         <select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option></select>
                         <input type="number" id="log-pnl" class="form-control" placeholder="PROFIT / LOSS ($)">
-                        <textarea id="log-news" class="form-control" placeholder="📰 News Context (Optional): e.g., CPI caused Gold 250 pips move"></textarea>
+                        <textarea id="log-news" class="form-control" placeholder="📰 News Context (Optional)"></textarea>
                         <button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH TO CLOUD</button>
                     ` : `<div style="text-align:center; padding:40px; color:var(--magenta);"><i class="fas fa-lock" style="font-size:3rem; margin-bottom:15px;"></i><br>ADMIN ACCESS REQUIRED</div>`}
                 </div>
@@ -701,31 +675,23 @@
         `;
     }
 
-    // BROADCAST HUB (formerly Settings)
     function renderSettings() {
         return `
             <h2><i class="fas fa-broadcast-tower"></i> BROADCAST HUB</h2>
-            <p class="muted" style="margin-bottom:20px;">Smart auto-broadcast to Discord #site_alpha_matrix. System detects pending reports automatically.</p>
-            
             <div class="grid grid-2">
                 <div class="glass" style="border-color:var(--red);">
                     <h3 class="red"><i class="fas fa-newspaper"></i> 📊 DAILY RECAP</h3>
-                    <p class="muted" style="margin:10px 0;">Auto-collects today's trades & calendar logs. Best sent at 00:00 UTC.</p>
                     <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; margin:15px 0;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                             <span class="muted">Today's Trades:</span>
                             <strong id="today-trades-count">0</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span class="muted">Today's P&L:</span>
-                            <strong id="today-pnl">$0.00</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
                             <span class="muted">Last Sent:</span>
                             <strong id="last-daily">${state.lastDailySent || 'Never'}</strong>
                         </div>
                     </div>
-                    <textarea id="daily-notes" class="form-control" placeholder="📰 Additional News Context: e.g., NFP moved USD pairs 100+ pips"></textarea>
+                    <textarea id="daily-notes" class="form-control" placeholder="📰 Additional News Context"></textarea>
                     <button class="btn btn-red" onclick="pushDailyRecap()">
                         <i class="fab fa-discord"></i> SEND DAILY RECAP
                     </button>
@@ -733,41 +699,30 @@
 
                 <div class="glass" style="border-color:var(--orange);">
                     <h3 class="orange"><i class="fas fa-trophy"></i> 🏆 WEEKLY REPORT</h3>
-                    <p class="muted" style="margin:10px 0;">Auto-collects this week's performance. Best sent Sunday 22:00 UTC.</p>
                     <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; margin:15px 0;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                             <span class="muted">This Week Trades:</span>
                             <strong id="week-trades-count">0</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span class="muted">Week P&L:</span>
-                            <strong id="week-pnl">$0.00</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
                             <span class="muted">Last Sent:</span>
                             <strong id="last-weekly">${state.lastWeeklySent || 'Never'}</strong>
                         </div>
                     </div>
-                    <textarea id="weekly-notes" class="form-control" placeholder="🔮 Next Week Bias: e.g., Bullish on Gold, expecting CPI volatility"></textarea>
+                    <textarea id="weekly-notes" class="form-control" placeholder="🔮 Next Week Bias"></textarea>
                     <button class="btn btn-orange" onclick="pushWeeklyReport()">
                         <i class="fab fa-discord"></i> SEND WEEKLY REPORT
                     </button>
                 </div>
             </div>
-
             <div class="grid grid-2" style="margin-top:20px;">
                 <div class="glass">
-                    <h3><i class="fas fa-database"></i> CLOUD SYNC STATUS</h3>
-                    <div class="stat cyan">${db ? 'CONNECTED' : 'OFFLINE MODE'}</div>
-                    <p class="muted" style="margin-top:10px;">Data Path: <code>alphaMatrix_v14</code></p>
+                    <h3><i class="fas fa-database"></i> CLOUD SYNC</h3>
+                    <div class="stat cyan">${db ? 'CONNECTED' : 'OFFLINE'}</div>
                 </div>
                 <div class="glass">
                     <h3 class="magenta"><i class="fas fa-trash-alt"></i> DANGER ZONE</h3>
-                    ${isAdmin ? `
-                        <button class="btn btn-magenta" onclick="clearAllData()">
-                            <i class="fas fa-power-off"></i> RESET ALL DATA
-                        </button>
-                    ` : `<div style="text-align:center; padding:20px; color:var(--magenta);"><i class="fas fa-lock"></i> Admin Required</div>`}
+                    ${isAdmin ? `<button class="btn btn-magenta" onclick="clearAllData()"><i class="fas fa-power-off"></i> RESET ALL</button>` : ''}
                 </div>
             </div>
         `;
@@ -841,10 +796,9 @@
         return { labels, cumulative, dailyData, sortedKeys };
     }
 
-    // --- ACTIONS WITH SMART DISCORD ---
+    // --- ACTIONS WITH DISCORD HOOKS ---
     window.switchView = switchView;
     
-    // 🎉 LEVEL-UP MESSAGE (Purple - Congratulation)
     window.withdraw = async (i) => {
         if(!isAdmin) return;
         const t = state.targets[i];
@@ -855,29 +809,26 @@
         t.completed = true;
         save(); renderAll();
         
-        const payload = {
+        await sendDiscordWebhook({
             username: "Alpha Matrix Bot",
             avatar_url: BOT_AVATAR,
             embeds: [{
                 title: "🎉 CONGRATULATIONS! LEVEL UP!",
-                description: `You've successfully completed **Level ${t.id}** and secured your profits. Ready for the next challenge!`,
-                color: 10181046, // Purple
+                description: `You've successfully completed **Level ${t.id}** and secured your profits.`,
+                color: 10181046,
                 fields: [
                     { name: "🏆 Level Completed", value: `Level ${t.id}`, inline: true },
                     { name: "🎯 Next Target", value: nextTarget ? `Level ${nextTarget.id} - $${nextTarget.goal}` : "**MASTER LEVEL** 👑", inline: true },
                     { name: "💰 Secured to Wallet", value: `**+$${t.withdraw.toFixed(2)}**`, inline: false },
                     { name: "💵 New Active Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
-                    { name: "🏦 Total in Binance Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
-                    { name: "📈 Next Goal", value: nextTarget ? `$${nextTarget.goal}` : "You conquered the Matrix!", inline: true }
+                    { name: "🏦 Total in Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true }
                 ],
                 footer: { text: "Alpha Matrix • Keep pushing!" },
                 timestamp: new Date().toISOString()
             }]
-        };
-        await sendDiscordWebhook(payload);
+        });
     };
 
-    // Trade with timestamp and news context
     window.addTrade = async () => {
         if(!isAdmin) return;
         const sym = document.getElementById('log-sym').value;
@@ -886,19 +837,11 @@
         const news = document.getElementById('log-news').value.trim();
         if(!pnl) return alert("Enter valid amount");
         
-        const trade = { 
-            symbol: sym, 
-            outcome: out, 
-            pnl, 
-            date: new Date().toISOString(),
-            news: news || null
-        };
-        state.trades.unshift(trade);
+        state.trades.unshift({ symbol: sym, outcome: out, pnl, date: new Date().toISOString(), news: news || null });
         state.activeBalance += pnl;
         save(); renderAll();
         
-        // Green trade notification
-        const payload = {
+        await sendDiscordWebhook({
             username: "Alpha Matrix Bot",
             avatar_url: BOT_AVATAR,
             embeds: [{
@@ -913,155 +856,69 @@
                 footer: { text: "Alpha Matrix Automation" },
                 timestamp: new Date().toISOString()
             }]
-        };
-        await sendDiscordWebhook(payload);
-        
-        // Check if daily recap should be suggested
-        setTimeout(checkSmartNotifications, 2000);
+        });
     };
 
-    // 📊 DAILY RECAP (Red - End of day summary)
-    window.pushDailyRecap = async () => {
-        if(!isAdmin) return;
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Collect today's trades
-        const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
-        
-        // Collect today's calendar logs (match by month-day format)
-        const todayDate = new Date();
-        const monthIdx = todayDate.getMonth();
-        const day = todayDate.getDate();
-        const calendarKey = `${monthIdx}-${day}`;
-        const calendarLog = state.calendar[calendarKey];
-        
-        let totalTrades = todayTrades.length;
-        let wins = todayTrades.filter(t => t.outcome === 'win').length;
-        let pnl = todayTrades.reduce((sum, t) => sum + t.pnl, 0);
-        
-        if (calendarLog) {
-            totalTrades += 1;
-            if (calendarLog.outcome === 'win') wins += 1;
-            pnl += calendarLog.amount;
-        }
-        
-        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
-        
-        // Collect news from today's trades
-        const newsItems = todayTrades.filter(t => t.news).map(t => `• **${t.symbol}**: ${t.news}`);
-        const manualNotes = document.getElementById('daily-notes')?.value.trim() || '';
-        if (calendarLog && calendarLog.news) {
-            newsItems.push(`• **Calendar Log**: ${calendarLog.news}`);
-        }
-        
-        const payload = {
-            username: "Alpha Matrix System",
-            avatar_url: BOT_AVATAR,
-            embeds: [{
-                title: "📊 DAILY RECAP | END OF DAY",
-                description: `Trading session completed for **${new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}**`,
-                color: 15158332, // Red
-                fields: [
-                    { name: "📈 Total Trades", value: `${totalTrades}`, inline: true },
-                    { name: "🎯 Win Rate", value: `${winRate}%`, inline: true },
-                    { name: "💰 Net P&L", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
-                    { name: "💵 Active Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
-                    { name: "🏦 Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
-                    ...(newsItems.length > 0 ? [{ name: "📰 High Impact News Today", value: newsItems.join('\n'), inline: false }] : []),
-                    ...(manualNotes ? [{ name: "📝 Additional Notes", value: manualNotes, inline: false }] : [])
-                ],
-                footer: { text: "Alpha Matrix • Daily Recap" },
-                timestamp: new Date().toISOString()
-            }]
-        };
-        
-        const success = await sendDiscordWebhook(payload);
-        if (success) {
-            state.lastDailySent = today;
-            save();
-            renderAll();
-            alert("✅ Daily Recap sent to Discord!");
-        }
-    };
-
-    // 🏆 WEEKLY REPORT (Orange - Sunday summary)
-    window.pushWeeklyReport = async () => {
-        if(!isAdmin) return;
-        const now = new Date();
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const weekAgoStr = weekAgo.toISOString().split('T')[0];
-        
-        // Collect this week's trades
-        const weekTrades = state.trades.filter(t => t.date && t.date >= weekAgoStr);
-        
-        let totalTrades = weekTrades.length;
-        let wins = weekTrades.filter(t => t.outcome === 'win').length;
-        let losses = weekTrades.filter(t => t.outcome === 'loss').length;
-        let pnl = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
-        let grossProfit = weekTrades.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
-        let grossLoss = weekTrades.filter(t => t.pnl < 0).reduce((sum, t) => sum + Math.abs(t.pnl), 0);
-        
-        // Best/Worst trade
-        const bestTrade = weekTrades.length > 0 ? Math.max(...weekTrades.map(t => t.pnl)) : 0;
-        const worstTrade = weekTrades.length > 0 ? Math.min(...weekTrades.map(t => t.pnl)) : 0;
-        
-        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
-        const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : grossProfit > 0 ? "∞" : "0.00";
-        
-        const weekStart = weekAgo.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-        const weekEnd = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-        
-        const manualNotes = document.getElementById('weekly-notes')?.value.trim() || '';
-        
-        const payload = {
-            username: "Alpha Matrix System",
-            avatar_url: BOT_AVATAR,
-            embeds: [{
-                title: "🏆 WEEKLY PERFORMANCE REPORT",
-                description: `Complete breakdown for week **${weekStart} - ${weekEnd}**`,
-                color: 15105570, // Orange
-                fields: [
-                    { name: "📊 Total Trades", value: `${totalTrades}`, inline: true },
-                    { name: "🎯 Win Rate", value: `${winRate}% (${wins}W / ${losses}L)`, inline: true },
-                    { name: "💰 Net Result", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
-                    { name: "📈 Gross Profit", value: `$${grossProfit.toFixed(2)}`, inline: true },
-                    { name: "📉 Gross Loss", value: `-$${grossLoss.toFixed(2)}`, inline: true },
-                    { name: "⚖️ Profit Factor", value: `${profitFactor}`, inline: true },
-                    { name: "🏅 Best Trade", value: `+$${bestTrade.toFixed(2)}`, inline: true },
-                    { name: "⚠️ Worst Trade", value: `$${worstTrade.toFixed(2)}`, inline: true },
-                    { name: "💵 Current Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
-                    { name: "🏦 Total Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
-                    ...(manualNotes ? [{ name: "🔮 Next Week Outlook", value: manualNotes, inline: false }] : [])
-                ],
-                footer: { text: "Alpha Matrix • Weekly Wrap-Up" },
-                timestamp: new Date().toISOString()
-            }]
-        };
-        
-        const success = await sendDiscordWebhook(payload);
-        if (success) {
-            state.lastWeeklySent = new Date().toISOString().split('T')[0];
-            save();
-            renderAll();
-            alert("✅ Weekly Report sent to Discord!");
-        }
-    };
-
-    window.toggleTrack = (type, name, lvl) => {
+    // ⭐ STRIKE / ABSENCE DISCORD ALERT - FORMATTED
+    window.toggleTrack = async (type, name, lvl) => {
         if(!isAdmin) return;
         const cur = state[type][name] || 0;
-        state[type][name] = (cur === lvl) ? lvl - 1 : lvl;
-        const newLevel = state[type][name];
-        const targetPage = Math.max(0, Math.ceil(newLevel / 5) - 1);
+        const newCount = (cur === lvl) ? lvl - 1 : lvl;
+        state[type][name] = newCount;
+        
+        const targetPage = Math.max(0, Math.ceil(newCount / 5) - 1);
         ui.pages[type][name] = targetPage;
         save(); renderAll();
+        
+        // Determine if this is an add or remove action
+        const isAdded = newCount > cur;
+        const isStrike = type === 'strikes';
+        const topicLabel = isStrike ? "⚠️ STRIKES" : "🕐 ABSENCES";
+        const topicDescription = isStrike 
+            ? "Rule infraction logged for team member" 
+            : "Absence logged for team member";
+        
+        // Color: Red/Magenta for Strikes, Gold for Absences
+        const embedColor = isStrike ? 15158332 : 1752220;
+        const emoji = isStrike ? "🔴" : "🟡";
+        
+        // Warning status
+        let warningField = [];
+        if (newCount >= 3) {
+            warningField = [{ 
+                name: "🚨 WARNING STATUS", 
+                value: `**${name}** has reached **${newCount}** ${type}! Immediate attention required.`, 
+                inline: false 
+            }];
+        }
+        
+        await sendDiscordWebhook({
+            username: "Alpha Matrix HR Bot",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: `${emoji} TEAM MEMBER ${isAdded ? 'UPDATE' : 'UPDATE'} LOGGED`,
+                description: topicDescription,
+                color: embedColor,
+                fields: [
+                    { name: "👤 Name", value: `**${name}**`, inline: true },
+                    { name: "📋 Topic", value: topicLabel, inline: true },
+                    { name: "🔢 Number", value: `**${newCount}**`, inline: true },
+                    { name: "📊 Action", value: isAdded ? `Added ${type === 'strikes' ? 'Strike' : 'Absence'} #${newCount}` : `Removed - Now at ${newCount}`, inline: false },
+                    ...warningField
+                ],
+                footer: { text: "Alpha Matrix • HR Tracking System" },
+                timestamp: new Date().toISOString()
+            }]
+        });
     };
+
     window.changePage = (type, name, newPage) => {
         if(!isAdmin) return;
         if(!ui.pages[type]) ui.pages[type] = {};
         ui.pages[type][name] = newPage;
         renderAll();
     };
+
     window.openDay = (k, d) => {
         if(!isAdmin) return;
         ui.dayKey = k;
@@ -1089,11 +946,117 @@
         state.leaks.unshift({ reason: r, amt: a });
         save(); renderAll();
     };
-    
+
+    // DAILY & WEEKLY RECAPS (Same as before)
+    window.pushDailyRecap = async () => {
+        if(!isAdmin) return;
+        const today = new Date().toISOString().split('T')[0];
+        const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
+        const todayDate = new Date();
+        const monthIdx = todayDate.getMonth();
+        const day = todayDate.getDate();
+        const calendarKey = `${monthIdx}-${day}`;
+        const calendarLog = state.calendar[calendarKey];
+        
+        let totalTrades = todayTrades.length;
+        let wins = todayTrades.filter(t => t.outcome === 'win').length;
+        let pnl = todayTrades.reduce((sum, t) => sum + t.pnl, 0);
+        
+        if (calendarLog) {
+            totalTrades += 1;
+            if (calendarLog.outcome === 'win') wins += 1;
+            pnl += calendarLog.amount;
+        }
+        
+        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+        const newsItems = todayTrades.filter(t => t.news).map(t => `• **${t.symbol}**: ${t.news}`);
+        const manualNotes = document.getElementById('daily-notes')?.value.trim() || '';
+        if (calendarLog && calendarLog.news) newsItems.push(`• **Calendar Log**: ${calendarLog.news}`);
+        
+        await sendDiscordWebhook({
+            username: "Alpha Matrix System",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "📊 DAILY RECAP | END OF DAY",
+                description: `Trading session completed for **${new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}**`,
+                color: 15158332,
+                fields: [
+                    { name: "📈 Total Trades", value: `${totalTrades}`, inline: true },
+                    { name: "🎯 Win Rate", value: `${winRate}%`, inline: true },
+                    { name: "💰 Net P&L", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
+                    { name: "💵 Active Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
+                    { name: "🏦 Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
+                    ...(newsItems.length > 0 ? [{ name: "📰 High Impact News Today", value: newsItems.join('\n'), inline: false }] : []),
+                    ...(manualNotes ? [{ name: "📝 Additional Notes", value: manualNotes, inline: false }] : [])
+                ],
+                footer: { text: "Alpha Matrix • Daily Recap" },
+                timestamp: new Date().toISOString()
+            }]
+        });
+        
+        state.lastDailySent = today;
+        save();
+        renderAll();
+        alert("✅ Daily Recap sent!");
+    };
+
+    window.pushWeeklyReport = async () => {
+        if(!isAdmin) return;
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const weekAgoStr = weekAgo.toISOString().split('T')[0];
+        
+        const weekTrades = state.trades.filter(t => t.date && t.date >= weekAgoStr);
+        let totalTrades = weekTrades.length;
+        let wins = weekTrades.filter(t => t.outcome === 'win').length;
+        let losses = weekTrades.filter(t => t.outcome === 'loss').length;
+        let pnl = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
+        let grossProfit = weekTrades.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
+        let grossLoss = weekTrades.filter(t => t.pnl < 0).reduce((sum, t) => sum + Math.abs(t.pnl), 0);
+        
+        const bestTrade = weekTrades.length > 0 ? Math.max(...weekTrades.map(t => t.pnl)) : 0;
+        const worstTrade = weekTrades.length > 0 ? Math.min(...weekTrades.map(t => t.pnl)) : 0;
+        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+        const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : "∞";
+        
+        const weekStart = weekAgo.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        const weekEnd = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        const manualNotes = document.getElementById('weekly-notes')?.value.trim() || '';
+        
+        await sendDiscordWebhook({
+            username: "Alpha Matrix System",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "🏆 WEEKLY PERFORMANCE REPORT",
+                description: `Complete breakdown for week **${weekStart} - ${weekEnd}**`,
+                color: 15105570,
+                fields: [
+                    { name: "📊 Total Trades", value: `${totalTrades}`, inline: true },
+                    { name: "🎯 Win Rate", value: `${winRate}% (${wins}W / ${losses}L)`, inline: true },
+                    { name: "💰 Net Result", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
+                    { name: "📈 Gross Profit", value: `$${grossProfit.toFixed(2)}`, inline: true },
+                    { name: "📉 Gross Loss", value: `-$${grossLoss.toFixed(2)}`, inline: true },
+                    { name: "⚖️ Profit Factor", value: `${profitFactor}`, inline: true },
+                    { name: "🏅 Best Trade", value: `+$${bestTrade.toFixed(2)}`, inline: true },
+                    { name: "⚠️ Worst Trade", value: `$${worstTrade.toFixed(2)}`, inline: true },
+                    { name: "💵 Current Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
+                    { name: "🏦 Total Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
+                    ...(manualNotes ? [{ name: "🔮 Next Week Outlook", value: manualNotes, inline: false }] : [])
+                ],
+                footer: { text: "Alpha Matrix • Weekly Wrap-Up" },
+                timestamp: new Date().toISOString()
+            }]
+        });
+        
+        state.lastWeeklySent = today;
+        save();
+        renderAll();
+        alert("✅ Weekly Report sent!");
+    };
+
     window.clearAllData = () => {
         if(!isAdmin) return;
         if(!confirm("⚠️ DELETE ALL DATA?")) return;
-        if(!confirm("CANNOT BE UNDONE. Confirm?")) return;
         state = {
             activeBalance: 150.00, binanceWallet: 0.00,
             targets: [
@@ -1129,31 +1092,18 @@
         if(wrEl) wrEl.innerText = `${wr}%`;
         calcLot();
         
-        // Update Broadcast Hub stats if visible
         const todayTradesEl = document.getElementById('today-trades-count');
         if (todayTradesEl) {
             const today = new Date().toISOString().split('T')[0];
             const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
-            const todayPnl = todayTrades.reduce((sum, t) => sum + t.pnl, 0);
             todayTradesEl.textContent = todayTrades.length;
-            const todayPnlEl = document.getElementById('today-pnl');
-            if (todayPnlEl) {
-                todayPnlEl.textContent = `${todayPnl >= 0 ? '+' : ''}$${todayPnl.toFixed(2)}`;
-                todayPnlEl.className = todayPnl >= 0 ? 'emerald' : 'magenta';
-            }
         }
         
         const weekTradesEl = document.getElementById('week-trades-count');
         if (weekTradesEl) {
             const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
             const weekTrades = state.trades.filter(t => t.date && t.date >= weekAgo);
-            const weekPnl = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
             weekTradesEl.textContent = weekTrades.length;
-            const weekPnlEl = document.getElementById('week-pnl');
-            if (weekPnlEl) {
-                weekPnlEl.textContent = `${weekPnl >= 0 ? '+' : ''}$${weekPnl.toFixed(2)}`;
-                weekPnlEl.className = weekPnl >= 0 ? 'emerald' : 'magenta';
-            }
         }
     }
 
