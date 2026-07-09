@@ -3,27 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlphaMatrix Enterprise | Console</title>
+    <title>AlphaMatrix Enterprise | Auto-Broadcast Console</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-    <!-- Chart.js for Equity Curve -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --bg: #050505; --card: rgba(15, 20, 30, 0.8); --border: rgba(0, 243, 255, 0.2);
             --cyan: #00F3FF; --emerald: #00FF9D; --magenta: #FF0055; --gold: #FFD700;
+            --red: #e74c3c; --orange: #e67e22; --purple: #9b59b6;
             --text: #E0E6ED; --muted: #6B7280;
             --glow-c: 0 0 10px rgba(0, 243, 255, 0.5); --glow-e: 0 0 10px rgba(0, 255, 157, 0.5);
             --glow-m: 0 0 10px rgba(255, 0, 85, 0.5); --glow-g: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
-        
         .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: rgba(5,5,5,0.95); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; backdrop-filter: blur(10px); }
         .sidebar { width: 240px; height: 100vh; position: fixed; left: 0; top: 60px; background: rgba(10,10,15,0.95); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
         .main { margin-left: 240px; margin-top: 60px; padding: 30px; flex: 1; width: calc(100% - 240px); }
+        
+        /* Notification Banner */
+        .notif-banner {
+            position: fixed; top: 70px; left: 260px; right: 20px;
+            background: linear-gradient(135deg, var(--orange), var(--red));
+            color: #fff; padding: 15px 20px; border-radius: 10px;
+            display: none; align-items: center; gap: 15px; z-index: 99;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+            animation: slideDown 0.5s ease;
+        }
+        .notif-banner.show { display: flex; }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        .notif-banner .btn-sm { padding: 6px 14px; background: #fff; color: var(--red); border: none; border-radius: 5px; font-weight: 700; cursor: pointer; }
         
         .glass { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: 0.3s; }
         .glass:hover { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0,243,255,0.1); }
@@ -40,6 +52,9 @@
         .emerald { color: var(--emerald); text-shadow: var(--glow-e); }
         .magenta { color: var(--magenta); text-shadow: var(--glow-m); }
         .gold { color: var(--gold); text-shadow: var(--glow-g); }
+        .red { color: var(--red); }
+        .orange { color: var(--orange); }
+        .purple { color: var(--purple); }
         .muted { color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
         
         .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
@@ -50,15 +65,20 @@
         
         .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-family: 'Rajdhani'; font-size: 1rem; }
         .form-control:focus { border-color: var(--cyan); outline: none; box-shadow: 0 0 8px rgba(0,243,255,0.3); }
+        textarea.form-control { min-height: 80px; resize: vertical; }
         .btn { padding: 12px 20px; border: 1px solid var(--cyan); background: transparent; color: var(--cyan); font-family: 'Orbitron'; cursor: pointer; border-radius: 6px; font-weight: 700; letter-spacing: 1px; transition: 0.2s; width: 100%; text-transform: uppercase; font-size: 0.85rem; }
         .btn:hover { background: var(--cyan); color: #000; box-shadow: var(--glow-c); }
         .btn-emerald { border-color: var(--emerald); color: var(--emerald); }
         .btn-emerald:hover { background: var(--emerald); color: #000; box-shadow: var(--glow-e); }
         .btn-magenta { border-color: var(--magenta); color: var(--magenta); }
         .btn-magenta:hover { background: var(--magenta); color: #fff; box-shadow: var(--glow-m); }
-        .btn-gold { border-color: var(--gold); color: var(--gold); }
-        .btn-gold:hover { background: var(--gold); color: #000; box-shadow: var(--glow-g); }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; background: transparent !important; box-shadow: none !important; }
+        .btn-red { border-color: var(--red); color: var(--red); }
+        .btn-red:hover { background: var(--red); color: #fff; box-shadow: 0 0 10px var(--red); }
+        .btn-orange { border-color: var(--orange); color: var(--orange); }
+        .btn-orange:hover { background: var(--orange); color: #fff; box-shadow: 0 0 10px var(--orange); }
+        .btn-purple { border-color: var(--purple); color: var(--purple); }
+        .btn-purple:hover { background: var(--purple); color: #fff; box-shadow: 0 0 10px var(--purple); }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .btn-sm { padding: 8px 16px; font-size: 0.75rem; }
         
         .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-family: 'Orbitron'; border: 1px solid; display: inline-flex; align-items: center; gap: 6px; }
@@ -71,109 +91,55 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); transition: width 1s ease; box-shadow: 0 0 15px var(--cyan); }
         .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-shadow: 0 0 5px #000; z-index: 2; }
         
-        /* Chart Container */
         .chart-container { position: relative; height: 400px; margin-top: 20px; }
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .chart-stat { text-align: center; padding: 10px 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border); }
         .chart-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
         .chart-stat-value { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; margin-top: 5px; }
         
-        /* Calendar with Days Header */
         .calendar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
         .month-card { padding: 20px; }
-        .days-header { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 6px; 
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .day-label {
-            text-align: center;
-            font-family: 'Orbitron';
-            font-size: 0.7rem;
-            font-weight: 900;
-            letter-spacing: 1px;
-            padding: 4px 0;
-        }
+        .days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .day-label { text-align: center; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; padding: 4px 0; }
         .day-label.weekday { color: var(--cyan); text-shadow: var(--glow-c); }
         .day-label.weekend { color: var(--magenta); text-shadow: var(--glow-m); }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day { 
-            aspect-ratio: 1; 
-            background: #111; 
-            border-radius: 6px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 0.85rem; 
-            font-weight: 600;
-            cursor: pointer; 
-            border: 1px solid #222;
-            transition: 0.2s;
-            padding: 4px;
-        }
-        .day:hover { border-color: var(--cyan); transform: scale(1.05); z-index: 5; box-shadow: 0 0 10px var(--cyan); }
+        .day { aspect-ratio: 1; background: #111; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid #222; transition: 0.2s; padding: 4px; }
+        .day:hover { border-color: var(--cyan); transform: scale(1.05); z-index: 5; }
         .day-num { font-family: 'Orbitron'; font-size: 0.9rem; }
         .day-amt { font-size: 0.7rem; font-family: 'Orbitron'; margin-top: 2px; font-weight: 700; }
-        .day.win { background: var(--emerald); color: #000; border-color: var(--emerald); box-shadow: 0 0 10px var(--emerald); }
-        .day.loss { background: var(--magenta); color: #fff; border-color: var(--magenta); box-shadow: 0 0 10px var(--magenta); }
+        .day.win { background: var(--emerald); color: #000; border-color: var(--emerald); }
+        .day.loss { background: var(--magenta); color: #fff; border-color: var(--magenta); }
         
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px; color: var(--cyan); border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; }
         td { padding: 12px; border-bottom: 1px solid #222; }
         
         .strike-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-        .strike-btn { 
-            flex: 1; 
-            min-width: 45px; 
-            padding: 10px 4px; 
-            font-family: 'Orbitron'; 
-            font-size: 0.8rem; 
-            border: 1px solid #444; 
-            background: transparent; 
-            color: #666; 
-            border-radius: 4px; 
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .strike-btn:hover:not(:disabled) { border-color: var(--magenta); color: var(--magenta); }
-        .strike-btn.active { background: var(--magenta); border-color: var(--magenta); color: #fff; box-shadow: var(--glow-m); }
-        .abs-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
-        .abs-btn.active { background: var(--gold); border-color: var(--gold); color: #000; box-shadow: var(--glow-g); }
-        .strike-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .strike-btn { flex: 1; min-width: 45px; padding: 10px 4px; font-family: 'Orbitron'; font-size: 0.8rem; border: 1px solid #444; background: transparent; color: #666; border-radius: 4px; cursor: pointer; }
+        .strike-btn.active { background: var(--magenta); border-color: var(--magenta); color: #fff; }
+        .abs-btn.active { background: var(--gold); border-color: var(--gold); color: #000; }
         
         .pagination-row { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
-        .page-btn { 
-            flex: 1; 
-            padding: 8px; 
-            background: rgba(0,243,255,0.1); 
-            border: 1px solid var(--cyan); 
-            color: var(--cyan); 
-            border-radius: 4px; 
-            cursor: pointer;
-            font-family: 'Orbitron';
-            font-size: 0.75rem;
-            transition: 0.2s;
-        }
-        .page-btn:hover:not(:disabled) { background: var(--cyan); color: #000; }
+        .page-btn { flex: 1; padding: 8px; background: rgba(0,243,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.75rem; }
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .page-indicator { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--gold); text-align: center; flex: 1; }
         
         .wallet-display { text-align: center; padding: 60px 20px; }
         .wallet-icon { font-size: 5rem; color: var(--gold); text-shadow: var(--glow-g); margin-bottom: 30px; }
-        .wallet-amount { font-size: 4rem; font-family: 'Orbitron'; font-weight: 900; color: var(--gold); text-shadow: var(--glow-g); margin: 20px 0; }
+        .wallet-amount { font-size: 4rem; font-family: 'Orbitron'; font-weight: 900; color: var(--gold); margin: 20px 0; }
         .wallet-label { font-family: 'Orbitron'; color: var(--muted); font-size: 1rem; letter-spacing: 2px; }
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: var(--glow-c); }
+        .modal-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; }
+
+        /* News Tag Styling */
+        .news-tag { display: inline-block; padding: 4px 10px; background: rgba(231,76,60,0.2); color: var(--red); border: 1px solid var(--red); border-radius: 4px; font-size: 0.75rem; font-family: 'Orbitron'; margin: 2px; }
 
         @media (max-width: 768px) {
-            .sidebar { width: 70px; } .sidebar span { display: none; } .main { margin-left: 70px; width: calc(100% - 70px); padding: 15px; }
-            .calendar-grid { grid-template-columns: 1fr; }
-            .chart-container { height: 300px; }
+            .sidebar { width: 70px; } .sidebar span { display: none; } 
+            .main { margin-left: 70px; width: calc(100% - 70px); padding: 15px; }
+            .notif-banner { left: 80px; }
         }
     </style>
 </head>
@@ -189,6 +155,17 @@
         </button>
     </header>
 
+    <!-- Smart Notification Banner -->
+    <div class="notif-banner" id="notif-banner">
+        <i class="fas fa-bell" style="font-size:1.5rem;"></i>
+        <div style="flex:1;">
+            <strong id="notif-title">Daily Recap Pending</strong>
+            <div style="font-size:0.85rem; opacity:0.9;" id="notif-msg">You have trades logged today. Send the daily recap to Discord?</div>
+        </div>
+        <button class="btn-sm" onclick="triggerSmartSend()">SEND NOW</button>
+        <button class="btn-sm" style="background:rgba(0,0,0,0.3); color:#fff;" onclick="dismissNotif()">✕</button>
+    </div>
+
     <aside class="sidebar">
         <div class="logo"><i class="fas fa-cube"></i><h3 style="margin-top:10px;">ALPHA<span class="cyan">MATRIX</span></h3></div>
         <div id="nav-list"></div>
@@ -199,7 +176,7 @@
     <div class="modal" id="admin-modal">
         <div class="modal-box">
             <h3 class="cyan"><i class="fas fa-shield-alt"></i> ADMIN ACCESS</h3>
-            <p class="muted" style="margin:15px 0;">ENTER MASTER KEY TO UNLOCK WRITE ACCESS</p>
+            <p class="muted" style="margin:15px 0;">ENTER MASTER KEY</p>
             <input type="password" id="admin-pass" class="form-control" placeholder="MASTER KEY" onkeypress="if(event.key==='Enter') verifyAdmin()">
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn btn-emerald" onclick="verifyAdmin()">UNLOCK</button>
@@ -216,6 +193,7 @@
                 <button class="btn btn-magenta" onclick="setOutcome('loss')">🔴 LOSS</button>
             </div>
             <input type="number" id="day-amt" class="form-control" placeholder="AMOUNT ($)">
+            <textarea id="day-news" class="form-control" placeholder="📰 High Impact News Context (Optional): e.g., CPI caused Gold 250 pips move"></textarea>
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn btn-emerald" onclick="saveDay()">SAVE</button>
                 <button class="btn btn-magenta" onclick="clearDay()">CLEAR</button>
@@ -228,8 +206,11 @@
     const ADMIN_KEY = "ALPHA2026";
     let isAdmin = localStorage.getItem('alpha_admin') === 'true';
     let db;
-    let equityChart = null; // Chart instance
+    let equityChart = null;
     
+    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1524794862736773140/HbblArOLZVn5fnPYy97oV08Sl9ksaFXg06VtFUcoI4OaRbbvoQP4-fcQRoOlF3kNY_Y-";
+    const BOT_AVATAR = "https://alpha-matrix-chi.vercel.app/favicon.ico";
+
     let state = {
         activeBalance: 150.00, 
         binanceWallet: 0.00,
@@ -249,24 +230,22 @@
         leaks: [], 
         calendar: {},
         strikes: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
-        absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 }
+        absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
+        lastDailySent: null,
+        lastWeeklySent: null
     };
     const team = ['NOAMANE', 'HOSSAM', 'YASSINE', 'MONCEF', 'TAHA', 'AMINE'];
     const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
     const dayLabels = [
-        { name: 'MON', type: 'weekday' },
-        { name: 'TUE', type: 'weekday' },
-        { name: 'WED', type: 'weekday' },
-        { name: 'THU', type: 'weekday' },
-        { name: 'FRI', type: 'weekday' },
-        { name: 'SAT', type: 'weekend' },
-        { name: 'SUN', type: 'weekend' }
+        { name: 'MON', type: 'weekday' }, { name: 'TUE', type: 'weekday' }, { name: 'WED', type: 'weekday' },
+        { name: 'THU', type: 'weekday' }, { name: 'FRI', type: 'weekday' }, { name: 'SAT', type: 'weekend' }, { name: 'SUN', type: 'weekend' }
     ];
     
     let ui = { 
         view: 'dashboard', 
         dayKey: null, 
         outcome: null,
+        smartSendType: null,
         pages: { strikes: {}, absences: {} }
     };
 
@@ -279,19 +258,86 @@
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        db.ref('alphaMatrix_v12').on('value', snap => {
+        db.ref('alphaMatrix_v14').on('value', snap => {
             if(snap.val()) {
                 state = { ...state, ...snap.val() };
+                if(!state.trades) state.trades = [];
+                if(!state.lastDailySent) state.lastDailySent = null;
+                if(!state.lastWeeklySent) state.lastWeeklySent = null;
                 renderAll();
                 document.getElementById('db-badge').innerHTML = '<i class="fas fa-check"></i> SYNCED';
                 document.getElementById('db-badge').className = 'badge badge-e';
+                checkSmartNotifications();
             }
         });
     } catch(e) { console.log("Offline Mode"); }
 
     function save() {
-        if(db) db.ref('alphaMatrix_v12').set(state);
+        if(db) db.ref('alphaMatrix_v14').set(state);
         else localStorage.setItem('alphaMatrix_local', JSON.stringify(state));
+    }
+
+    // --- DISCORD ENGINE ---
+    async function sendDiscordWebhook(payload) {
+        try {
+            const response = await fetch(DISCORD_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) console.error('Discord Error:', response.status);
+            else console.log('✅ Sent to Discord');
+            return response.ok;
+        } catch (error) {
+            console.error('Network Error:', error);
+            return false;
+        }
+    }
+
+    // --- SMART NOTIFICATIONS ---
+    function checkSmartNotifications() {
+        if (!isAdmin) return;
+        
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const isSunday = now.getDay() === 0;
+        const hour = now.getUTCHours();
+        
+        // Get today's trades
+        const todayTrades = state.trades.filter(t => {
+            if(!t.date) return false;
+            return t.date.split('T')[0] === today;
+        });
+        
+        // Daily check: after 20:00 UTC or has trades but not sent today
+        if (todayTrades.length > 0 && state.lastDailySent !== today) {
+            ui.smartSendType = 'daily';
+            showNotif('📊 Daily Recap Ready', `You logged ${todayTrades.length} trade(s) today. Send recap to Discord?`);
+            return;
+        }
+        
+        // Weekly check: Sunday after 20:00 UTC
+        if (isSunday && hour >= 20 && state.lastWeeklySent !== today) {
+            ui.smartSendType = 'weekly';
+            showNotif('🏆 Weekly Report Ready', "It's Sunday night. Send weekly performance report?");
+            return;
+        }
+    }
+
+    function showNotif(title, msg) {
+        document.getElementById('notif-title').textContent = title;
+        document.getElementById('notif-msg').textContent = msg;
+        document.getElementById('notif-banner').classList.add('show');
+    }
+
+    function dismissNotif() {
+        document.getElementById('notif-banner').classList.remove('show');
+    }
+
+    function triggerSmartSend() {
+        dismissNotif();
+        if (ui.smartSendType === 'daily') pushDailyRecap();
+        else if (ui.smartSendType === 'weekly') pushWeeklyReport();
     }
 
     function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
@@ -305,6 +351,7 @@
             document.getElementById('mode-badge').className = 'badge badge-e';
             closeModal('admin-modal');
             renderAll();
+            checkSmartNotifications();
         } else {
             alert("❌ ACCESS DENIED");
         }
@@ -321,7 +368,7 @@
         { id: 'risk', icon: 'fa-calculator', label: 'RISK CONSOLE' },
         { id: 'calendar', icon: 'fa-calendar-alt', label: 'CALENDAR' },
         { id: 'analytics', icon: 'fa-chart-bar', label: 'ANALYTICS' },
-        { id: 'settings', icon: 'fa-cog', label: 'SETTINGS' }
+        { id: 'settings', icon: 'fa-cog', label: 'BROADCAST HUB' }
     ];
 
     function renderNav() {
@@ -342,11 +389,7 @@
         const app = document.getElementById('app-container');
         app.innerHTML = '';
         
-        // Destroy previous chart instance to avoid memory leaks
-        if (equityChart) {
-            equityChart.destroy();
-            equityChart = null;
-        }
+        if (equityChart) { equityChart.destroy(); equityChart = null; }
         
         if(ui.view === 'dashboard') app.innerHTML = renderDashboard();
         if(ui.view === 'performance') { app.innerHTML = renderPerformance(); renderEquityCurve(); }
@@ -395,27 +438,12 @@
         `;
     }
 
-    // NEW: Performance / Equity Curve Page
     function renderPerformance() {
         return `
             <h2><i class="fas fa-chart-line"></i> EQUITY CURVE & PERFORMANCE</h2>
             <div class="glass">
                 <div class="chart-header">
                     <h3 style="margin:0;"><i class="fas fa-chart-area"></i> DAILY P&L PROGRESSION</h3>
-                    <div style="display:flex; gap:10px;">
-                        <div class="chart-stat">
-                            <div class="chart-stat-label">Peak Balance</div>
-                            <div class="chart-stat-value emerald" id="peak-bal">$150.00</div>
-                        </div>
-                        <div class="chart-stat">
-                            <div class="chart-stat-label">Current P&L</div>
-                            <div class="chart-stat-value" id="cur-pnl">$0.00</div>
-                        </div>
-                        <div class="chart-stat">
-                            <div class="chart-stat-label">Trading Days</div>
-                            <div class="chart-stat-value cyan" id="total-days">0</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="equityChart"></canvas>
@@ -470,10 +498,7 @@
 
     function renderWallet() {
         const totalWithdrawn = state.binanceWallet;
-        const withdrawalHistory = state.targets.filter(t => t.completed).map(t => ({
-            level: t.id,
-            amount: t.withdraw
-        }));
+        const withdrawalHistory = state.targets.filter(t => t.completed).map(t => ({ level: t.id, amount: t.withdraw }));
 
         return `
             <h2><i class="fab fa-bitcoin"></i> BINANCE WALLET TRACKER</h2>
@@ -481,15 +506,11 @@
                 <div class="wallet-icon"><i class="fab fa-bitcoin"></i></div>
                 <div class="wallet-label">TOTAL ACCUMULATED BALANCE</div>
                 <div class="wallet-amount">$${totalWithdrawn.toFixed(2)}</div>
-                <div class="muted" style="margin-top:20px;">Auto-synced from Target Withdrawals</div>
             </div>
-            
             <div class="glass">
                 <h3><i class="fas fa-history"></i> WITHDRAWAL HISTORY</h3>
                 <table>
-                    <thead>
-                        <tr><th>LEVEL</th><th>AMOUNT</th><th>STATUS</th></tr>
-                    </thead>
+                    <thead><tr><th>LEVEL</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
                     <tbody>
                         ${withdrawalHistory.length > 0 ? withdrawalHistory.map(w => `
                             <tr>
@@ -514,6 +535,7 @@
                         <select id="log-sym" class="form-control"><option>XAUUSD</option><option>EURUSD</option><option>US30</option></select>
                         <select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option></select>
                         <input type="number" id="log-pnl" class="form-control" placeholder="PROFIT / LOSS ($)">
+                        <textarea id="log-news" class="form-control" placeholder="📰 News Context (Optional): e.g., CPI caused Gold 250 pips move"></textarea>
                         <button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH TO CLOUD</button>
                     ` : `<div style="text-align:center; padding:40px; color:var(--magenta);"><i class="fas fa-lock" style="font-size:3rem; margin-bottom:15px;"></i><br>ADMIN ACCESS REQUIRED</div>`}
                 </div>
@@ -521,15 +543,20 @@
                     <h3>RECENT LEDGER</h3>
                     <div style="max-height:400px; overflow-y:auto;">
                         <table>
-                            <thead><tr><th>SYM</th><th>P&L</th><th>STATUS</th></tr></thead>
+                            <thead><tr><th>SYM</th><th>P&L</th><th>NEWS</th><th>DATE</th></tr></thead>
                             <tbody>
-                                ${state.trades.slice(0,10).map(t => `
-                                    <tr>
-                                        <td>${t.symbol}</td>
-                                        <td class="${t.pnl >= 0 ? 'emerald' : 'magenta'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
-                                        <td>${t.outcome === 'win' ? '🟢' : '🔴'}</td>
-                                    </tr>
-                                `).join('')}
+                                ${state.trades.slice(0,10).map(t => {
+                                    const date = t.date ? new Date(t.date).toLocaleDateString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : 'N/A';
+                                    const newsTag = t.news ? `<span class="news-tag" title="${t.news}"><i class="fas fa-newspaper"></i></span>` : '-';
+                                    return `
+                                        <tr>
+                                            <td>${t.symbol}</td>
+                                            <td class="${t.pnl >= 0 ? 'emerald' : 'magenta'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+                                            <td>${newsTag}</td>
+                                            <td style="font-size:0.8rem;">${date}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
                             </tbody>
                         </table>
                     </div>
@@ -546,7 +573,6 @@
         
         return `
             <h2><i class="fas ${icon}"></i> ${title}</h2>
-            <p class="muted" style="margin-bottom:20px;">Click buttons to toggle. Navigation persists your position.</p>
             <div class="grid grid-3">
                 ${team.map(name => {
                     const count = state[type][name] || 0;
@@ -580,7 +606,7 @@
                                     NEXT <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                            ${count >= 3 ? `<div style="margin-top:15px; color:var(--${color}); font-family:'Orbitron'; font-size:0.8rem; text-align:center;"><i class="fas fa-bell"></i> WARNING THRESHOLD REACHED</div>` : ''}
+                            ${count >= 3 ? `<div style="margin-top:15px; color:var(--${color}); font-family:'Orbitron'; font-size:0.8rem; text-align:center;"><i class="fas fa-bell"></i> WARNING</div>` : ''}
                         </div>
                     `;
                 }).join('')}
@@ -611,11 +637,9 @@
         `;
     }
 
-    // ENHANCED CALENDAR WITH DAYS HEADER
     function renderCalendar() {
         return `
             <h2><i class="fas fa-calendar-alt"></i> YEARLY P&L LOG</h2>
-            <p class="muted" style="margin-bottom:20px;">Click days to log WIN/LOSS with amounts. <span class="cyan">Weekdays</span> & <span class="magenta">Weekends</span> clearly marked.</p>
             <div class="calendar-grid">
                 ${months.map((m, idx) => `
                     <div class="glass month-card">
@@ -663,9 +687,9 @@
                 <div class="glass">
                     <h3 class="magenta">LEAKED CAPITAL LOG</h3>
                     ${isAdmin ? `
-                        <input type="text" id="lk-r" class="form-control" placeholder="REASON (e.g. FOMO)">
-                        <input type="number" id="lk-a" class="form-control" placeholder="AMOUNT LOST ($)">
-                        <button class="btn btn-magenta" onclick="addLeak()"><i class="fas fa-plus"></i> LOG INFRACTION</button>
+                        <input type="text" id="lk-r" class="form-control" placeholder="REASON">
+                        <input type="number" id="lk-a" class="form-control" placeholder="AMOUNT LOST">
+                        <button class="btn btn-magenta" onclick="addLeak()"><i class="fas fa-plus"></i> LOG</button>
                     ` : ''}
                     <table style="margin-top:20px;">
                         <thead><tr><th>REASON</th><th>LOST</th></tr></thead>
@@ -677,37 +701,122 @@
         `;
     }
 
+    // BROADCAST HUB (formerly Settings)
     function renderSettings() {
         return `
-            <h2><i class="fas fa-cog"></i> SYSTEM SETTINGS</h2>
+            <h2><i class="fas fa-broadcast-tower"></i> BROADCAST HUB</h2>
+            <p class="muted" style="margin-bottom:20px;">Smart auto-broadcast to Discord #site_alpha_matrix. System detects pending reports automatically.</p>
+            
             <div class="grid grid-2">
+                <div class="glass" style="border-color:var(--red);">
+                    <h3 class="red"><i class="fas fa-newspaper"></i> 📊 DAILY RECAP</h3>
+                    <p class="muted" style="margin:10px 0;">Auto-collects today's trades & calendar logs. Best sent at 00:00 UTC.</p>
+                    <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; margin:15px 0;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="muted">Today's Trades:</span>
+                            <strong id="today-trades-count">0</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="muted">Today's P&L:</span>
+                            <strong id="today-pnl">$0.00</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="muted">Last Sent:</span>
+                            <strong id="last-daily">${state.lastDailySent || 'Never'}</strong>
+                        </div>
+                    </div>
+                    <textarea id="daily-notes" class="form-control" placeholder="📰 Additional News Context: e.g., NFP moved USD pairs 100+ pips"></textarea>
+                    <button class="btn btn-red" onclick="pushDailyRecap()">
+                        <i class="fab fa-discord"></i> SEND DAILY RECAP
+                    </button>
+                </div>
+
+                <div class="glass" style="border-color:var(--orange);">
+                    <h3 class="orange"><i class="fas fa-trophy"></i> 🏆 WEEKLY REPORT</h3>
+                    <p class="muted" style="margin:10px 0;">Auto-collects this week's performance. Best sent Sunday 22:00 UTC.</p>
+                    <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; margin:15px 0;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="muted">This Week Trades:</span>
+                            <strong id="week-trades-count">0</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="muted">Week P&L:</span>
+                            <strong id="week-pnl">$0.00</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="muted">Last Sent:</span>
+                            <strong id="last-weekly">${state.lastWeeklySent || 'Never'}</strong>
+                        </div>
+                    </div>
+                    <textarea id="weekly-notes" class="form-control" placeholder="🔮 Next Week Bias: e.g., Bullish on Gold, expecting CPI volatility"></textarea>
+                    <button class="btn btn-orange" onclick="pushWeeklyReport()">
+                        <i class="fab fa-discord"></i> SEND WEEKLY REPORT
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-top:20px;">
                 <div class="glass">
                     <h3><i class="fas fa-database"></i> CLOUD SYNC STATUS</h3>
-                    <p class="muted" style="margin:15px 0;">Firebase Realtime Database Connection</p>
-                    <div class="stat cyan" id="sync-status">${db ? 'CONNECTED' : 'OFFLINE MODE'}</div>
-                    <p class="muted" style="margin-top:15px;">Data Path: <code>alphaMatrix_v12</code></p>
+                    <div class="stat cyan">${db ? 'CONNECTED' : 'OFFLINE MODE'}</div>
+                    <p class="muted" style="margin-top:10px;">Data Path: <code>alphaMatrix_v14</code></p>
                 </div>
                 <div class="glass">
                     <h3 class="magenta"><i class="fas fa-trash-alt"></i> DANGER ZONE</h3>
-                    <p class="muted" style="margin:15px 0;">Clear all data and reset to initial state.</p>
                     ${isAdmin ? `
                         <button class="btn btn-magenta" onclick="clearAllData()">
                             <i class="fas fa-power-off"></i> RESET ALL DATA
                         </button>
-                        <p class="muted" style="margin-top:15px; font-size:0.8rem;">⚠️ This will delete all trades, calendar logs, strikes, and reset balances.</p>
-                    ` : `<div style="text-align:center; padding:20px; color:var(--magenta);"><i class="fas fa-lock" style="font-size:2rem;"></i><br>Admin Access Required</div>`}
+                    ` : `<div style="text-align:center; padding:20px; color:var(--magenta);"><i class="fas fa-lock"></i> Admin Required</div>`}
                 </div>
             </div>
         `;
     }
 
-    // --- EQUITY CURVE LOGIC ---
-    function buildEquityData() {
-        // Aggregate all logs by date-like key
-        // Calendar uses "monthIdx-day" format - we'll create sequential trading days
-        const dailyData = {};
+    function renderEquityCurve() {
+        const canvas = document.getElementById('equityChart');
+        if (!canvas) return;
+        const { labels, cumulative, dailyData } = buildEquityData();
+        const dailyValues = Object.values(dailyData);
+        const bestDay = dailyValues.length > 0 ? Math.max(...dailyValues) : 0;
+        const worstDay = dailyValues.length > 0 ? Math.min(...dailyValues) : 0;
+        const avgDay = dailyValues.length > 0 ? (dailyValues.reduce((a,b) => a+b, 0) / dailyValues.length) : 0;
+        const curPnl = cumulative.length > 0 ? cumulative[cumulative.length-1] - 150 : 0;
         
-        // From calendar: key is "monthIdx-day"
+        document.getElementById('best-day').textContent = `${bestDay >= 0 ? '+' : ''}$${bestDay.toFixed(2)}`;
+        document.getElementById('worst-day').textContent = `${worstDay >= 0 ? '+' : ''}$${worstDay.toFixed(2)}`;
+        document.getElementById('avg-day').textContent = `${avgDay >= 0 ? '+' : ''}$${avgDay.toFixed(2)}`;
+        
+        if (labels.length === 0) return;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        if (curPnl >= 0) { gradient.addColorStop(0, 'rgba(0, 255, 157, 0.4)'); gradient.addColorStop(1, 'rgba(0, 255, 157, 0.0)'); } 
+        else { gradient.addColorStop(0, 'rgba(255, 0, 85, 0.4)'); gradient.addColorStop(1, 'rgba(255, 0, 85, 0.0)'); }
+        
+        equityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Equity ($)', data: cumulative,
+                    borderColor: curPnl >= 0 ? '#00FF9D' : '#FF0055',
+                    backgroundColor: gradient, borderWidth: 3, fill: true, tension: 0.3,
+                    pointRadius: 5, pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(0,243,255,0.1)' }, ticks: { color: '#6B7280', callback: (v) => '$' + v.toFixed(0) } },
+                    x: { grid: { display: false }, ticks: { color: '#6B7280' } }
+                }
+            }
+        });
+    }
+
+    function buildEquityData() {
+        const dailyData = {};
         Object.keys(state.calendar).forEach(key => {
             const log = state.calendar[key];
             if (log && log.amount !== undefined) {
@@ -715,155 +824,229 @@
                 dailyData[key] += parseFloat(log.amount);
             }
         });
-        
-        // Sort by month then day
-        const sortedKeys = Object.keys(dailyData).sort((a, b) => {
-            const [ma, da] = a.split('-').map(Number);
-            const [mb, db] = b.split('-').map(Number);
-            if (ma !== mb) return ma - mb;
-            return da - db;
+        state.trades.forEach(t => {
+            if(!t.date) return;
+            const key = t.date.split('T')[0];
+            if (!dailyData[key]) dailyData[key] = 0;
+            dailyData[key] += parseFloat(t.pnl);
         });
-        
-        const labels = [];
+        const sortedKeys = Object.keys(dailyData).sort();
+        const labels = sortedKeys.map(k => new Date(k).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
         const cumulative = [];
-        let running = 150; // Starting balance
-        
+        let running = 150;
         sortedKeys.forEach(key => {
-            const [mIdx, day] = key.split('-').map(Number);
-            labels.push(`${months[mIdx].substring(0,3)} ${day}`);
             running += dailyData[key];
             cumulative.push(running);
         });
-        
-        // Include trades
-        state.trades.slice().reverse().forEach((t, idx) => {
-            labels.push(`Trade ${idx+1}`);
-            running += t.pnl;
-            cumulative.push(running);
-        });
-        
         return { labels, cumulative, dailyData, sortedKeys };
     }
 
-    function renderEquityCurve() {
-        const canvas = document.getElementById('equityChart');
-        if (!canvas) return;
-        
-        const { labels, cumulative, dailyData, sortedKeys } = buildEquityData();
-        
-        // Calculate stats
-        const dailyValues = Object.values(dailyData);
-        const bestDay = dailyValues.length > 0 ? Math.max(...dailyValues) : 0;
-        const worstDay = dailyValues.length > 0 ? Math.min(...dailyValues) : 0;
-        const avgDay = dailyValues.length > 0 ? (dailyValues.reduce((a,b) => a+b, 0) / dailyValues.length) : 0;
-        const peak = cumulative.length > 0 ? Math.max(...cumulative) : 150;
-        const curPnl = cumulative.length > 0 ? cumulative[cumulative.length-1] - 150 : 0;
-        
-        document.getElementById('peak-bal').textContent = `$${peak.toFixed(2)}`;
-        document.getElementById('cur-pnl').textContent = `${curPnl >= 0 ? '+' : ''}$${curPnl.toFixed(2)}`;
-        document.getElementById('cur-pnl').className = `chart-stat-value ${curPnl >= 0 ? 'emerald' : 'magenta'}`;
-        document.getElementById('total-days').textContent = labels.length;
-        
-        document.getElementById('best-day').textContent = `${bestDay >= 0 ? '+' : ''}$${bestDay.toFixed(2)}`;
-        document.getElementById('worst-day').textContent = `${worstDay >= 0 ? '+' : ''}$${worstDay.toFixed(2)}`;
-        document.getElementById('avg-day').textContent = `${avgDay >= 0 ? '+' : ''}$${avgDay.toFixed(2)}`;
-        
-        // If no data, show empty state
-        if (labels.length === 0) {
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#6B7280';
-            ctx.font = '16px Orbitron';
-            ctx.textAlign = 'center';
-            ctx.fillText('No trading data yet. Log days in Calendar or push trades.', canvas.width/2, canvas.height/2);
-            return;
-        }
-        
-        const ctx = canvas.getContext('2d');
-        
-        // Create gradient
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        if (curPnl >= 0) {
-            gradient.addColorStop(0, 'rgba(0, 255, 157, 0.4)');
-            gradient.addColorStop(1, 'rgba(0, 255, 157, 0.0)');
-        } else {
-            gradient.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
-            gradient.addColorStop(1, 'rgba(255, 0, 85, 0.0)');
-        }
-        
-        equityChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Equity ($)',
-                    data: cumulative,
-                    borderColor: curPnl >= 0 ? '#00FF9D' : '#FF0055',
-                    backgroundColor: gradient,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: curPnl >= 0 ? '#00FF9D' : '#FF0055',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(5,5,5,0.95)',
-                        titleColor: '#00F3FF',
-                        bodyColor: '#E0E6ED',
-                        borderColor: '#00F3FF',
-                        borderWidth: 1,
-                        padding: 12,
-                        displayColors: false,
-                        callbacks: {
-                            label: (ctx) => `Balance: $${ctx.parsed.y.toFixed(2)}`
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: { color: 'rgba(0,243,255,0.1)' },
-                        ticks: { 
-                            color: '#6B7280',
-                            callback: (v) => '$' + v.toFixed(0)
-                        }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#6B7280', maxRotation: 45 }
-                    }
-                }
-            }
-        });
-    }
-
-    // --- ACTIONS ---
+    // --- ACTIONS WITH SMART DISCORD ---
     window.switchView = switchView;
-    window.withdraw = (i) => {
+    
+    // 🎉 LEVEL-UP MESSAGE (Purple - Congratulation)
+    window.withdraw = async (i) => {
         if(!isAdmin) return;
         const t = state.targets[i];
+        const nextTarget = state.targets[i + 1];
+        
         state.activeBalance = t.newBalance;
         state.binanceWallet += t.withdraw;
         t.completed = true;
         save(); renderAll();
+        
+        const payload = {
+            username: "Alpha Matrix Bot",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "🎉 CONGRATULATIONS! LEVEL UP!",
+                description: `You've successfully completed **Level ${t.id}** and secured your profits. Ready for the next challenge!`,
+                color: 10181046, // Purple
+                fields: [
+                    { name: "🏆 Level Completed", value: `Level ${t.id}`, inline: true },
+                    { name: "🎯 Next Target", value: nextTarget ? `Level ${nextTarget.id} - $${nextTarget.goal}` : "**MASTER LEVEL** 👑", inline: true },
+                    { name: "💰 Secured to Wallet", value: `**+$${t.withdraw.toFixed(2)}**`, inline: false },
+                    { name: "💵 New Active Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
+                    { name: "🏦 Total in Binance Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
+                    { name: "📈 Next Goal", value: nextTarget ? `$${nextTarget.goal}` : "You conquered the Matrix!", inline: true }
+                ],
+                footer: { text: "Alpha Matrix • Keep pushing!" },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        await sendDiscordWebhook(payload);
     };
-    window.addTrade = () => {
+
+    // Trade with timestamp and news context
+    window.addTrade = async () => {
         if(!isAdmin) return;
         const sym = document.getElementById('log-sym').value;
         const out = document.getElementById('log-out').value;
         const pnl = parseFloat(document.getElementById('log-pnl').value);
+        const news = document.getElementById('log-news').value.trim();
         if(!pnl) return alert("Enter valid amount");
-        state.trades.unshift({ symbol: sym, outcome: out, pnl });
+        
+        const trade = { 
+            symbol: sym, 
+            outcome: out, 
+            pnl, 
+            date: new Date().toISOString(),
+            news: news || null
+        };
+        state.trades.unshift(trade);
         state.activeBalance += pnl;
         save(); renderAll();
+        
+        // Green trade notification
+        const payload = {
+            username: "Alpha Matrix Bot",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "🎯 TRADE LOGGED",
+                color: 3066993,
+                fields: [
+                    { name: "💵 Asset", value: sym, inline: true },
+                    { name: "📉 Outcome", value: out.toUpperCase(), inline: true },
+                    { name: "💰 P&L", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
+                    ...(news ? [{ name: "📰 News Context", value: news, inline: false }] : [])
+                ],
+                footer: { text: "Alpha Matrix Automation" },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        await sendDiscordWebhook(payload);
+        
+        // Check if daily recap should be suggested
+        setTimeout(checkSmartNotifications, 2000);
     };
+
+    // 📊 DAILY RECAP (Red - End of day summary)
+    window.pushDailyRecap = async () => {
+        if(!isAdmin) return;
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Collect today's trades
+        const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
+        
+        // Collect today's calendar logs (match by month-day format)
+        const todayDate = new Date();
+        const monthIdx = todayDate.getMonth();
+        const day = todayDate.getDate();
+        const calendarKey = `${monthIdx}-${day}`;
+        const calendarLog = state.calendar[calendarKey];
+        
+        let totalTrades = todayTrades.length;
+        let wins = todayTrades.filter(t => t.outcome === 'win').length;
+        let pnl = todayTrades.reduce((sum, t) => sum + t.pnl, 0);
+        
+        if (calendarLog) {
+            totalTrades += 1;
+            if (calendarLog.outcome === 'win') wins += 1;
+            pnl += calendarLog.amount;
+        }
+        
+        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+        
+        // Collect news from today's trades
+        const newsItems = todayTrades.filter(t => t.news).map(t => `• **${t.symbol}**: ${t.news}`);
+        const manualNotes = document.getElementById('daily-notes')?.value.trim() || '';
+        if (calendarLog && calendarLog.news) {
+            newsItems.push(`• **Calendar Log**: ${calendarLog.news}`);
+        }
+        
+        const payload = {
+            username: "Alpha Matrix System",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "📊 DAILY RECAP | END OF DAY",
+                description: `Trading session completed for **${new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}**`,
+                color: 15158332, // Red
+                fields: [
+                    { name: "📈 Total Trades", value: `${totalTrades}`, inline: true },
+                    { name: "🎯 Win Rate", value: `${winRate}%`, inline: true },
+                    { name: "💰 Net P&L", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
+                    { name: "💵 Active Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
+                    { name: "🏦 Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
+                    ...(newsItems.length > 0 ? [{ name: "📰 High Impact News Today", value: newsItems.join('\n'), inline: false }] : []),
+                    ...(manualNotes ? [{ name: "📝 Additional Notes", value: manualNotes, inline: false }] : [])
+                ],
+                footer: { text: "Alpha Matrix • Daily Recap" },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        
+        const success = await sendDiscordWebhook(payload);
+        if (success) {
+            state.lastDailySent = today;
+            save();
+            renderAll();
+            alert("✅ Daily Recap sent to Discord!");
+        }
+    };
+
+    // 🏆 WEEKLY REPORT (Orange - Sunday summary)
+    window.pushWeeklyReport = async () => {
+        if(!isAdmin) return;
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const weekAgoStr = weekAgo.toISOString().split('T')[0];
+        
+        // Collect this week's trades
+        const weekTrades = state.trades.filter(t => t.date && t.date >= weekAgoStr);
+        
+        let totalTrades = weekTrades.length;
+        let wins = weekTrades.filter(t => t.outcome === 'win').length;
+        let losses = weekTrades.filter(t => t.outcome === 'loss').length;
+        let pnl = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
+        let grossProfit = weekTrades.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
+        let grossLoss = weekTrades.filter(t => t.pnl < 0).reduce((sum, t) => sum + Math.abs(t.pnl), 0);
+        
+        // Best/Worst trade
+        const bestTrade = weekTrades.length > 0 ? Math.max(...weekTrades.map(t => t.pnl)) : 0;
+        const worstTrade = weekTrades.length > 0 ? Math.min(...weekTrades.map(t => t.pnl)) : 0;
+        
+        const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : 0;
+        const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : grossProfit > 0 ? "∞" : "0.00";
+        
+        const weekStart = weekAgo.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        const weekEnd = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        
+        const manualNotes = document.getElementById('weekly-notes')?.value.trim() || '';
+        
+        const payload = {
+            username: "Alpha Matrix System",
+            avatar_url: BOT_AVATAR,
+            embeds: [{
+                title: "🏆 WEEKLY PERFORMANCE REPORT",
+                description: `Complete breakdown for week **${weekStart} - ${weekEnd}**`,
+                color: 15105570, // Orange
+                fields: [
+                    { name: "📊 Total Trades", value: `${totalTrades}`, inline: true },
+                    { name: "🎯 Win Rate", value: `${winRate}% (${wins}W / ${losses}L)`, inline: true },
+                    { name: "💰 Net Result", value: `**${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}**`, inline: false },
+                    { name: "📈 Gross Profit", value: `$${grossProfit.toFixed(2)}`, inline: true },
+                    { name: "📉 Gross Loss", value: `-$${grossLoss.toFixed(2)}`, inline: true },
+                    { name: "⚖️ Profit Factor", value: `${profitFactor}`, inline: true },
+                    { name: "🏅 Best Trade", value: `+$${bestTrade.toFixed(2)}`, inline: true },
+                    { name: "⚠️ Worst Trade", value: `$${worstTrade.toFixed(2)}`, inline: true },
+                    { name: "💵 Current Balance", value: `$${state.activeBalance.toFixed(2)}`, inline: true },
+                    { name: "🏦 Total Wallet", value: `$${state.binanceWallet.toFixed(2)}`, inline: true },
+                    ...(manualNotes ? [{ name: "🔮 Next Week Outlook", value: manualNotes, inline: false }] : [])
+                ],
+                footer: { text: "Alpha Matrix • Weekly Wrap-Up" },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        
+        const success = await sendDiscordWebhook(payload);
+        if (success) {
+            state.lastWeeklySent = new Date().toISOString().split('T')[0];
+            save();
+            renderAll();
+            alert("✅ Weekly Report sent to Discord!");
+        }
+    };
+
     window.toggleTrack = (type, name, lvl) => {
         if(!isAdmin) return;
         const cur = state[type][name] || 0;
@@ -883,16 +1066,19 @@
         if(!isAdmin) return;
         ui.dayKey = k;
         document.getElementById('day-title').innerText = `LOG DAY ${d}`;
-        document.getElementById('day-amt').value = state.calendar[k] ? state.calendar[k].amount : '';
-        ui.outcome = state.calendar[k] ? state.calendar[k].outcome : null;
+        const log = state.calendar[k];
+        document.getElementById('day-amt').value = log ? log.amount : '';
+        document.getElementById('day-news').value = log && log.news ? log.news : '';
+        ui.outcome = log ? log.outcome : null;
         document.getElementById('day-modal').style.display = 'flex';
     };
     window.setOutcome = (o) => { ui.outcome = o; };
     window.saveDay = () => {
         if(!ui.outcome) return alert("Select Outcome");
         const amt = parseFloat(document.getElementById('day-amt').value);
+        const news = document.getElementById('day-news').value.trim();
         if(!amt) return alert("Enter Amount");
-        state.calendar[ui.dayKey] = { outcome: ui.outcome, amount: amt };
+        state.calendar[ui.dayKey] = { outcome: ui.outcome, amount: amt, news: news || null };
         closeModal('day-modal'); save(); renderAll();
     };
     window.clearDay = () => { delete state.calendar[ui.dayKey]; closeModal('day-modal'); save(); renderAll(); };
@@ -903,14 +1089,13 @@
         state.leaks.unshift({ reason: r, amt: a });
         save(); renderAll();
     };
+    
     window.clearAllData = () => {
         if(!isAdmin) return;
-        if(!confirm("⚠️ WARNING: This will delete ALL data. Are you sure?")) return;
-        if(!confirm("This action CANNOT be undone. Confirm reset?")) return;
-        
+        if(!confirm("⚠️ DELETE ALL DATA?")) return;
+        if(!confirm("CANNOT BE UNDONE. Confirm?")) return;
         state = {
-            activeBalance: 150.00, 
-            binanceWallet: 0.00,
+            activeBalance: 150.00, binanceWallet: 0.00,
             targets: [
                 { id: 1, goal: 320, withdraw: 150, newBalance: 170, completed: false },
                 { id: 2, goal: 400, withdraw: 200, newBalance: 200, completed: false },
@@ -925,28 +1110,51 @@
             ],
             trades: [], leaks: [], calendar: {},
             strikes: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
-            absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 }
+            absences: { NOAMANE: 0, HOSSAM: 0, YASSINE: 0, MONCEF: 0, TAHA: 0, AMINE: 0 },
+            lastDailySent: null, lastWeeklySent: null
         };
         ui.pages = { strikes: {}, absences: {} };
         save(); renderAll();
-        alert("✅ All data has been reset!");
+        alert("✅ Reset complete!");
     };
 
     function updateStats() {
         let pnl = 0, wins = 0;
         state.trades.forEach(t => { pnl += t.pnl; if(t.outcome === 'win') wins++; });
         Object.values(state.calendar).forEach(l => pnl += l.amount);
-        
         const wr = state.trades.length > 0 ? ((wins/state.trades.length)*100).toFixed(1) : 0;
         const pnlEl = document.getElementById('dash-pnl');
         const wrEl = document.getElementById('dash-wr');
-        if(pnlEl) {
-            pnlEl.innerText = `$${pnl.toFixed(2)}`;
-            pnlEl.className = `stat ${pnl >= 0 ? 'emerald' : 'magenta'}`;
-        }
+        if(pnlEl) { pnlEl.innerText = `$${pnl.toFixed(2)}`; pnlEl.className = `stat ${pnl >= 0 ? 'emerald' : 'magenta'}`; }
         if(wrEl) wrEl.innerText = `${wr}%`;
-        
         calcLot();
+        
+        // Update Broadcast Hub stats if visible
+        const todayTradesEl = document.getElementById('today-trades-count');
+        if (todayTradesEl) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
+            const todayPnl = todayTrades.reduce((sum, t) => sum + t.pnl, 0);
+            todayTradesEl.textContent = todayTrades.length;
+            const todayPnlEl = document.getElementById('today-pnl');
+            if (todayPnlEl) {
+                todayPnlEl.textContent = `${todayPnl >= 0 ? '+' : ''}$${todayPnl.toFixed(2)}`;
+                todayPnlEl.className = todayPnl >= 0 ? 'emerald' : 'magenta';
+            }
+        }
+        
+        const weekTradesEl = document.getElementById('week-trades-count');
+        if (weekTradesEl) {
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const weekTrades = state.trades.filter(t => t.date && t.date >= weekAgo);
+            const weekPnl = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
+            weekTradesEl.textContent = weekTrades.length;
+            const weekPnlEl = document.getElementById('week-pnl');
+            if (weekPnlEl) {
+                weekPnlEl.textContent = `${weekPnl >= 0 ? '+' : ''}$${weekPnl.toFixed(2)}`;
+                weekPnlEl.className = weekPnl >= 0 ? 'emerald' : 'magenta';
+            }
+        }
     }
 
     function calcLot() {
@@ -955,7 +1163,6 @@
         const lot = (state.activeBalance * r) / (sl * 10);
         const res = document.getElementById('r-res');
         if(res) res.innerText = lot.toFixed(2);
-        
         const tbl = document.getElementById('matrix-tbl');
         if(tbl) {
             const risk = state.activeBalance * 0.01;
@@ -976,6 +1183,7 @@
     }
     renderNav();
     renderAll();
+    setTimeout(checkSmartNotifications, 1500);
 </script>
 </body>
 </html>
