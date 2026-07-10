@@ -89,19 +89,27 @@
         .chart-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
         .chart-stat-value { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; margin-top: 5px; }
         
+        /* REAL CALENDAR STYLES */
         .calendar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
         .month-card { padding: 20px; }
-        .days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .day-label { text-align: center; font-family: 'Orbitron'; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; padding: 4px 0; }
+        .days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .day-label { text-align: center; font-family: 'Orbitron'; font-size: 0.65rem; font-weight: 900; letter-spacing: 0.5px; padding: 4px 0; }
         .day-label.weekday { color: var(--cyan); text-shadow: var(--glow-c); }
         .day-label.weekend { color: var(--magenta); text-shadow: var(--glow-m); }
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day { aspect-ratio: 1; background: #111; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid #222; transition: 0.2s; padding: 4px; }
-        .day:hover { border-color: var(--cyan); transform: scale(1.05); z-index: 5; }
-        .day-num { font-family: 'Orbitron'; font-size: 0.9rem; }
-        .day-amt { font-size: 0.7rem; font-family: 'Orbitron'; margin-top: 2px; font-weight: 700; }
-        .day.win { background: var(--emerald); color: #000; border-color: var(--emerald); }
-        .day.loss { background: var(--magenta); color: #fff; border-color: var(--magenta); }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .day { 
+            aspect-ratio: 1; background: #111; border-radius: 6px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; 
+            border: 1px solid #222; transition: 0.2s; padding: 2px; position: relative;
+        }
+        .day.empty { background: transparent; border: none; cursor: default; pointer-events: none; }
+        .day:not(.empty):hover { border-color: var(--cyan); transform: scale(1.08); z-index: 5; box-shadow: 0 0 10px var(--cyan); }
+        .day-num { font-family: 'Orbitron'; font-size: 0.85rem; }
+        .day-amt { font-size: 0.6rem; font-family: 'Orbitron'; margin-top: 1px; font-weight: 700; line-height: 1; }
+        .day.win { background: var(--emerald); color: #000; border-color: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+        .day.loss { background: var(--magenta); color: #fff; border-color: var(--magenta); box-shadow: 0 0 8px var(--magenta); }
+        .day.today { border: 2px solid var(--gold); box-shadow: 0 0 12px var(--gold); }
         
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px; color: var(--cyan); border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 0.8rem; }
@@ -131,6 +139,7 @@
             .sidebar { width: 70px; } .sidebar span { display: none; } 
             .main { margin-left: 70px; width: calc(100% - 70px); padding: 15px; }
             .notif-banner { left: 80px; }
+            .calendar-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -201,6 +210,14 @@
     const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1524794862736773140/HbblArOLZVn5fnPYy97oV08Sl9ksaFXg06VtFUcoI4OaRbbvoQP4-fcQRoOlF3kNY_Y-";
     const BOT_AVATAR = "https://alpha-matrix-chi.vercel.app/favicon.ico";
 
+    // 🗓️ REAL CALENDAR CONFIG FOR 2026
+    const CALENDAR_YEAR = 2026;
+    const MONTH_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+    const DAY_LABELS = [
+        { name: 'MON', type: 'weekday' }, { name: 'TUE', type: 'weekday' }, { name: 'WED', type: 'weekday' },
+        { name: 'THU', type: 'weekday' }, { name: 'FRI', type: 'weekday' }, { name: 'SAT', type: 'weekend' }, { name: 'SUN', type: 'weekend' }
+    ];
+
     let state = {
         activeBalance: 150.00, 
         binanceWallet: 0.00,
@@ -225,11 +242,6 @@
         lastWeeklySent: null
     };
     const team = ['NOAMANE', 'HOSSAM', 'YASSINE', 'MONCEF', 'TAHA', 'AMINE'];
-    const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-    const dayLabels = [
-        { name: 'MON', type: 'weekday' }, { name: 'TUE', type: 'weekday' }, { name: 'WED', type: 'weekday' },
-        { name: 'THU', type: 'weekday' }, { name: 'FRI', type: 'weekday' }, { name: 'SAT', type: 'weekend' }, { name: 'SUN', type: 'weekend' }
-    ];
     
     let ui = { 
         view: 'dashboard', 
@@ -248,7 +260,7 @@
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        db.ref('alphaMatrix_v15').on('value', snap => {
+        db.ref('alphaMatrix_v16').on('value', snap => {
             if(snap.val()) {
                 state = { ...state, ...snap.val() };
                 if(!state.trades) state.trades = [];
@@ -263,11 +275,38 @@
     } catch(e) { console.log("Offline Mode"); }
 
     function save() {
-        if(db) db.ref('alphaMatrix_v15').set(state);
+        if(db) db.ref('alphaMatrix_v16').set(state);
         else localStorage.setItem('alphaMatrix_local', JSON.stringify(state));
     }
 
-    // --- DISCORD ENGINE ---
+    // --- REAL CALENDAR HELPER FUNCTIONS ---
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    function getFirstDayOfMonth(year, month) {
+        // Returns 0=Sun, 1=Mon, ..., 6=Sat
+        // We need 0=Mon, 1=Tue, ..., 6=Sun for our grid
+        const day = new Date(year, month, 1).getDay();
+        return day === 0 ? 6 : day - 1; // Convert Sun=0 to Mon-based (Mon=0, Sun=6)
+    }
+
+    function formatDateKey(year, month, day) {
+        const m = String(month + 1).padStart(2, '0');
+        const d = String(day).padStart(2, '0');
+        return `${year}-${m}-${d}`;
+    }
+
+    function getDayName(year, month, day) {
+        const date = new Date(year, month, day);
+        return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function isToday(year, month, day) {
+        const today = new Date();
+        return today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+    }
+
     async function sendDiscordWebhook(payload) {
         try {
             const response = await fetch(DISCORD_WEBHOOK, {
@@ -284,7 +323,6 @@
         }
     }
 
-    // --- SMART NOTIFICATIONS ---
     function checkSmartNotifications() {
         if (!isAdmin) return;
         const now = new Date();
@@ -611,33 +649,62 @@
         `;
     }
 
+    // 🗓️ REAL CALENDAR RENDERER - FIXED ALIGNMENT
     function renderCalendar() {
+        const today = new Date();
+        const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+        
         return `
-            <h2><i class="fas fa-calendar-alt"></i> YEARLY P&L LOG</h2>
+            <h2><i class="fas fa-calendar-alt"></i> YEARLY P&L LOG — ${CALENDAR_YEAR}</h2>
+            <p class="muted" style="margin-bottom:20px;">Real calendar alignment. Days match actual weekdays. <span class="gold">■ Today</span> <span class="cyan">Weekdays</span> <span class="magenta">Weekends</span></p>
             <div class="calendar-grid">
-                ${months.map((m, idx) => `
-                    <div class="glass month-card">
-                        <h3 style="text-align:center; margin-bottom:15px;">${m}</h3>
-                        <div class="days-header">
-                            ${dayLabels.map(d => `<div class="day-label ${d.type}">${d.name}</div>`).join('')}
+                ${MONTH_NAMES.map((monthName, monthIdx) => {
+                    const daysInMonth = getDaysInMonth(CALENDAR_YEAR, monthIdx);
+                    const firstDayOffset = getFirstDayOfMonth(CALENDAR_YEAR, monthIdx); // 0=Mon, 6=Sun
+                    
+                    // Build empty padding cells for days before the 1st
+                    let daysHtml = '';
+                    for (let pad = 0; pad < firstDayOffset; pad++) {
+                        daysHtml += `<div class="day empty"></div>`;
+                    }
+                    
+                    // Build actual day cells
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const key = formatDateKey(CALENDAR_YEAR, monthIdx, d);
+                        const log = state.calendar[key];
+                        const isTodayCell = (key === todayKey);
+                        
+                        let cls = 'day';
+                        if (isTodayCell) cls += ' today';
+                        
+                        let content = `<div class="day-num">${d}</div>`;
+                        
+                        if(log) {
+                            cls += log.outcome === 'win' ? ' win' : ' loss';
+                            const amt = Math.abs(log.amount);
+                            const display = amt >= 1000 ? (amt/1000).toFixed(1)+'k' : amt;
+                            content += `<div class="day-amt">${log.outcome === 'win' ? '+' : '-'}$${display}</div>`;
+                        }
+                        
+                        const dayFullName = getDayName(CALENDAR_YEAR, monthIdx, d);
+                        const clickAttr = isAdmin ? `onclick="openDay('${key}', ${d}, '${dayFullName}')"` : '';
+                        const titleAttr = `title="${dayFullName}"`;
+                        
+                        daysHtml += `<div class="${cls}" ${clickAttr} ${titleAttr}>${content}</div>`;
+                    }
+                    
+                    return `
+                        <div class="glass month-card">
+                            <h3 style="text-align:center; margin-bottom:15px;">${monthName}</h3>
+                            <div class="days-header">
+                                ${DAY_LABELS.map(dl => `<div class="day-label ${dl.type}">${dl.name}</div>`).join('')}
+                            </div>
+                            <div class="days-grid">
+                                ${daysHtml}
+                            </div>
                         </div>
-                        <div class="days-grid">
-                            ${Array.from({length:31}, (_,i) => i+1).map(d => {
-                                const key = `${idx}-${d}`;
-                                const log = state.calendar[key];
-                                let cls = 'day';
-                                let content = `<div class="day-num">${d}</div>`;
-                                if(log) {
-                                    cls += log.outcome === 'win' ? ' win' : ' loss';
-                                    const amt = Math.abs(log.amount);
-                                    const display = amt >= 1000 ? (amt/1000).toFixed(1)+'k' : amt;
-                                    content += `<div class="day-amt">${log.outcome === 'win' ? '+' : '-'}$${display}</div>`;
-                                }
-                                return `<div class="${cls}" ${isAdmin ? `onclick="openDay('${key}', ${d})"` : ''}>${content}</div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         `;
     }
@@ -686,7 +753,7 @@
                             <span class="muted">Today's Trades:</span>
                             <strong id="today-trades-count">0</strong>
                         </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between;">
                             <span class="muted">Last Sent:</span>
                             <strong id="last-daily">${state.lastDailySent || 'Never'}</strong>
                         </div>
@@ -772,6 +839,7 @@
 
     function buildEquityData() {
         const dailyData = {};
+        // Aggregate calendar logs (keys are now YYYY-MM-DD)
         Object.keys(state.calendar).forEach(key => {
             const log = state.calendar[key];
             if (log && log.amount !== undefined) {
@@ -779,6 +847,7 @@
                 dailyData[key] += parseFloat(log.amount);
             }
         });
+        // Aggregate trades by date
         state.trades.forEach(t => {
             if(!t.date) return;
             const key = t.date.split('T')[0];
@@ -786,7 +855,10 @@
             dailyData[key] += parseFloat(t.pnl);
         });
         const sortedKeys = Object.keys(dailyData).sort();
-        const labels = sortedKeys.map(k => new Date(k).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
+        const labels = sortedKeys.map(k => {
+            const d = new Date(k + 'T00:00:00');
+            return d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        });
         const cumulative = [];
         let running = 150;
         sortedKeys.forEach(key => {
@@ -859,7 +931,6 @@
         });
     };
 
-    // ⭐ STRIKE / ABSENCE DISCORD ALERT - FORMATTED
     window.toggleTrack = async (type, name, lvl) => {
         if(!isAdmin) return;
         const cur = state[type][name] || 0;
@@ -870,19 +941,13 @@
         ui.pages[type][name] = targetPage;
         save(); renderAll();
         
-        // Determine if this is an add or remove action
         const isAdded = newCount > cur;
         const isStrike = type === 'strikes';
         const topicLabel = isStrike ? "⚠️ STRIKES" : "🕐 ABSENCES";
-        const topicDescription = isStrike 
-            ? "Rule infraction logged for team member" 
-            : "Absence logged for team member";
-        
-        // Color: Red/Magenta for Strikes, Gold for Absences
+        const topicDescription = isStrike ? "Rule infraction logged for team member" : "Absence logged for team member";
         const embedColor = isStrike ? 15158332 : 1752220;
         const emoji = isStrike ? "🔴" : "🟡";
         
-        // Warning status
         let warningField = [];
         if (newCount >= 3) {
             warningField = [{ 
@@ -896,14 +961,14 @@
             username: "Alpha Matrix HR Bot",
             avatar_url: BOT_AVATAR,
             embeds: [{
-                title: `${emoji} TEAM MEMBER ${isAdded ? 'UPDATE' : 'UPDATE'} LOGGED`,
+                title: `${emoji} TEAM MEMBER UPDATE LOGGED`,
                 description: topicDescription,
                 color: embedColor,
                 fields: [
                     { name: "👤 Name", value: `**${name}**`, inline: true },
                     { name: "📋 Topic", value: topicLabel, inline: true },
                     { name: "🔢 Number", value: `**${newCount}**`, inline: true },
-                    { name: "📊 Action", value: isAdded ? `Added ${type === 'strikes' ? 'Strike' : 'Absence'} #${newCount}` : `Removed - Now at ${newCount}`, inline: false },
+                    { name: "📊 Action", value: isAdded ? `Added ${isStrike ? 'Strike' : 'Absence'} #${newCount}` : `Removed - Now at ${newCount}`, inline: false },
                     ...warningField
                 ],
                 footer: { text: "Alpha Matrix • HR Tracking System" },
@@ -919,10 +984,11 @@
         renderAll();
     };
 
-    window.openDay = (k, d) => {
+    // UPDATED: openDay now receives full day name for display
+    window.openDay = (k, d, dayFullName) => {
         if(!isAdmin) return;
         ui.dayKey = k;
-        document.getElementById('day-title').innerText = `LOG DAY ${d}`;
+        document.getElementById('day-title').innerText = dayFullName || `LOG DAY ${d}`;
         const log = state.calendar[k];
         document.getElementById('day-amt').value = log ? log.amount : '';
         document.getElementById('day-news').value = log && log.news ? log.news : '';
@@ -947,16 +1013,13 @@
         save(); renderAll();
     };
 
-    // DAILY & WEEKLY RECAPS (Same as before)
     window.pushDailyRecap = async () => {
         if(!isAdmin) return;
         const today = new Date().toISOString().split('T')[0];
         const todayTrades = state.trades.filter(t => t.date && t.date.split('T')[0] === today);
-        const todayDate = new Date();
-        const monthIdx = todayDate.getMonth();
-        const day = todayDate.getDate();
-        const calendarKey = `${monthIdx}-${day}`;
-        const calendarLog = state.calendar[calendarKey];
+        
+        // Use real date key for calendar lookup
+        const calendarLog = state.calendar[today];
         
         let totalTrades = todayTrades.length;
         let wins = todayTrades.filter(t => t.outcome === 'win').length;
@@ -1048,7 +1111,7 @@
             }]
         });
         
-        state.lastWeeklySent = today;
+        state.lastWeeklySent = new Date().toISOString().split('T')[0];
         save();
         renderAll();
         alert("✅ Weekly Report sent!");
