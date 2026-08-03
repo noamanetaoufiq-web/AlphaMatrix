@@ -180,11 +180,9 @@ const MEETING_WEBHOOK="https://discord.com/api/webhooks/1527426875092373574/eIWh
 const HR_WEBHOOK="https://discord.com/api/webhooks/1524794862736773140/HbblArOLZVn5fnPYy97oV08Sl9ksaFXg06VtFUcoI4OaRbbvoQP4-fcQRoOlF3kNY_Y-";
 const BOT_AVATAR="https://alpha-matrix-chi.vercel.app/favicon.ico";
 const YEAR=2026;
-/* ===== CORRECTED MONEY MATH ===== */
 const START_BALANCE=152.04;
 const GOALS=[322.04,400,500,750,1000,1500,2000,3000,4000,5000];
 const WITHDRAW_AMT=[152.04,200,250,325,500,750,1000,1500,2000,2500];
-/* Daily goal range [min,max] per level — edit freely */
 const DAILY_GOALS=[[20,25],[30,35],[40,45],[55,60],[70,75],[100,110],[140,150],[200,215],[270,290],[350,375]];
 const SEASON_DAYS=30;const INACTIVITY_WARN_DAYS=14;const INACTIVITY_DECAY_DAYS=21;const RAPID_LOSS_WINDOW=3;const RAPID_LOSS_THRESHOLD=3;
 const MONTHS=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
@@ -272,7 +270,7 @@ function trendIcon(t){return t==='up'?'<span class="trend-up" title="Climbing">�
 const firebaseConfig={apiKey:"AIzaSyBPFG8TJEMrtgRPpKJekUgaB4Qy47N2-64",authDomain:"alpha-matrix-57042.firebaseapp.com",databaseURL:"https://alpha-matrix-57042-default-rtdb.firebaseio.com",projectId:"alpha-matrix-57042"};
 let fbOK=false;
 try{firebase.initializeApp(firebaseConfig);db=firebase.database();fbOK=true;
- db.ref('alphaMatrix_full_v7').on('value',snap=>{
+ db.ref('alphaMatrix_full_v8').on('value',snap=>{
   const d=snap.val();
   if(d&&typeof d==='object')state={...state,...d};
   ensureMembers();ensureSeason();autoClose();renderAll();
@@ -282,9 +280,22 @@ try{firebase.initializeApp(firebaseConfig);db=firebase.database();fbOK=true;
 }catch(e){console.error('Firebase init failed',e);db=null;
  const b=document.getElementById('db-badge');if(b){b.innerHTML='<i class="fas fa-plug"></i> OFFLINE';b.className='badge badge-g';}
  ensureMembers();ensureSeason();}
-function save(){if(db){try{db.ref('alphaMatrix_full_v7').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
+function save(){if(db){try{db.ref('alphaMatrix_full_v8').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
 async function hook(url,p){try{await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}catch(e){console.error(e);}}
 function mention(name){const id=MEMBER_DISCORD[name];return id?`<@${id}>`:null;}
+/* ===== SELF-TEST (brain) ===== */
+function selfTest(){
+ const t=[];
+ t.push(['targets=10',state.targets.length===10]);
+ t.push(['nb=goal-withdraw',state.targets.every(x=>Math.abs((x.goal-x.withdraw)-x.nb)<0.01)]);
+ t.push(['dailyGoals=10',DAILY_GOALS.length===10]);
+ t.push(['ranks>0',RANKS.length>0]);
+ t.push(['team=6',team.length===6]);
+ t.push(['start=152.04',Math.abs(START_BALANCE-152.04)<0.001]);
+ const bad=t.filter(x=>!x[1]);
+ console.log('%cSELF-TEST '+(bad.length?'FAIL':'OK'),'color:#00FF9D;font-weight:bold',t.map(x=>x[0]+':'+(x[1]?'✓':'✗')).join(' '));
+ return bad.length===0;
+}
 function cms(name){let pnl=0,w=0,l=0,be=0,gp=0,gl=0,n=0;const each=(p,o)=>{pnl+=p;n++;if(o==='win'){w++;gp+=p;}else if(o==='loss'){l++;gl+=Math.abs(p);}else be++;};
  state.trades.forEach(t=>{if((t.member||null)===name)each(t.pnl,t.outcome);});
  const wr=n?+((w/(w+l||1))*100).toFixed(1):0;const pf=gl>0?+(gp/gl).toFixed(2):(gp>0?99:0);return{pnl,w,l,be,n,wr,pf,gp,gl};}
@@ -304,13 +315,12 @@ function buildDailyTotals(){
  Object.keys(keys).forEach(k=>{const di=dayInfo(k);if(di.hasData)out[k]=di.total;});
  return out;
 }
-/* ===== DAILY GOAL (per level) ===== */
 function activeLevelIdx(){const i=state.targets.findIndex(t=>!t.done);return i<0?state.targets.length-1:i;}
 function dailyGoalInfo(){
  const li=activeLevelIdx();
  const range=DAILY_GOALS[li]||DAILY_GOALS[DAILY_GOALS.length-1];
  const min=range[0],max=range[1];
- const todayPnl=+ (dayInfo(todayKey()).total).toFixed(2);
+ const todayPnl=+(dayInfo(todayKey()).total).toFixed(2);
  let status,label,color;
  if(todayPnl<0){status='loss';label='LOSS DAY ⚠️';color='var(--magenta)';}
  else if(todayPnl>=max){status='crush';label='GOAL CRUSHED 🔥';color='var(--gold)';}
@@ -405,7 +415,7 @@ function checkMemberStatus(name){ensureMembers();const meta=state.memberMeta[nam
 function sendIndariya(name,lost,daysInactive){const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);const m=mention(name);const nm=m||('**'+name+'**');
  hook(HR_WEBHOOK,{username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,
   content:m?`🚨🚨🚨 ${m} 🚨`:undefined,
-  embeds:[{title:"🚨🚨🚨   I N D A R I Y A   K B I R A   🚨🚨🚨",
+  embeds:[{title:"🚨🚨   I N D A R I Y A   K B I R A   🚨🚨🚨",
    description:`# ⚠️ INDARIYA ⚠️\n### ${nm}\n\n**RANK STARS COLLAPSING.** The system detected **${lost} stars lost in ${RAPID_LOSS_WINDOW} days** — a rapid decline. This is a **FINAL warning** before further demotion.\n\n**Sala7 7alek daba.** Attend meetings, respect risk rules, stop FOMO. Your rank is on the line.`,
    color:15158332,
    fields:[
@@ -413,7 +423,7 @@ function sendIndariya(name,lost,daysInactive){const md=state.memberRanks[name];c
     {name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},
     {name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},
     {name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
-    {name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} · ${st.wr}% · ${st.pf>=99?'∞':st.pf}`,inline:true},
+    {name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} • ${st.wr}% • ${st.pf>=99?'∞':st.pf}`,inline:true},
     {name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},
     {name:'⚖️ Consequence',value:'**Immediate star decay in progress.** If the decline continues, automatic rank demotion follows each cycle.',inline:false},
     {name:'✅ Required Action',value:'Show up. Zero strikes/absences. Rebuild your stars.',inline:false}],
@@ -451,8 +461,8 @@ function verifyMember(){const code=document.getElementById('member-pass').value.
  if(state.attendance.activeSessions[mn]){const s=state.attendance.activeSessions[mn];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:mn,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,autoClosed:true});delete state.attendance.activeSessions[mn];save();}
  currentMember=mn;localStorage.setItem('alpha_member',mn);document.getElementById('member-modal').style.display='none';document.getElementById('member-pass').value='';FX.win();updateAuth();renderAll();}else{FX.loss();alert('❌ INVALID CODE');}}
 window.safeLogout=async()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember])await forceOut(currentMember,'Logged Out');isAdmin=false;currentMember=null;localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');FX.cout();updateAuth();renderAll();};
-async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v7/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v7/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
-window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v7.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
+async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v8/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v8/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
+window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v8.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
 function updateAuth(){const mb=document.getElementById('mode-badge'),ub=document.getElementById('user-badge'),un=document.getElementById('user-name-display'),lb=document.getElementById('logout-btn'),mlb=document.getElementById('member-login-btn');
  if(isAdmin){mb.innerHTML='<i class="fas fa-user-shield"></i> ADMIN';mb.className='badge badge-e';ub.style.display='none';lb.style.display='block';mlb.style.display='none';}
  else if(currentMember){mb.innerHTML='<i class="fas fa-user-clock"></i> MEMBER';mb.className='badge badge-g';ub.style.display='inline-flex';un.textContent=currentMember;lb.style.display='block';mlb.style.display='none';}
@@ -471,7 +481,7 @@ function renderAll(){
  app.querySelectorAll('.glass').forEach((c,i)=>{c.style.animation='revealUp .5s both';c.style.animationDelay=(i*35)+'ms';});
  updateStats();
 }
-window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v7').remove();}catch(e){}}location.reload();};
+window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v8').remove();}catch(e){}}location.reload();};
 function baseFor(i){const ai=activeLevelIdx();if(i===ai)return state.activeBalance;return i>0?state.targets[i-1].nb:START_BALANCE;}
 function renderDashboard(){const c=state.targets.filter(t=>t.done).length,pr=c/state.targets.length*100,ai=activeLevelIdx();const at=state.targets[ai]||state.targets[0];
  const me=isAdmin?'NOAMANE':currentMember;let meRank='';if(me&&state.memberRanks[me]){const r=RANKS[state.memberRanks[me].rankIndex]||RANKS[0],tc='tier-'+r.tier;meRank=`<div class="glass" style="text-align:center"><div class="muted">YOUR RANK</div><div class="${tc}" style="margin:8px auto"><div class="rank-badge-wrap" style="width:92px;height:100px">${badgeSVG(r)}</div></div><div class="rank-name">${r.name} ${trendIcon(trendOf(me))}</div>${starRow(r,state.memberRanks[me].stars)}</div>`;}
@@ -566,7 +576,9 @@ function updateStats(){const dt=buildDailyTotals();let p=0;Object.values(dt).for
  const pe=document.getElementById('dash-pnl');if(pe)pe.className='stat '+(p>=0?'emerald':'magenta');calcLot();}
 function calcLot(){const sl=parseFloat(document.getElementById('r-sl')?.value||1);const risk=parseFloat(document.getElementById('r-risk')?.value||1)/100;const fixed=parseFloat(document.getElementById('r-fixed')?.value);let pv=parseFloat(document.getElementById('r-pv')?.value||10);const asset=document.getElementById('r-asset')?.value;if(asset&&pv===10){pv=ASSETS[asset].pv;document.getElementById('r-pv').value=pv;}let riskAmt=fixed>0?fixed:state.activeBalance*risk;if(highImpactToday())riskAmt*=.5;const lot=riskAmt/(sl*pv);const res=document.getElementById('r-res');if(res)res.textContent=lot.toFixed(2);const exp=document.getElementById('r-exp');if(exp)exp.textContent=`Risk ${fixed>0?'$'+fixed.toFixed(2):((risk*100).toFixed(1)+'%')}${highImpactToday()?' · NEWS CUT 50%':''}`;
  const tbl=document.getElementById('matrix-tbl');if(tbl){const base=fixed>0?fixed:state.activeBalance*0.01;const cut=highImpactToday()?.5:1;tbl.innerHTML=Object.keys(ASSETS).map(k=>{const pv2=ASSETS[k].pv;return `<tr><td class="cyan">${ASSETS[k].label}</td>${[10,20,30,50].map(s=>`<td>${((base*cut)/(s*pv2)).toFixed(2)}</td>`).join('')}</tr>`;}).join('');}}
+/* ===== INIT ===== */
 ensureMembers();ensureSeason();
+selfTest();
 document.getElementById('audio-toggle').classList.toggle('on',FX.on);
 document.getElementById('audio-toggle').querySelector('i').className=FX.on?'fas fa-volume-up':'fas fa-volume-mute';
 if(!fbOK){const ls=localStorage.getItem('alphaMatrix_local');if(ls){try{state={...state,...JSON.parse(ls)};}catch(e){}}ensureMembers();ensureSeason();}
