@@ -240,7 +240,7 @@ function buildTargets(){return GOALS.map((g,i)=>({id:i+1,goal:g,withdraw:+(g-REM
 let isAdmin=localStorage.getItem('alpha_admin')==='true';
 let currentMember=localStorage.getItem('alpha_member')||null;
 let db,equityChart=null,timerInterval=null,calMonth=new Date().getMonth();
-let state={activeBalance:150,binanceWallet:0,targets:buildTargets(),trades:[],leaks:[],calendar:{},
+let state={activeBalance:152.04,binanceWallet:0,targets:buildTargets(),trades:[],leaks:[],calendar:{},
  strikes:{},absences:{},disciplineLog:[],attendance:{activeSessions:{},logs:[]},memberRanks:{},memberMeta:{},season:null,lastDecayedSeasonId:0,lastDailySent:null,lastWeeklySent:null};
 let ui={view:'ranking',dayKey:null,outcome:null,smart:null,pages:{strikes:{},absences:{}},flash:{}};
 /* ===== GUARANTEES ===== */
