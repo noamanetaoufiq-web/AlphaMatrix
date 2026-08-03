@@ -172,18 +172,18 @@ table{width:100%;border-collapse:collapse}th{text-align:left;padding:11px;color:
 /* ===================== CONFIG ===================== */
 const ADMIN_KEY="ALPHA2026";
 const MEMBER_CODES={"HOSSAM123":"HOSSAM","YASSINE456":"YASSINE","MONCEF789":"MONCEF","TAHA101":"TAHA","AMINE202":"AMINE"};
-/* 🔔 OPTIONAL: fill Discord user IDs to make warnings PING the member (e.g. {"HOSSAM":"123456789012345678"}). Leave {} to just bold the name. */
+/* 🔔 OPTIONAL: fill Discord user IDs to make warnings PING the member. Leave {} to just bold the name. */
 const MEMBER_DISCORD={};
 const MEETING_WEBHOOK="https://discord.com/api/webhooks/1527426875092373574/eIWhOZvOnvaeghkzRylus-JgujstbVrTLPFvsLg0qy8msBWl1X07WORhYfQD3c2OvTrQ";
 const HR_WEBHOOK="https://discord.com/api/webhooks/1524794862736773140/HbblArOLZVn5fnPYy97oV08Sl9ksaFXg06VtFUcoI4OaRbbvoQP4-fcQRoOlF3kNY_Y-";
 const BOT_AVATAR="https://alpha-matrix-chi.vercel.app/favicon.ico";
 const YEAR=2026;
-/* ===== SEASON / DECAY / WARNING TUNING ===== */
+/* ===== SEASON / DECAY / WARNING TUNING (discipline ONLY — trades NOT involved) ===== */
 const SEASON_DAYS=30;
 const INACTIVITY_WARN_DAYS=14;
 const INACTIVITY_DECAY_DAYS=21;
-const RAPID_LOSS_WINDOW=3;      /* stars lost within this many days = rapid decline */
-const RAPID_LOSS_THRESHOLD=3;   /* 3 stars lost in window → INDARIYA KBIRA */
+const RAPID_LOSS_WINDOW=3;
+const RAPID_LOSS_THRESHOLD=3;
 const MONTHS=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 const DL=[{n:'MON',t:'weekday'},{n:'TUE',t:'weekday'},{n:'WED',t:'weekday'},{n:'THU',t:'weekday'},{n:'FRI',t:'weekday'},{n:'SAT',t:'weekend'},{n:'SUN',t:'weekend'}];
 const team=['NOAMANE','HOSSAM','YASSINE','MONCEF','TAHA','AMINE'];
@@ -199,15 +199,15 @@ function toggleAudio(){FX.on=!FX.on;localStorage.setItem('am_audio',FX.on?'on':'
 /* ===== RANK TIERS ===== */
 const TC={Bronze:{a:'#5a3410',b:'#cd7f32',c:'#e8a860'},Silver:{a:'#4a4f57',b:'#aeb6bf',c:'#e2e6ea'},Gold:{a:'#7a5a08',b:'#e0a800',c:'#ffe14d'},Platinum:{a:'#4a2d6e',b:'#9b6dd6',c:'#d4b3ff'},Diamond:{a:'#5a0a4a',b:'#c026a0',c:'#ff7ae0'},Hero:{a:'#7a0a0a',b:'#e0301a',c:'#ff7a4d'},Master:{a:'#5a4500',b:'#ffd700',c:'#fff4a0'},Grandmaster:{a:'#3a0050',b:'#ff00aa',c:'#ffd700'}};
 const TCFG=[
- {tier:'Bronze',icon:'stripe',subs:2,pf:.8,wr:35,ms:99,stars:[3,3],emoji:'🥉'},
- {tier:'Silver',icon:'chevron',subs:2,pf:1.2,wr:45,ms:2,stars:[4,4],emoji:'🥈'},
- {tier:'Gold',icon:'diamond',subs:3,pf:1.6,wr:52,ms:1,stars:[4,5,5],emoji:'🥇'},
- {tier:'Platinum',icon:'star',subs:3,pf:2.0,wr:58,ms:1,stars:[5,5,5],wingTop:true,emoji:'💠'},
- {tier:'Diamond',icon:'star',subs:4,pf:2.5,wr:64,ms:0,stars:[5,5,5,5],wingTop:true,emoji:'💎'},
- {tier:'Hero',icon:'star',subs:5,pf:3.0,wr:70,ms:0,stars:[5,5,5,5,5],wingAll:true,emoji:'🦸'},
- {tier:'Master',icon:'crown',subs:1,pf:3.5,wr:75,ms:0,stars:[Infinity],wingAll:true,emoji:'👑'},
- {tier:'Grandmaster',icon:'star',subs:1,pf:4.0,wr:80,ms:0,stars:[Infinity],wingAll:true,emoji:'🌟'}];
-const RANKS=[];TCFG.forEach(t=>{for(let s=0;s<t.subs;s++)RANKS.push({index:RANKS.length,tier:t.tier,sub:s,name:t.tier+' '+['I','II','III','IV','V'][s],starsNeeded:t.stars[s],minPF:t.pf,minWR:t.wr,maxStrikes:t.ms,iconType:t.icon,iconCount:s+1,winged:!!t.wingAll||(!!t.wingTop&&s===t.subs-1),emoji:t.emoji});});
+ {tier:'Bronze',icon:'stripe',subs:2,stars:[3,3],emoji:'🥉'},
+ {tier:'Silver',icon:'chevron',subs:2,stars:[4,4],emoji:'🥈'},
+ {tier:'Gold',icon:'diamond',subs:3,stars:[4,5,5],emoji:'🥇'},
+ {tier:'Platinum',icon:'star',subs:3,stars:[5,5,5],wingTop:true,emoji:'💠'},
+ {tier:'Diamond',icon:'star',subs:4,stars:[5,5,5,5],wingTop:true,emoji:'💎'},
+ {tier:'Hero',icon:'star',subs:5,stars:[5,5,5,5,5],wingAll:true,emoji:'🦸'},
+ {tier:'Master',icon:'crown',subs:1,stars:[Infinity],wingAll:true,emoji:'👑'},
+ {tier:'Grandmaster',icon:'star',subs:1,stars:[Infinity],wingAll:true,emoji:'🌟'}];
+const RANKS=[];TCFG.forEach(t=>{for(let s=0;s<t.subs;s++)RANKS.push({index:RANKS.length,tier:t.tier,sub:s,name:t.tier+' '+['I','II','III','IV','V'][s],starsNeeded:t.stars[s],iconType:t.icon,iconCount:s+1,winged:!!t.wingAll||(!!t.wingTop&&s===t.subs-1),emoji:t.emoji});});
 let _UID=0;
 function starPts(cx,cy,r){const ri=r*.45;let p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rd=i%2?ri:r;p.push((cx+Math.cos(a)*rd).toFixed(1)+','+(cy-Math.sin(a)*rd).toFixed(1));}return p.join(' ');}
 function bIcons(rank){const t=rank.iconType,w='#fff';let s='';
@@ -258,11 +258,10 @@ function ensureMembers(){
  if(!state.calendar||typeof state.calendar!=='object')state.calendar={};
  if(!Array.isArray(state.targets)||!state.targets.length)state.targets=buildTargets();
  team.forEach(m=>{
-  if(!state.memberRanks[m]||typeof state.memberRanks[m]!=='object')state.memberRanks[m]={rankIndex:0,stars:0,lastStarTrades:0};
+  if(!state.memberRanks[m]||typeof state.memberRanks[m]!=='object')state.memberRanks[m]={rankIndex:0,stars:0};
   if(state.memberRanks[m].rankIndex==null)state.memberRanks[m].rankIndex=0;
   if(state.memberRanks[m].stars==null)state.memberRanks[m].stars=0;
-  if(state.memberRanks[m].lastStarTrades==null)state.memberRanks[m].lastStarTrades=0;
-  if(!state.memberMeta[m]||typeof state.memberMeta[m]!=='object')state.memberMeta[m]={lastTradeDate:null,starsLost7d:[],seasonStartRankIdx:0,seasonStartStars:0,lastWarningDate:null,lastInactivityDecay:null,lastDisciplineDate:null};
+  if(!state.memberMeta[m]||typeof state.memberMeta[m]!=='object')state.memberMeta[m]={starsLost7d:[],seasonStartRankIdx:0,seasonStartStars:0,lastWarningDate:null,lastInactivityDecay:null,lastDisciplineDate:null};
   if(!Array.isArray(state.memberMeta[m].starsLost7d))state.memberMeta[m].starsLost7d=[];
   if(state.strikes[m]==null)state.strikes[m]=0;
   if(state.absences[m]==null)state.absences[m]=0;
@@ -278,35 +277,26 @@ function trendIcon(t){return t==='up'?'<span class="trend-up" title="Climbing">�
 const firebaseConfig={apiKey:"AIzaSyBPFG8TJEMrtgRPpKJekUgaB4Qy47N2-64",authDomain:"alpha-matrix-57042.firebaseapp.com",databaseURL:"https://alpha-matrix-57042-default-rtdb.firebaseio.com",projectId:"alpha-matrix-57042"};
 let fbOK=false;
 try{firebase.initializeApp(firebaseConfig);db=firebase.database();fbOK=true;
- db.ref('alphaMatrix_full_v4').on('value',snap=>{
+ db.ref('alphaMatrix_full_v5').on('value',snap=>{
   const d=snap.val();
   if(d&&typeof d==='object')state={...state,...d};
-  ensureMembers();ensureSeason();autoClose();evaluateAll(true);renderAll();
+  ensureMembers();ensureSeason();autoClose();renderAll();
   const b=document.getElementById('db-badge');if(b){b.innerHTML='<i class="fas fa-check"></i> SYNCED';b.className='badge badge-e';}
   if(!d){save();}
  },err=>{console.error('FB read error',err);const b=document.getElementById('db-badge');if(b){b.innerHTML='<i class="fas fa-triangle-exclamation"></i> DB ERR';b.className='badge badge-r';}});
 }catch(e){console.error('Firebase init failed',e);db=null;
  const b=document.getElementById('db-badge');if(b){b.innerHTML='<i class="fas fa-plug"></i> OFFLINE';b.className='badge badge-g';}
  ensureMembers();ensureSeason();}
-function save(){if(db){try{db.ref('alphaMatrix_full_v4').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
+function save(){if(db){try{db.ref('alphaMatrix_full_v5').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
 async function hook(url,p){try{await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}catch(e){console.error(e);}}
 function mention(name){const id=MEMBER_DISCORD[name];return id?`<@${id}>`:null;}
-/* ===== STATS ===== */
+/* ===== DISPLAY STATS ONLY (trades do NOT affect rank) ===== */
 function cms(name){let pnl=0,w=0,l=0,be=0,gp=0,gl=0,n=0;const each=(p,o)=>{pnl+=p;n++;if(o==='win'){w++;gp+=p;}else if(o==='loss'){l++;gl+=Math.abs(p);}else be++;};
  state.trades.forEach(t=>{if((t.member||null)===name)each(t.pnl,t.outcome);});
  Object.values(state.calendar).forEach(c=>{if((c.member||null)===name&&c.amount!=null)each(c.amount,c.outcome);});
  const wr=n?+((w/(w+l||1))*100).toFixed(1):0;const pf=gl>0?+(gp/gl).toFixed(2):(gp>0?99:0);return{pnl,w,l,be,n,wr,pf,gp,gl};}
-/* ===== AUTO PROGRESSION (discipline + performance, no trade-count gate) ===== */
-function evaluateMember(name,silent){const md=state.memberRanks[name];if(!md)return;let g=0;
- while(g++<30){const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);if(st.n<1)break;
-  const meet=st.pf>=r.minPF&&st.wr>=r.minWR&&(state.strikes[name]||0)<=r.maxStrikes;const since=st.n-(md.lastStarTrades||0);
-  if(!meet||since<1)break;const need=r.starsNeeded;
-  if(need===Infinity){md.stars+=since;md.lastStarTrades=st.n;if(!silent)flash(name);break;}
-  const grant=since,space=need-md.stars;
-  if(grant>=space){const old=r.name;md.stars=0;md.lastStarTrades+=space;if(md.rankIndex<RANKS.length-1){md.rankIndex++;if(!silent){flash(name);notifyRank(name,'UP',old,(RANKS[md.rankIndex]||RANKS[0]).name);}continue;}else{if(!silent)flash(name);break;}}
-  else{md.stars+=grant;md.lastStarTrades+=grant;if(!silent)flash(name);break;}}}
-function evaluateAll(s){team.forEach(m=>evaluateMember(m,s));}
-/* ===== STAR MUTATIONS ===== */
+function lastAttendance(name){let last=null;state.attendance.logs.forEach(l=>{if(l.member===name&&l.checkIn){const d=l.checkIn.slice(0,10);if(!last||d>last)last=d;}});return last;}
+/* ===== STAR MUTATIONS (discipline ONLY) ===== */
 function pushStarLossRecord(name){const meta=state.memberMeta[name];if(!meta.starsLost7d)meta.starsLost7d=[];meta.starsLost7d.push(Date.now());}
 function mutateStarLoss(name){const md=state.memberRanks[name];if(md.stars>0){md.stars--;}else if(md.rankIndex>0){md.rankIndex--;const low=RANKS[md.rankIndex]||RANKS[0];md.stars=low.starsNeeded===Infinity?0:Math.max(0,low.starsNeeded-1);}}
 function applyStarLoss(name,count){for(let i=0;i<count;i++){pushStarLossRecord(name);mutateStarLoss(name);}}
@@ -314,7 +304,7 @@ function grantStar(name){const md=state.memberRanks[name];const r=RANKS[md.rankI
  if(need===Infinity){md.stars++;}
  else if(md.stars+1>=need){if(md.rankIndex<RANKS.length-1){const old=r.name;md.rankIndex++;md.stars=0;notifyRank(name,'UP',old,(RANKS[md.rankIndex]||RANKS[0]).name);}else{md.stars=need;}}
  else md.stars++;}
-/* DAILY DISCIPLINE STAR: attended meeting + full clean day (no abs/strike) → +1 star */
+/* +⭐ per clean attended day (attendance + discipline ONLY, no trades) */
 function grantDisciplineStars(name){ensureMembers();const meta=state.memberMeta[name];const today=todayKey();
  if(!meta.lastDisciplineDate){meta.lastDisciplineDate=today;return 0;}
  let granted=0;let d=new Date(meta.lastDisciplineDate+'T00:00:00');d.setDate(d.getDate()+1);
@@ -328,7 +318,7 @@ function grantDisciplineStars(name){ensureMembers();const meta=state.memberMeta[
  meta.lastDisciplineDate=today;
  if(granted>0)flash(name);
  return granted;}
-/* STRIKE or ABSENCE → lose a star (all ranks) */
+/* STRIKE or ABSENCE → −⭐ (all ranks) */
 function loseStar(name){ensureMembers();const md=state.memberRanks[name];const before=(RANKS[md.rankIndex]||RANKS[0]).name;const bs=md.stars;
  pushStarLossRecord(name);mutateStarLoss(name);
  const after=(RANKS[md.rankIndex]||RANKS[0]).name;
@@ -338,47 +328,48 @@ function loseStar(name){ensureMembers();const md=state.memberRanks[name];const b
 function flash(name){ui.flash[name]=1;FX.rankup();setTimeout(()=>{['badge-','badge-t-','badge-p-','badge-c-'].forEach(pre=>{const el=document.getElementById(pre+name);if(el)el.classList.remove('rankup');});const me=document.getElementById('badge-me');if(me)me.classList.remove('rankup');delete ui.flash[name];},1400);}
 async function notifyRank(name,dir,oldN,newN){const up=dir==='UP';const st=cms(name);if(up)FX.rankup();else FX.down();
  await hook(HR_WEBHOOK,{username:"Alpha Matrix Rank Bot",avatar_url:BOT_AVATAR,embeds:[{title:up?'🎉 RANK UP!':'⚠️ RANK DOWN',description:`**${name}** ${up?'promoted to':'demoted to'} **${newN}**`,color:up?3066993:15158332,fields:[{name:'👤',value:`**${name}**`,inline:true},{name:up?'⬆️ From':'⬇️ From',value:oldN,inline:true},{name:up?'⬆️ To':'⬇️ To',value:newN,inline:true},{name:'📊',value:`P&L $${st.pnl.toFixed(2)} • WR ${st.wr}% • PF ${st.pf>=99?'∞':st.pf}`,inline:false}],footer:{text:'Alpha Matrix • Ranked'},timestamp:new Date().toISOString()}]});}
-/* ===== SEASON DECAY ===== */
+/* ===== SEASON DECAY (attendance + discipline ONLY, no trades) ===== */
 function runSeasonDecay(){ensureMembers();ensureSeason();const report=[];
- team.forEach(name=>{const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);const meta=state.memberMeta[name];
-  const tradesInSeason=state.trades.filter(t=>(t.member||null)===name&&t.date&&t.date.slice(0,10)>=state.season.start).length;
-  const lastT=meta.lastTradeDate;const daysInactive=lastT?Math.floor((Date.now()-new Date(lastT+'T00:00:00'))/864e5):9999;
-  const active=tradesInSeason>=3&&daysInactive<=10;const perfOk=st.pf>=r.minPF&&st.wr>=r.minWR&&(state.strikes[name]||0)<=r.maxStrikes;
+ team.forEach(name=>{const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const meta=state.memberMeta[name];
+  const attendedDays=state.attendance.logs.filter(l=>l.member===name&&l.checkIn&&l.checkIn.slice(0,10)>=state.season.start).length;
+  const discIssues=state.disciplineLog.filter(x=>x.member===name&&x.date>=state.season.start).length;
+  const lastA=lastAttendance(name);const daysInactive=lastA?Math.floor((Date.now()-new Date(lastA+'T00:00:00'))/864e5):9999;
+  const active=attendedDays>=3&&daysInactive<=10;const clean=discIssues===0;
   let action='MAINTAIN';const from=r.name;
-  if(active&&perfOk){action='MAINTAIN';}
-  else if(active&&!perfOk){action='SOFT_DECAY';applyStarLoss(name,1);}
+  if(active&&clean){action='MAINTAIN';}
+  else if(active&&!clean){action='SOFT_DECAY';applyStarLoss(name,1);}
   else if(!active&&daysInactive<=INACTIVITY_WARN_DAYS){action='SOFT_DECAY';applyStarLoss(name,1);}
-  else{action='HARD_DECAY';mutateStarLoss(name);if(md.rankIndex>0){}applyStarLoss(name,0);}
-  report.push({name,action,from,to:(RANKS[md.rankIndex]||RANKS[0]).name,tradesInSeason,daysInactive});});
+  else{action='HARD_DECAY';mutateStarLoss(name);}
+  report.push({name,action,from,to:(RANKS[md.rankIndex]||RANKS[0]).name,attendedDays,daysInactive});});
  team.forEach(name=>{const md=state.memberRanks[name];state.memberMeta[name].seasonStartRankIdx=md.rankIndex;state.memberMeta[name].seasonStartStars=md.stars;});
  state.lastDecayedSeasonId=state.season.id;
  state.season={id:state.season.id+1,start:new Date().toISOString().slice(0,10),days:SEASON_DAYS};
  return report;}
-window.endSeason=function(){if(!isAdmin)return;if(!confirm('End the current season NOW and apply rank decay to every member?'))return;
+window.endSeason=function(){if(!isAdmin)return;if(!confirm('End the current season NOW and apply rank decay (attendance + discipline only)?'))return;
  const endedId=state.season.id;const report=runSeasonDecay();team.forEach(checkMemberStatus);save();renderAll();
- hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:'🌙 SEASON '+endedId+' COMPLETE — RANK DECAY APPLIED',description:'Season evaluation finished. Ranks adjusted by **performance + activity + discipline**. New season started.',color:10181046,
-  fields:report.map(x=>({name:(x.action==='HARD_DECAY'?'📉 ':x.action==='SOFT_DECAY'?'⬇ ':' ')+x.name,value:`${x.from} → **${x.to}** · trades:${x.tradesInSeason} · idle:${x.daysInactive>9000?'∞':x.daysInactive}d`,inline:true})),
+ hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:'🌙 SEASON '+endedId+' COMPLETE — RANK DECAY APPLIED',description:'Season evaluation finished (attendance + discipline only — trades not involved). New season started.',color:10181046,
+  fields:report.map(x=>({name:(x.action==='HARD_DECAY'?'📉 ':x.action==='SOFT_DECAY'?'⬇ ':' ')+x.name,value:`${x.from} → **${x.to}** · attended:${x.attendedDays} · idle:${x.daysInactive>9000?'∞':x.daysInactive}d`,inline:true})),
   footer:{text:'Alpha Matrix • Seasonal Ranked System'},timestamp:new Date().toISOString()}]});
  FX.win();toast('🌙 Season ended & decay applied');};
-/* ===== STATUS / WARNING ENGINE ===== */
+/* ===== STATUS / WARNING ENGINE (attendance-based inactivity) ===== */
 function checkMemberStatus(name){ensureMembers();const meta=state.memberMeta[name];const now=Date.now();
  meta.starsLost7d=(meta.starsLost7d||[]).filter(t=>now-t<=RAPID_LOSS_WINDOW*864e5);
- const lost=meta.starsLost7d.length;const lastT=meta.lastTradeDate;
- const daysInactive=lastT?Math.floor((now-new Date(lastT+'T00:00:00'))/864e5):0;
+ const lost=meta.starsLost7d.length;
+ const lastA=lastAttendance(name);
+ const daysInactive=lastA?Math.floor((now-new Date(lastA+'T00:00:00'))/864e5):0;
  const reasons=[];let decayed=false;
- if(lastT&&daysInactive>=INACTIVITY_DECAY_DAYS){
-   if(!meta.lastInactivityDecay||(now-new Date(meta.lastInactivityDecay))>=7*864e5){const b=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);decayed=true;meta.lastInactivityDecay=new Date().toISOString();reasons.push('👻 Inactive '+daysInactive+' days → forced decay (was '+b+')');}
-   else reasons.push('👻 Inactive '+daysInactive+' days — decay pending');
- } else if(lastT&&daysInactive>=INACTIVITY_WARN_DAYS){reasons.push('👻 Inactive '+daysInactive+' days — log disciplined trades');}
+ if(lastA&&daysInactive>=INACTIVITY_DECAY_DAYS){
+   if(!meta.lastInactivityDecay||(now-new Date(meta.lastInactivityDecay))>=7*864e5){const b=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);decayed=true;meta.lastInactivityDecay=new Date().toISOString();reasons.push('👻 No meeting '+daysInactive+' days → forced decay (was '+b+')');}
+   else reasons.push('👻 No meeting '+daysInactive+' days — decay pending');
+ } else if(lastA&&daysInactive>=INACTIVITY_WARN_DAYS){reasons.push('👻 No meeting '+daysInactive+' days — attend sessions to stay ranked');}
  if(lost>=RAPID_LOSS_THRESHOLD){
    if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendIndariya(name,lost,daysInactive);}
  } else if(reasons.length){
    if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendWarning(name,reasons,lost,daysInactive,decayed);}
  }}
-/* ===== INDARIYA KBIRA (rapid star collapse) ===== */
 function sendIndariya(name,lost,daysInactive){const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);const m=mention(name);const nm=m||('**'+name+'**');
  const payload={username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,
-  content:m?`🚨🚨🚨 ${m} 🚨🚨🚨`:undefined,
+  content:m?`🚨🚨🚨 ${m} 🚨🚨`:undefined,
   embeds:[{title:"🚨🚨🚨   I N D A R I Y A   K B I R A   🚨🚨🚨",
    description:`# ⚠️ INDARIYA ⚠️\n### ${nm}\n\n**RANK STARS COLLAPSING.** The system detected **${lost} stars lost in ${RAPID_LOSS_WINDOW} days** — a rapid decline. This is a **FINAL warning** before further demotion.\n\n**Sala7 7alek daba.** Attend meetings, respect risk rules, stop FOMO. Your rank is on the line.`,
    color:15158332,
@@ -386,11 +377,11 @@ function sendIndariya(name,lost,daysInactive){const md=state.memberRanks[name];c
     {name:'👤 Member',value:`**${name}**`,inline:true},
     {name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},
     {name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},
-    {name:'👻 Days Inactive',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
+    {name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
     {name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} · ${st.wr}% · ${st.pf>=99?'∞':st.pf}`,inline:true},
     {name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},
     {name:'⚖️ Consequence',value:'**Immediate star decay in progress.** If the decline continues, automatic rank demotion follows each cycle.',inline:false},
-    {name:'✅ Required Action',value:'Show up. Log disciplined trades. Zero strikes/absences. Rebuild your stars.',inline:false}],
+    {name:'✅ Required Action',value:'Show up. Zero strikes/absences. Rebuild your stars.',inline:false}],
    footer:{text:'FINAL WARNING • Alpha Matrix Discipline • '+new Date().toLocaleString()},
    timestamp:new Date().toISOString()}]};
  hook(HR_WEBHOOK,payload);}
@@ -398,24 +389,22 @@ function sendWarning(name,reasons,lost,daysInactive,decayed){const md=state.memb
  const payload={username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,
   content:m?`🚨 ${m} — PERFORMANCE ALERT`:undefined,
   embeds:[{title:"🚨   P E R F O R M A N C E   A L E R T   🚨",
-   description:`### ⚠️ ${nm} — YOUR RANK IS AT RISK\n\nThe discipline system detected issues with your recent activity & performance. Act **immediately** or further demotion follows.`,
+   description:`### ⚠️ ${nm} — YOUR RANK IS AT RISK\n\nThe discipline system detected issues with your recent attendance & conduct. Act **immediately** or further demotion follows.`,
    color:15158332,
    fields:[
     {name:'👤 Member',value:`**${name}**`,inline:true},
     {name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},
     {name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},
-    {name:'👻 Days Inactive',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
-    {name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} · ${st.wr}% · ${st.pf>=99?'∞':st.pf}`,inline:true},
+    {name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
     {name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},
     {name:'🔍 Detected Issues',value:reasons.map(x=>'• '+x).join('\n'),inline:false},
     {name:'⚖️ Consequence',value:decayed?'**Rank/Star forcibly reduced.** Continued issues trigger further demotion.':'**Warning issued.** Improve within the grace window or automatic decay applies.',inline:false},
-    {name:'✅ Required Action',value:'Log disciplined trades, respect risk rules, attend sessions.',inline:false}],
+    {name:'✅ Required Action',value:'Attend meetings, respect risk rules, zero strikes/absences.',inline:false}],
    footer:{text:'URGENT • Alpha Matrix Discipline • '+new Date().toLocaleString()},
    timestamp:new Date().toISOString()}]};
  hook(HR_WEBHOOK,payload);}
-window.forceWarn=function(name){if(!isAdmin)return;const meta=state.memberMeta[name];sendWarning(name,['🛠️ Admin-issued disciplinary warning'],(meta.starsLost7d||[]).length,meta.lastTradeDate?Math.floor((Date.now()-new Date(meta.lastTradeDate+'T00:00:00'))/864e5):0,false);meta.lastWarningDate=new Date().toISOString();save();FX.click();toast('⚠️ Warning sent to '+name);};
+window.forceWarn=function(name){if(!isAdmin)return;const meta=state.memberMeta[name];sendWarning(name,['🛠️ Admin-issued disciplinary warning'],(meta.starsLost7d||[]).length,lastAttendance(name)?Math.floor((Date.now()-new Date(lastAttendance(name)+'T00:00:00'))/864e5):0,false);meta.lastWarningDate=new Date().toISOString();save();FX.click();toast('⚠️ Warning sent to '+name);};
 window.forceDecay=function(name){if(!isAdmin)return;if(!confirm('Force one decay step on '+name+'?'))return;const before=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);const after=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;flash(name);FX.down();save();renderAll();toast('📉 '+name+': '+before+' → '+after);};
-function recordActivity(name){if(!name)return;ensureMembers();state.memberMeta[name].lastTradeDate=todayKey();}
 function autoClose(){if(!state.attendance.activeSessions)return;const now=Date.now(),MAX=12*3600e3;Object.keys(state.attendance.activeSessions).forEach(m=>{const s=state.attendance.activeSessions[m];if(!s)return;const st=new Date(s.startTime).getTime();if(now-st>MAX){const co=new Date(st+MAX),d=Math.floor(MAX/1000);state.attendance.logs.push({member:m,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,autoClosed:true});delete state.attendance.activeSessions[m];save();}});}
 function checkSmart(){if(!isAdmin)return;const now=new Date(),tk=now.toISOString().split('T')[0],sun=now.getDay()===0,h=now.getUTCHours();const tt=state.trades.filter(t=>t.date&&t.date.split('T')[0]===tk);
  if(tt.length&&state.lastDailySent!==tk){ui.smart='daily';toast('📊 Daily Recap Ready — '+tt.length+' trade(s). Click to send.');return;}
@@ -430,8 +419,8 @@ function verifyMember(){const code=document.getElementById('member-pass').value.
  if(state.attendance.activeSessions[mn]){const s=state.attendance.activeSessions[mn];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:mn,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,autoClosed:true});delete state.attendance.activeSessions[mn];save();}
  currentMember=mn;localStorage.setItem('alpha_member',mn);document.getElementById('member-modal').style.display='none';document.getElementById('member-pass').value='';FX.win();updateAuth();renderAll();}else{FX.loss();alert('❌ INVALID CODE');}}
 window.safeLogout=async()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember])await forceOut(currentMember,'Logged Out');isAdmin=false;currentMember=null;localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');FX.cout();updateAuth();renderAll();};
-async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v4/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v4/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
-window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v4.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
+async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v5/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v5/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
+window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v5.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
 function updateAuth(){const mb=document.getElementById('mode-badge'),ub=document.getElementById('user-badge'),un=document.getElementById('user-name-display'),lb=document.getElementById('logout-btn'),mlb=document.getElementById('member-login-btn');
  if(isAdmin){mb.innerHTML='<i class="fas fa-user-shield"></i> ADMIN';mb.className='badge badge-e';ub.style.display='none';lb.style.display='block';mlb.style.display='none';}
  else if(currentMember){mb.innerHTML='<i class="fas fa-user-clock"></i> MEMBER';mb.className='badge badge-g';ub.style.display='inline-flex';un.textContent=currentMember;lb.style.display='block';mlb.style.display='none';}
@@ -451,11 +440,11 @@ function renderAll(){
  app.querySelectorAll('.glass').forEach((c,i)=>{c.style.animation='revealUp .5s both';c.style.animationDelay=(i*35)+'ms';});
  updateStats();
 }
-window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v4').remove();}catch(e){}}location.reload();};
-/* ===== RANKING + SEASON + MANUAL ===== */
-function renderRanking(){evaluateAll(true);
+window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v5').remove();}catch(e){}}location.reload();};
+/* ===== RANKING (discipline-only; trades display only) ===== */
+function renderRanking(){
  const sInfo=seasonInfo();
- const seasonBanner=`<div class="glass season-banner"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><h3 style="margin:0;color:var(--violet)"><i class="fas fa-hourglass-half"></i> SEASON ${state.season.id}</h3><div class="muted" style="text-transform:none;letter-spacing:0;margin-top:4px">${sInfo.daysLeft>0?sInfo.daysLeft+' days left in season':'Season ended — decay pending (admin: END SEASON)'}</div></div><div style="font-family:Orbitron;font-weight:800;color:var(--cyan)">${sInfo.progress}%</div></div><div class="progress-bar" style="margin-top:12px"><div class="progress-fill" style="width:${sInfo.progress}%"></div></div><div class="muted" style="text-transform:none;letter-spacing:0;margin-top:10px">Discipline economy: <b style="color:var(--emerald)">+⭐</b> clean attended day · <b style="color:var(--magenta)">−⭐</b> strike/absence · rapid 3-star collapse → <b style="color:var(--magenta)">INDARIYA KBIRA</b>.</div></div>`;
+ const seasonBanner=`<div class="glass season-banner"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><h3 style="margin:0;color:var(--violet)"><i class="fas fa-hourglass-half"></i> SEASON ${state.season.id}</h3><div class="muted" style="text-transform:none;letter-spacing:0;margin-top:4px">${sInfo.daysLeft>0?sInfo.daysLeft+' days left in season':'Season ended — decay pending (admin: END SEASON)'}</div></div><div style="font-family:Orbitron;font-weight:800;color:var(--cyan)">${sInfo.progress}%</div></div><div class="progress-bar" style="margin-top:12px"><div class="progress-fill" style="width:${sInfo.progress}%"></div></div><div class="muted" style="text-transform:none;letter-spacing:0;margin-top:10px">Discipline economy (trades NOT involved): <b style="color:var(--emerald)">+⭐</b> clean attended day · <b style="color:var(--magenta)">−⭐</b> strike/absence · rapid 3-star collapse → <b style="color:var(--magenta)">INDARIYA KBIRA</b>.</div></div>`;
  const data=team.map(m=>{const md=state.memberRanks[m]||{rankIndex:0,stars:0};const rk=RANKS[md.rankIndex]||RANKS[0];return{name:m,rank:rk,stars:md.stars||0,st:cms(m),str:state.strikes[m]||0,abs:state.absences[m]||0};}).sort((a,b)=>b.rank.index-a.rank.index||b.st.pnl-a.st.pnl);
  const top=data.slice(0,3),po=[top[1],top[0],top[2]];
  const podium=`<div style="display:flex;justify-content:center;align-items:flex-end;gap:18px;flex-wrap:wrap;margin:18px 0">`+po.map((p,idx)=>{if(!p)return`<div style="width:150px"></div>`;const tc='tier-'+p.rank.tier,fl=ui.flash[p.name]?'rankup':'';const sz=idx===1?122:96,szh=idx===1?132:104;return `<div style="text-align:center"><div class="${tc}"><div class="rank-badge-wrap ${fl}" id="badge-p-${p.name}" style="width:${sz}px;height:${szh}px">${badgeSVG(p.rank)}</div></div><div class="rank-name ${idx===1?'gold':''}">${p.name} ${trendIcon(trendOf(p.name))}</div><div style="font-size:.78rem;color:var(--muted)">${p.rank.name}</div>${starRow(p.rank,p.stars)}<div class="${p.st.pnl>=0?'emerald':'magenta'}" style="font-family:Orbitron;font-weight:700;margin-top:6px">${p.st.pnl>=0?'+':''}$${p.st.pnl.toFixed(2)}</div></div>`;}).join('')+`</div>`;
@@ -466,16 +455,16 @@ function renderRanking(){evaluateAll(true);
  if(isAdmin){
   manualPanel=`<div class="glass" style="border-color:var(--gold);box-shadow:0 0 26px rgba(255,215,0,.12)">
    <h3 style="color:var(--gold)"><i class="fas fa-screwdriver-wrench"></i> ADMIN RANK & SEASON CONTROL <span class="muted" style="text-transform:none;letter-spacing:0">· manual override</span></h3>
-   <p class="muted" style="text-transform:none;letter-spacing:0;margin-bottom:14px">Auto: <b style="color:var(--emerald)">+⭐</b> per clean attended day · <b style="color:var(--magenta)">−⭐</b> per strike/absence · rapid collapse → INDARIYA. Use these to override by hand.</p>
+   <p class="muted" style="text-transform:none;letter-spacing:0;margin-bottom:14px">Discipline only: <b style="color:var(--emerald)">+⭐</b> clean attended day · <b style="color:var(--magenta)">−⭐</b> strike/absence · rapid collapse → INDARIYA. <b style="color:var(--text)">Trades do NOT affect rank.</b></p>
    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"><button class="btn btn-gold" style="flex:1;min-width:240px" onclick="endSeason()"><i class="fas fa-moon"></i> END SEASON & APPLY DECAY</button></div>
    <div class="grid grid-2">${team.map(m=>{
-    const md=state.memberRanks[m];const rk=RANKS[md.rankIndex]||RANKS[0];const tc='tier-'+rk.tier;const fl=ui.flash[m]?'rankup':'';const meta=state.memberMeta[m]||{};
-    const lastT=meta.lastTradeDate;const idle=lastT?Math.floor((Date.now()-new Date(lastT+'T00:00:00'))/864e5):0;
+    const md=state.memberRanks[m];const rk=RANKS[md.rankIndex]||RANKS[0];const tc='tier-'+rk.tier;const fl=ui.flash[m]?'rankup':'';
+    const lastA=lastAttendance(m);const idle=lastA?Math.floor((Date.now()-new Date(lastA+'T00:00:00'))/864e5):0;
     const atTop=md.rankIndex>=RANKS.length-1;const atBot=md.rankIndex<=0;
     return `<div class="rank-ctrl glass">
       <div class="rc-head">
         <div class="${tc}"><div class="rank-badge-wrap ${fl}" id="badge-c-${m}" style="width:62px;height:68px">${badgeSVG(rk)}</div></div>
-        <div class="rc-info"><div class="rc-name">${m} ${trendIcon(trendOf(m))}</div><div class="rc-rank" style="color:var(--gc2)">${rk.name} · ${lastT?('idle '+idle+'d'):'never traded'}</div>${starRow(rk,md.stars)}</div>
+        <div class="rc-info"><div class="rc-name">${m} ${trendIcon(trendOf(m))}</div><div class="rc-rank" style="color:var(--gc2)">${rk.name} · ${lastA?('no-meeting '+idle+'d'):'never attended'}</div>${starRow(rk,md.stars)}</div>
       </div>
       <div class="ctrl-row">
         <button class="cb cb-minus" onclick="manualStar('${m}',-1)" title="Remove a star">−★</button>
@@ -491,25 +480,13 @@ function renderRanking(){evaluateAll(true);
     </div>`;}).join('')}</div>
   </div>`;
  }
- return `<h2><i class="fas fa-trophy"></i> RANKED LADDER<span class="sub">Seasonal · discipline economy · decay on inactivity · INDARIYA on rapid collapse</span></h2>
+ return `<h2><i class="fas fa-trophy"></i> RANKED LADDER<span class="sub">Seasonal · discipline economy · trades are display-only</span></h2>
   ${seasonBanner}
-  ${isAdmin?`<button class="btn btn-gold no-print" style="max-width:340px;margin:14px 0" onclick="runEval()"><i class="fas fa-bolt"></i> EVALUATE ALL RANKS (AUTO)</button>`:''}
   ${meCard}
   <div class="glass"><h3 style="text-align:center">🏆 TOP 3 PODIUM</h3>${podium}</div>
   <div class="glass"><h3><i class="fas fa-list-ol"></i> FULL STANDINGS</h3><div style="overflow-x:auto"><table class="rank-table"><thead><tr><th>BADGE</th><th>MEMBER</th><th>STARS</th><th>NET P&L</th><th>WR</th><th>PF</th><th>TRADES</th><th>STRK/ABS</th></tr></thead><tbody>${rows}</tbody></table></div></div>
   ${manualPanel}
-  <div class="glass"><h3><i class="fas fa-scroll"></i> TIER REQUIREMENTS</h3><div style="overflow-x:auto"><table class="rank-table"><thead><tr><th>TIER</th><th>RANGE</th><th>MIN PF</th><th>MIN WR</th><th>MAX STRIKES</th><th>⭐ / SUB</th></tr></thead><tbody>${TCFG.map(t=>{const subs=t.subs===1?t.tier:`${t.tier} I → ${t.tier} ${['I','II','III','IV','V'][t.subs-1]}`;return `<tr><td><span class="tier-${t.tier}" style="font-family:Orbitron;font-weight:700">${t.emoji} ${t.tier.toUpperCase()}</span></td><td>${subs}</td><td>${t.pf}</td><td>${t.wr}%</td><td>${t.ms>=99?'∞':t.ms}</td><td>${t.stars.map(s=>s===Infinity?'∞':s).join(' / ')}</td></tr>`;}).join('')}</tbody></table></div></div>`;}
-/* ===== EVALUATE ALL ===== */
-window.runEval=function(){ensureMembers();
- const before={};team.forEach(m=>{before[m]={i:state.memberRanks[m].rankIndex,s:state.memberRanks[m].stars};});
- evaluateAll(false);
- const up=[],dn=[];team.forEach(m=>{const b=before[m],a=state.memberRanks[m];
-  if(a.rankIndex>b.i)up.push('⬆ '+m+': '+(RANKS[b.i]||RANKS[0]).name+'→'+(RANKS[a.rankIndex]||RANKS[0]).name);
-  else if(a.rankIndex<b.i)dn.push('⬇ '+m);
-  else if(a.stars!==b.s)up.push(m+' '+(a.stars-b.s>0?'+':'')+(a.stars-b.s)+'★');});
- save();renderAll();
- if(up.length||dn.length){FX.win();toast('✅ Auto-eval: '+[...up,...dn].join(' · '));}
- else{FX.click();toast('ℹ️ Ma kayn walo — PF/WR/strikes ma wslouch l threshold. Sta3mel 🛠️ ADMIN CONTROL.');}};
+  <div class="glass"><h3><i class="fas fa-scroll"></i> TIER REQUIREMENTS (STARS PER SUB-RANK)</h3><div style="overflow-x:auto"><table class="rank-table"><thead><tr><th>TIER</th><th>RANGE</th><th>⭐ / SUB</th></tr></thead><tbody>${TCFG.map(t=>{const subs=t.subs===1?t.tier:`${t.tier} I → ${t.tier} ${['I','II','III','IV','V'][t.subs-1]}`;return `<tr><td><span class="tier-${t.tier}" style="font-family:Orbitron;font-weight:700">${t.emoji} ${t.tier.toUpperCase()}</span></td><td>${subs}</td><td>${t.stars.map(s=>s===Infinity?'∞':s).join(' / ')}</td></tr>`;}).join('')}</tbody></table></div></div>`;}
 /* ===== MANUAL RANK ===== */
 window.manualStar=function(name,delta){if(!isAdmin)return;ensureMembers();
  const md=state.memberRanks[name];const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;
@@ -520,7 +497,7 @@ window.manualStar=function(name,delta){if(!isAdmin)return;ensureMembers();
  save();renderAll();};
 window.manualPromote=function(name){if(!isAdmin)return;ensureMembers();const md=state.memberRanks[name];if(md.rankIndex>=RANKS.length-1){toast('⚠️ '+name+' already at max rank');FX.loss();return;}const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex++;md.stars=0;const newR=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);FX.rankup();notifyAdminRank(name,'⬆ Manual Promote',oldR,newR,oldS,0);save();renderAll();};
 window.manualDemote=function(name){if(!isAdmin)return;ensureMembers();const md=state.memberRanks[name];if(md.rankIndex<=0){toast('⚠️ '+name+' already at lowest rank');FX.loss();return;}if(!confirm('Demote '+name+' by one rank?'))return;const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex--;const low=RANKS[md.rankIndex]||RANKS[0];md.stars=low.starsNeeded===Infinity?0:Math.max(0,low.starsNeeded-1);const newR=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);FX.down();notifyAdminRank(name,'⬇ Manual Demote',oldR,newR,oldS,md.stars);save();renderAll();};
-window.manualReset=function(name){if(!isAdmin)return;ensureMembers();if(!confirm('RESET '+name+' to the lowest rank?'))return;const md=state.memberRanks[name];const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex=0;md.stars=0;md.lastStarTrades=0;const newR=(RANKS[0]||{name:'Bronze I'}).name;flash(name);FX.down();notifyAdminRank(name,'↺ Manual Reset',oldR,newR,oldS,0);save();renderAll();};
+window.manualReset=function(name){if(!isAdmin)return;ensureMembers();if(!confirm('RESET '+name+' to the lowest rank?'))return;const md=state.memberRanks[name];const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex=0;md.stars=0;const newR=(RANKS[0]||{name:'Bronze I'}).name;flash(name);FX.down();notifyAdminRank(name,'↺ Manual Reset',oldR,newR,oldS,0);save();renderAll();};
 async function notifyAdminRank(member,action,oldR,newR,oldS,newS){await hook(HR_WEBHOOK,{username:"Alpha Matrix Rank Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🛠️ ADMIN RANK ADJUSTMENT",description:`**${member}** — ${action}`,color:1752220,fields:[{name:'👤 Member',value:`**${member}**`,inline:true},{name:'Action',value:action,inline:true},{name:'Rank',value:`${oldR} → ${newR}`,inline:false},{name:'Stars',value:`${oldS} → ${newS}`,inline:false}],footer:{text:'Alpha Matrix • Admin Override'},timestamp:new Date().toISOString()}]});}
 /* ===== DASHBOARD ===== */
 function baseFor(i){const ai=state.targets.findIndex(t=>!t.done);if(i===ai)return state.activeBalance;return i>0?state.targets[i-1].nb:state.activeBalance;}
@@ -541,10 +518,10 @@ function renderBroadcast(){const tk=todayKey(),tt=state.trades.filter(t=>t.date&
   <div class="glass" style="border-color:var(--red)"><h3 class="red"><i class="fas fa-rotate"></i> RECOVERY</h3><p class="muted" style="margin-bottom:14px;text-transform:none;letter-spacing:0">If any page looks broken, wipe local data and reload. Cloud data stays safe.</p><button class="btn btn-magenta" style="max-width:300px" onclick="hardReset()"><i class="fas fa-rotate"></i> HARD RESET LOCAL DATA</button></div>`;}
 function renderAttendance(){const ms=currentMember?[currentMember]:team;let cards=ms.map(m=>{const a=state.attendance.activeSessions&&state.attendance.activeSessions[m],sc=a?'online':'offline',st=a?'IN MEETING':'OFFLINE';let b='';if(isAdmin||currentMember===m)b=a?`<button class="btn btn-magenta" onclick="checkOut('${m}')">CHECK OUT</button>`:`<button class="btn btn-emerald" onclick="checkIn('${m}')">CHECK IN</button>`;else b=`<button class="btn" disabled>LOCKED</button>`;return `<div class="glass" style="text-align:center;border-color:${a?'var(--emerald)':'var(--border)'}"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px"><span class="status-dot ${sc}"></span><h3 style="margin:0">${m}</h3></div><div class="timer-display" id="timer-${m}">00:00:00</div><div class="muted" style="margin-bottom:14px">${st}</div>${b}</div>`;}).join('');
  const fl=(state.attendance.logs||[]).filter(l=>isAdmin||(currentMember&&l.member===currentMember));let lh=fl.slice().reverse().slice(0,20).map(l=>{const d=fmtDur(l.durationSec),dt=new Date(l.checkIn).toLocaleDateString(),ci=new Date(l.checkIn).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),co=l.checkOut?new Date(l.checkOut).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'-',au=l.autoClosed?' <span style="color:var(--orange);font-size:.66rem">(AUTO)</span>':'';return `<tr><td><strong class="cyan">${l.member}</strong>${au}</td><td>${ci}</td><td>${co}</td><td class="gold">${d}</td><td class="muted">${dt}</td></tr>`;}).join('');if(!fl.length)lh='<tr><td colspan="5" style="text-align:center;color:var(--muted)">No logs yet</td></tr>';
- return `<h2><i class="fas fa-clock"></i> ATTENDANCE<span class="sub">Live meeting timer · auto-synced · feeds daily discipline stars</span></h2>${currentMember?`<p class="muted" style="margin-bottom:16px">Logged as <strong class="cyan">${currentMember}</strong></p>`:''}<div class="grid grid-3">${cards}</div><div class="glass" style="margin-top:26px"><h3><i class="fas fa-history"></i> MEETING LOGS</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>MEMBER</th><th>IN</th><th>OUT</th><th>DURATION</th><th>DATE</th></tr></thead><tbody>${lh}</tbody></table></div></div>`;}
+ return `<h2><i class="fas fa-clock"></i> ATTENDANCE<span class="sub">Live meeting timer · feeds daily discipline stars</span></h2>${currentMember?`<p class="muted" style="margin-bottom:16px">Logged as <strong class="cyan">${currentMember}</strong></p>`:''}<div class="grid grid-3">${cards}</div><div class="glass" style="margin-top:26px"><h3><i class="fas fa-history"></i> MEETING LOGS</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>MEMBER</th><th>IN</th><th>OUT</th><th>DURATION</th><th>DATE</th></tr></thead><tbody>${lh}</tbody></table></div></div>`;}
 function renderTargets(){const ai=state.targets.findIndex(t=>!t.done);return `<h2><i class="fas fa-bullseye"></i> MILESTONES MATRIX<span class="sub">Active target · locked progression</span></h2><div class="grid grid-3">${state.targets.map((t,i)=>{const ia=i===ai,il=i>ai;let b=t.done?`<button class="btn btn-emerald" disabled><i class="fas fa-check"></i> SECURED</button>`:il?`<button class="btn" disabled><i class="fas fa-lock"></i> LOCKED</button>`:ia&&isAdmin?`<button class="btn btn-emerald" onclick="withdraw(${i})"><i class="fas fa-rocket"></i> EXECUTE</button>`:`<button class="btn" disabled>VIEW</button>`;const base=baseFor(i);return `<div class="glass" style="border-color:${ia?'var(--cyan)':t.done?'var(--emerald)':'#222'}"><h3>LEVEL ${t.id}</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0"><div><span class="muted">Goal</span><br><strong>$${t.goal}</strong></div><div><span class="muted">Withdraw</span><br><strong class="gold">$${t.withdraw.toFixed(2)}</strong></div><div><span class="muted">Base</span><br><strong>$${base.toFixed(2)}</strong></div><div><span class="muted">Profit Needed</span><br><strong class="emerald">+$${(t.goal-base).toFixed(2)}</strong></div></div>${b}</div>`;}).join('')}</div>`;}
 function renderWallet(){const wh=state.targets.filter(t=>t.done).map(t=>({l:t.id,a:t.withdraw}));return `<h2><i class="fab fa-bitcoin"></i> BINANCE WALLET<span class="sub">Secured profits tracker</span></h2><div class="glass wallet-display"><div class="wallet-icon"><i class="fab fa-bitcoin"></i></div><div class="muted">TOTAL ACCUMULATED</div><div class="wallet-amount">$${state.binanceWallet.toFixed(2)}</div></div><div class="glass"><h3><i class="fas fa-history"></i> WITHDRAWAL HISTORY</h3><table><thead><tr><th>LEVEL</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>${wh.length?wh.map(w=>`<tr><td class="cyan">Level ${w.l}</td><td class="gold">$${w.a.toFixed(2)}</td><td><span class="badge badge-e">SECURED</span></td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;color:var(--muted)">No withdrawals yet</td></tr>'}</tbody></table></div>`;}
-function renderLogger(){return `<h2><i class="fas fa-cloud-upload-alt"></i> TRADE LOG<span class="sub">Direct cloud push · attributed per member</span></h2><div class="grid grid-2"><div class="glass"><h3>PUSH TRADE</h3>${isAdmin?`<select id="log-sym" class="form-control">${Object.keys(ASSETS).map(k=>`<option value="${k}">${ASSETS[k].label}</option>`).join('')}</select><select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option><option value="be">⚪ BREAKEVEN</option></select><input type="number" id="log-pnl" class="form-control" placeholder="P&L ($)"><textarea id="log-news" class="form-control" placeholder="📰 News context"></textarea><button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH</button>`:`<div style="text-align:center;padding:40px;color:var(--magenta)"><i class="fas fa-lock" style="font-size:3rem"></i><br>ADMIN REQUIRED</div>`}</div><div class="glass"><h3>RECENT LEDGER</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>SYM</th><th>P&L</th><th>BY</th><th>DATE</th></tr></thead><tbody>${state.trades.slice(0,12).map(t=>{const d=t.date?new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';const oc=t.outcome==='win'?'emerald':t.outcome==='loss'?'magenta':'muted';return `<tr><td>${t.symbol}</td><td class="${oc}">${t.pnl>0?'+':''}$${t.pnl.toFixed(2)}</td><td class="muted">${t.member||'-'}</td><td style="font-size:.78rem">${d}</td></tr>`;}).join('')}</tbody></table></div></div></div>`;}
+function renderLogger(){return `<h2><i class="fas fa-cloud-upload-alt"></i> TRADE LOG<span class="sub">Direct cloud push · display-only for rank</span></h2><div class="grid grid-2"><div class="glass"><h3>PUSH TRADE</h3>${isAdmin?`<select id="log-sym" class="form-control">${Object.keys(ASSETS).map(k=>`<option value="${k}">${ASSETS[k].label}</option>`).join('')}</select><select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option><option value="be">⚪ BREAKEVEN</option></select><input type="number" id="log-pnl" class="form-control" placeholder="P&L ($)"><textarea id="log-news" class="form-control" placeholder="📰 News context"></textarea><button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH</button>`:`<div style="text-align:center;padding:40px;color:var(--magenta)"><i class="fas fa-lock" style="font-size:3rem"></i><br>ADMIN REQUIRED</div>`}</div><div class="glass"><h3>RECENT LEDGER</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>SYM</th><th>P&L</th><th>BY</th><th>DATE</th></tr></thead><tbody>${state.trades.slice(0,12).map(t=>{const d=t.date?new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';const oc=t.outcome==='win'?'emerald':t.outcome==='loss'?'magenta':'muted';return `<tr><td>${t.symbol}</td><td class="${oc}">${t.pnl>0?'+':''}$${t.pnl.toFixed(2)}</td><td class="muted">${t.member||'-'}</td><td style="font-size:.78rem">${d}</td></tr>`;}).join('')}</tbody></table></div></div></div>`;}
 function renderTeam(type){const is=type==='strikes',c=is?'magenta':'gold',t=is?'STRIKES':'ABSENCES',ic=is?'fa-exclamation-triangle':'fa-user-slash';return `<h2><i class="fas ${ic}"></i> ${t}<span class="sub">Each +1 = −⭐ · infinite pagination · Discord alert</span></h2><div class="grid grid-3">${team.map(name=>{const cnt=state[type][name]||0;let cp=ui.pages[type][name]!==undefined?ui.pages[type][name]:Math.max(0,Math.ceil(cnt/5)-1);const mp=Math.max(0,Math.ceil(cnt/5)-1);if(cp<0)cp=0;if(cp>mp+1)cp=mp+1;const sr=cp*5+1,er=sr+4;const btns=[];for(let i=sr;i<=er;i++){const a=i<=cnt;btns.push(`<button class="strike-btn ${is?'':'abs-btn'} ${a?'active':''}" ${!isAdmin?'disabled':''} onclick="toggleTrack('${type}','${name}',${i})">${i}</button>`);}return `<div class="glass"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3 style="margin:0">${name}</h3><span class="badge badge-${is?'m':'g'}">${cnt}</span></div><div class="strike-row">${btns.join('')}</div><div class="pagination-row"><button class="page-btn" ${cp===0||!isAdmin?'disabled':''} onclick="changePage('${type}','${name}',${cp-1})"><i class="fas fa-arrow-left"></i></button><div class="page-indicator">PAGE ${cp+1}</div><button class="page-btn" ${!isAdmin?'disabled':''} onclick="changePage('${type}','${name}',${cp+1})"><i class="fas fa-arrow-right"></i></button></div>${cnt>=3?`<div style="margin-top:14px;color:var(--${c});font-family:Orbitron;font-size:.78rem;text-align:center"><i class="fas fa-bell"></i> WARNING</div>`:''}</div>`;}).join('')}</div>`;}
 function renderRisk(){const we=weekEco();const hi=highImpactToday();
  return `<h2><i class="fas fa-calculator"></i> RISK CONSOLE<span class="sub">Smart lot sizing · news-aware</span></h2>${hi?`<div class="eco-hi"><b class="red"><i class="fas fa-bolt"></i> HIGH IMPACT NEWS ACTIVE TODAY</b><div class="muted" style="margin-top:6px">Recommended lot sizes automatically cut by 50% to protect capital.</div></div>`:''}
@@ -569,16 +546,15 @@ function firstD(y,m){const d=new Date(y,m,1).getDay();return d===0?6:d-1;}
 function fmtKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 function dayName(y,m,d){return new Date(y,m,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
 function animVal(el,to,suf){if(!el)return;const from=parseFloat(el.dataset.v||0);el.dataset.v=to;const dur=600,st=performance.now();const pre=(to<0?'-':'')+(suf==='$'?'$':'');const post=suf==='%'?'%':'';const av=Math.abs(to);function step(t){const p=Math.min(1,(t-st)/dur);const v=from+(av-from)*p;el.textContent=pre+(suf==='$'?v.toFixed(2):v.toFixed(suf==='%'?1:2))+post;if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
-function renderEquity(){const cv=document.getElementById('equityChart');if(!cv||typeof Chart==='undefined')return;const dd={};Object.keys(state.calendar).forEach(k=>{const l=state.calendar[k];if(l&&l.amount!=null)dd[k]=(dd[k]||0)+parseFloat(l.amount);});state.trades.forEach(t=>{if(!t.date)return;const k=t.date.split('T')[0];dd[k]=(dd[k]||0)+parseFloat(t.pnl);});const sk=Object.keys(dd).sort();const lb=sk.map(k=>new Date(k+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));const cum=[];let r=150;sk.forEach(k=>{r+=dd[k];cum.push(r);});const dv=Object.values(dd);const bd=dv.length?Math.max(...dv):0,wd=dv.length?Math.min(...dv):0;const winD=dv.filter(v=>v>0),lossD=dv.filter(v=>v<0);const aw=winD.length?winD.reduce((a,b)=>a+b,0)/winD.length:0,al=lossD.length?lossD.reduce((a,b)=>a+b,0)/lossD.length:0;const cp=cum.length?cum[cum.length-1]-150:0;
+function renderEquity(){const cv=document.getElementById('equityChart');if(!cv||typeof Chart==='undefined')return;const dd={};Object.keys(state.calendar).forEach(k=>{const l=state.calendar[k];if(l&&l.amount!=null)dd[k]=(dd[k]||0)+parseFloat(l.amount);});state.trades.forEach(t=>{if(!t.date)return;const k=t.date.split('T')[0];dd[k]=(dd[k]||0)+parseFloat(t.pnl);});const sk=Object.keys(dd).sort();const lb=sk.map(k=>new Date(k+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));const cum=[];let r=150;sk.forEach(k=>{r+=dd[k];cum.push(r);});const dv=Object.values(dd);const bd=dv.length?Math.max(...dv):0,wd=dv.length?Math.min(...dv):0;const winD=dv.filter(v=>v>0),lossD=dv.filter(v=>v<0);const aw=winD.length?winD.reduce((a,b)=>a+b,0)/winD.length:0,al=lossD.length?lossD.reduce((a,b)+a+b,0)/lossD.length:0;const cp=cum.length?cum[cum.length-1]-150:0;
  animVal(document.getElementById('best-day'),bd,'$');animVal(document.getElementById('worst-day'),wd,'$');animVal(document.getElementById('avg-win'),aw,'$');animVal(document.getElementById('avg-loss'),al,'$');
  if(!lb.length){const ctx=cv.getContext('2d');ctx.fillStyle='#6b7890';ctx.font='16px Orbitron';ctx.textAlign='center';ctx.fillText('No data yet — push trades or log days',cv.width/2,180);return;}
  const ctx=cv.getContext('2d'),g=ctx.createLinearGradient(0,0,0,380);if(cp>=0){g.addColorStop(0,'rgba(0,255,157,.4)');g.addColorStop(1,'rgba(0,255,157,0)');}else{g.addColorStop(0,'rgba(255,0,85,.4)');g.addColorStop(1,'rgba(255,0,85,0)');}equityChart=new Chart(ctx,{type:'line',data:{labels:lb,datasets:[{data:cum,borderColor:cp>=0?'#00FF9D':'#FF0055',backgroundColor:g,borderWidth:3,fill:true,tension:.3,pointRadius:4,pointHoverRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(4,6,10,.95)',borderColor:'#00F3FF',borderWidth:1,titleColor:'#00F3FF',bodyColor:'#fff'}},scales:{y:{grid:{color:'rgba(0,243,255,.08)'},ticks:{color:'#6b7890',callback:v=>'$'+v.toFixed(0)}},x:{grid:{display:false},ticks:{color:'#6b7890'}}}}});}
-/* ===== ACTIONS ===== */
+/* ===== ACTIONS (trades do NOT touch rank) ===== */
 window.checkIn=async m=>{if(!isAdmin&&currentMember!==m)return alert('❌');FX.cin();if(state.attendance.activeSessions[m])await forceOut(m,'Orphaned');state.attendance.activeSessions[m]={startTime:new Date().toISOString()};save();renderAll();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🟢 JOINED MEETING",description:`**${m}** entered`,color:3066993,fields:[{name:'🕒',value:`**${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false})} UTC**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
 window.checkOut=async m=>{if(!isAdmin&&currentMember!==m)return alert('❌');FX.cout();await forceOut(m,'Manual');renderAll();};
 window.withdraw=async i=>{if(!isAdmin)return;const t=state.targets[i],nt=state.targets[i+1];state.activeBalance=t.nb;state.binanceWallet+=t.withdraw;t.done=true;FX.win();save();renderAll();await hook(HR_WEBHOOK,{username:"Alpha Matrix Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🎉 LEVEL UP",description:`Completed **Level ${t.id}**`,color:10181046,fields:[{name:'Next',value:nt?`Lvl ${nt.id} - $${nt.goal}`:'MASTER 👑',inline:true},{name:'💰',value:`+$${t.withdraw.toFixed(2)}`,inline:true},{name:'💵',value:`$${state.activeBalance.toFixed(2)}`,inline:true},{name:'🏦',value:`$${state.binanceWallet.toFixed(2)}`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
-window.addTrade=async()=>{if(!isAdmin)return;const sym=document.getElementById('log-sym').value,out=document.getElementById('log-out').value,pnl=parseFloat(document.getElementById('log-pnl').value)||0,news=document.getElementById('log-news').value.trim();if(out!=='be'&&pnl===0)return alert('Enter amount');const member=currentMember||(isAdmin?'NOAMANE':null);state.trades.unshift({symbol:sym,outcome:out,pnl,date:new Date().toISOString(),news:news||null,member});state.activeBalance+=pnl;recordActivity(member);if(out==='win')FX.win();else if(out==='loss')FX.loss();else FX.be();evaluateAll(false);save();renderAll();await hook(HR_WEBHOOK,{username:"Alpha Matrix Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🎯 TRADE LOGGED",color:3066993,fields:[{name:'Asset',value:sym,inline:true},{name:'Outcome',value:out.toUpperCase(),inline:true},{name:'P&L',value:`**${pnl>0?'+':''}$${pnl.toFixed(2)}**`,inline:false},{name:'By',value:member||'-',inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
-/* STRIKE / ABSENCE: +1 count AND −1 star (all ranks), dated for discipline tracking */
+window.addTrade=async()=>{if(!isAdmin)return;const sym=document.getElementById('log-sym').value,out=document.getElementById('log-out').value,pnl=parseFloat(document.getElementById('log-pnl').value)||0,news=document.getElementById('log-news').value.trim();if(out!=='be'&&pnl===0)return alert('Enter amount');const member=currentMember||(isAdmin?'NOAMANE':null);state.trades.unshift({symbol:sym,outcome:out,pnl,date:new Date().toISOString(),news:news||null,member});state.activeBalance+=pnl;if(out==='win')FX.win();else if(out==='loss')FX.loss();else FX.be();save();renderAll();await hook(HR_WEBHOOK,{username:"Alpha Matrix Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🎯 TRADE LOGGED",color:3066993,fields:[{name:'Asset',value:sym,inline:true},{name:'Outcome',value:out.toUpperCase(),inline:true},{name:'P&L',value:`**${pnl>0?'+':''}$${pnl.toFixed(2)}**`,inline:false},{name:'By',value:member||'-',inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
 window.toggleTrack=async(type,name,lvl)=>{if(!isAdmin)return;FX.click();const cur=state[type][name]||0,nc=cur===lvl?lvl-1:lvl,added=nc>cur;state[type][name]=nc;ui.pages[type][name]=Math.max(0,Math.ceil(nc/5)-1);
  if(added){state.disciplineLog.push({member:name,type:type,date:todayKey()});loseStar(name);}
  save();renderAll();const is=type==='strikes';await hook(HR_WEBHOOK,{username:"Alpha Matrix HR",avatar_url:BOT_AVATAR,embeds:[{title:`${is?'🔴':''} TEAM UPDATE`,color:is?15158332:1752220,fields:[{name:'👤',value:`**${name}**`,inline:true},{name:'Topic',value:is?'STRIKES':'ABSENCES',inline:true},{name:'#',value:`**${nc}**`,inline:true},{name:'Action',value:added?'Added (−⭐ applied)':'Removed',inline:false}],footer:{text:'Alpha Matrix HR'},timestamp:new Date().toISOString()}]});};
@@ -587,8 +563,8 @@ window.pushWeekly=async()=>{if(!isAdmin)return;const now=new Date(),wa=new Date(
 window.changePage=(t,n,p)=>{if(!isAdmin)return;FX.click();if(!ui.pages[t])ui.pages[t]={};ui.pages[t][n]=p;renderAll();};
 window.openDay=(k,d,dn)=>{if(!isAdmin)return;FX.click();ui.dayKey=k;document.getElementById('day-title').innerText=dn||`DAY ${d}`;const l=state.calendar[k];document.getElementById('day-amt').value=l?l.amount:'';document.getElementById('day-news').value=l&&l.news?l.news:'';ui.outcome=l?l.outcome:null;['win','loss','be'].forEach(o=>{const b=document.getElementById('ob-'+o);b.style.opacity=ui.outcome===o?'1':'.5';});document.getElementById('day-modal').style.display='flex';};
 window.setOutcome=o=>{FX.click();ui.outcome=o;['win','loss','be'].forEach(x=>document.getElementById('ob-'+x).style.opacity=x===o?'1':'.5');};
-window.saveDay=()=>{if(!ui.outcome)return alert('Select outcome');const a=parseFloat(document.getElementById('day-amt').value)||0,n=document.getElementById('day-news').value.trim();if(ui.outcome!=='be'&&a===0)return alert('Enter amount');const member=currentMember||(isAdmin?'NOAMANE':null);state.calendar[ui.dayKey]={outcome:ui.outcome,amount:a,news:n||null,member};recordActivity(member);if(ui.outcome==='win')FX.win();else if(ui.outcome==='loss')FX.loss();else FX.be();evaluateAll(false);closeModal('day-modal');save();renderAll();};
-window.clearDay=()=>{delete state.calendar[ui.dayKey];evaluateAll(false);closeModal('day-modal');save();renderAll();};
+window.saveDay=()=>{if(!ui.outcome)return alert('Select outcome');const a=parseFloat(document.getElementById('day-amt').value)||0,n=document.getElementById('day-news').value.trim();if(ui.outcome!=='be'&&a===0)return alert('Enter amount');const member=currentMember||(isAdmin?'NOAMANE':null);state.calendar[ui.dayKey]={outcome:ui.outcome,amount:a,news:n||null,member};if(ui.outcome==='win')FX.win();else if(ui.outcome==='loss')FX.loss();else FX.be();closeModal('day-modal');save();renderAll();};
+window.clearDay=()=>{delete state.calendar[ui.dayKey];closeModal('day-modal');save();renderAll();};
 window.addLeak=()=>{const tp=document.getElementById('lk-type').value,r=document.getElementById('lk-r').value,a=parseFloat(document.getElementById('lk-a').value);if(!r||!a)return alert('Fill all');state.leaks.unshift({type:tp,reason:r,amt:a});FX.loss();save();renderAll();};
 function updateStats(){let p=0,w=0,l=0,gp=0,gl=0;state.trades.forEach(t=>{p+=t.pnl;if(t.outcome==='win'){w++;gp+=t.pnl;}else if(t.outcome==='loss'){l++;gl+=Math.abs(t.pnl);}});Object.values(state.calendar).forEach(c=>{if(c.amount!=null){p+=c.amount;if(c.outcome==='win'){w++;gp+=c.amount;}else if(c.outcome==='loss'){l++;gl+=Math.abs(c.amount);}}});const wr=(w+l)?((w/(w+l))*100):0;const pf=gl>0?(gp/gl):gp>0?99:0;
  animVal(document.getElementById('dash-wr'),wr,'%');animVal(document.getElementById('dash-pnl'),p,'$');animVal(document.getElementById('dash-bal'),state.activeBalance,'$');const pfe=document.getElementById('dash-pf');if(pfe)pfe.textContent=pf>=99?'∞':pf.toFixed(2);
@@ -602,7 +578,7 @@ document.getElementById('audio-toggle').querySelector('i').className=FX.on?'fas 
 if(!fbOK){const ls=localStorage.getItem('alphaMatrix_local');if(ls){try{state={...state,...JSON.parse(ls)};}catch(e){}}ensureMembers();ensureSeason();}
 (function(){ensureSeason();if(state.season.id>(state.lastDecayedSeasonId||0)&&seasonDaysLeft()<=0){const r=runSeasonDecay();console.log('Auto season decay applied:',r);}})();
 updateAuth();renderNav();renderAll();
-/* daily discipline stars (+⭐ clean attended days) then warnings */
+/* daily discipline stars (+⭐ clean attended days) then warnings — attendance/discipline ONLY */
 team.forEach(grantDisciplineStars);
 team.forEach(checkMemberStatus);
 setTimeout(checkSmart,1500);
