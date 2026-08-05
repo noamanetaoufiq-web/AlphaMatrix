@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#04060a;--card:rgba(13,19,30,.72);--card2:rgba(8,12,20,.88);--border:rgba(0,243,255,.16);--cyan:#00F3FF;--emerald:#00FF9D;--magenta:#FF0055;--gold:#FFD700;--red:#ff4d4d;--orange:#ff9d2e;--violet:#b07aff;--text:#E6ECF3;--muted:#6b7890;--gc:0 0 10px rgba(0,243,255,.5);--ge:0 0 10px rgba(0,255,157,.5);--gm:0 0 10px rgba(255,0,85,.5);--gg:0 0 10px rgba(255,215,0,.5)}
+:root{--bg:#04060a;--card:rgba(13,19,30,.72);--card2:rgba(8,12,20,.88);--border:rgba(0,243,255,.16);--cyan:#00F3FF;--emerald:#00FF9D;--magenta:#FF0055;--gold:#FFD700;--red:#ff4d4d;--orange:#ff9d2e;--violet:#b07aff;--text:#E6ECF3;--muted:#6b7280;--gc:0 0 10px rgba(0,243,255,.5);--ge:0 0 10px rgba(0,255,157,.5);--gm:0 0 10px rgba(255,0,85,.5);--gg:0 0 10px rgba(255,215,0,.5)}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
 body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .amb-grid,.amb-glow,.amb-scan{position:fixed;inset:0;pointer-events:none;z-index:0}
@@ -19,20 +19,18 @@ body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);mi
 .amb-glow{background:radial-gradient(40% 40% at 18% 22%,rgba(0,243,255,.12),transparent 70%),radial-gradient(38% 38% at 82% 78%,rgba(0,255,157,.10),transparent 70%),radial-gradient(30% 30% at 70% 12%,rgba(255,0,85,.07),transparent 70%);animation:glowBreath 9s ease-in-out infinite alternate}
 @keyframes glowBreath{from{opacity:.55;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
 .amb-scan{background:repeating-linear-gradient(rgba(0,243,255,.022) 0 2px,transparent 2px 4px);mix-blend-mode:overlay;opacity:.5}
-.top-bar{position:fixed;top:0;left:0;right:0;height:62px;background:rgba(4,6,10,.82);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 22px;z-index:100;backdrop-filter:blur(14px)}
-.sidebar{width:244px;height:100vh;position:fixed;left:0;top:62px;background:rgba(7,10,16,.9);border-right:1px solid var(--border);padding:20px 14px;overflow-y:auto;z-index:10;backdrop-filter:blur(8px)}
+.top-bar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(4,6,10,.82);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 22px;z-index:100;backdrop-filter:blur(14px)}
+.sidebar{width:244px;height:100vh;position:fixed;left:0;top:60px;background:rgba(7,10,16,.9);border-right:1px solid var(--border);padding:20px 14px;overflow-y:auto;z-index:10;backdrop-filter:blur(8px)}
 .sidebar::-webkit-scrollbar{width:6px}.sidebar::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--emerald));border-radius:3px}
-.main{margin-left:244px;margin-top:62px;padding:30px;position:relative;z-index:1;min-height:calc(100vh - 62px)}
-.glass{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.2,.7,.3,1),border-color .35s,box-shadow .35s;backdrop-filter:blur(8px)}
-.glass::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.06),transparent);transition:left .7s;pointer-events:none}
+.main{margin-left:244px;margin-top:60px;padding:30px;position:relative;z-index:1;min-height:calc(100vh - 60px)}
+.glass{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden;transition:transform .35s,border-color .35s,box-shadow .35s;backdrop-filter:blur(8px)}
 .glass:hover{transform:translateY(-4px);border-color:rgba(0,243,255,.4);box-shadow:0 14px 40px rgba(0,0,0,.5),0 0 22px rgba(0,243,255,.12)}
-.glass:hover::after{left:130%}
 @keyframes revealUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .grid{display:grid;gap:18px}.grid-4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.grid-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.grid-2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
-h2{font-family:'Orbitron',sans-serif;color:var(--cyan);margin-bottom:8px;letter-spacing:1.5px;font-size:1.7rem;text-shadow:var(--gc);font-weight:800}
+h2{font-family:'Orbitron';color:var(--cyan);margin-bottom:8px;letter-spacing:1.5px;font-size:1.7rem;text-shadow:var(--gc);font-weight:800}
 h2 .sub{display:block;font-family:'Rajdhani';font-size:.85rem;color:var(--muted);letter-spacing:2px;text-shadow:none;text-transform:uppercase;margin-top:4px;font-weight:500}
-h3{font-family:'Orbitron',sans-serif;color:#fff;margin-bottom:14px;font-size:1.05rem;letter-spacing:1px}
-.stat{font-family:'Orbitron',sans-serif;font-size:1.9rem;font-weight:800;margin:8px 0;letter-spacing:.5px}
+h3{font-family:'Orbitron';color:#fff;margin-bottom:14px;font-size:1.05rem;letter-spacing:1px}
+.stat{font-family:'Orbitron';font-size:1.9rem;font-weight:800;margin:8px 0;letter-spacing:.5px}
 .stat-huge{font-size:3rem;text-align:center;margin:18px 0}
 .cyan{color:var(--cyan);text-shadow:var(--gc)}.emerald{color:var(--emerald);text-shadow:var(--ge)}.magenta{color:var(--magenta);text-shadow:var(--gm)}.gold{color:var(--gold);text-shadow:var(--gg)}.violet{color:var(--violet)}.red{color:var(--red)}.orange{color:var(--orange)}
 .muted{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:1.2px}
@@ -40,7 +38,7 @@ h3{font-family:'Orbitron',sans-serif;color:#fff;margin-bottom:14px;font-size:1.0
 .logo i{font-size:2.1rem;color:var(--cyan);text-shadow:var(--gc);display:inline-block;animation:logoSpin 8s linear infinite}
 @keyframes logoSpin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(360deg)}}
 .logo h3{margin-top:10px;font-size:1.15rem}.logo span{color:var(--cyan)}
-.nav-item{padding:11px 12px;margin-bottom:7px;border-radius:9px;cursor:pointer;color:var(--muted);display:flex;align-items:center;gap:12px;transition:.25s;font-weight:600;font-size:.95rem;position:relative}
+.nav-item{padding:11px 12px;margin-bottom:7px;border-radius:9px;cursor:pointer;color:var(--muted);display:flex;align-items:center;gap:12px;transition:.25s;font-weight:600;font-size:.95rem}
 .nav-item i{width:20px;text-align:center}.nav-item:hover{background:rgba(0,243,255,.08);color:var(--cyan);transform:translateX(4px)}
 .nav-item.active{background:linear-gradient(90deg,rgba(0,243,255,.18),transparent);color:var(--cyan);box-shadow:inset 3px 0 0 var(--cyan)}
 .form-control{width:100%;background:rgba(0,0,0,.5);border:1px solid var(--border);color:#fff;padding:11px 12px;border-radius:7px;margin-bottom:13px;font-family:'Rajdhani';font-size:1rem;transition:.25s}
@@ -51,12 +49,11 @@ textarea.form-control{min-height:74px;resize:vertical}select.form-control{cursor
 .chk-row input{width:18px;height:18px;accent-color:var(--emerald);cursor:pointer}
 .chk-row span{color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-size:.8rem}
 .btn{padding:11px 18px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);font-family:'Orbitron';cursor:pointer;border-radius:7px;font-weight:700;letter-spacing:1px;transition:.25s;width:100%;text-transform:uppercase;font-size:.82rem;position:relative;overflow:hidden}
-.btn::before{content:"";position:absolute;inset:0;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1}
-.btn:hover{color:#04060a;box-shadow:var(--gc)}.btn:hover::before{transform:scaleX(1)}
+.btn:hover{color:#04060a;box-shadow:var(--gc)}
 .btn-emerald{border-color:var(--emerald);color:var(--emerald)}.btn-emerald:hover{box-shadow:var(--ge)}
 .btn-magenta{border-color:var(--magenta);color:var(--magenta)}.btn-magenta:hover{color:#fff;box-shadow:var(--gm)}
 .btn-gold{border-color:var(--gold);color:var(--gold)}.btn-gold:hover{box-shadow:var(--gg)}
-.btn:disabled{opacity:.3;cursor:not-allowed}.btn:disabled:hover::before{transform:scaleX(0)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
 .btn-sm{padding:8px 14px;font-size:.72rem;width:auto}
 .badge{padding:6px 12px;border-radius:20px;font-size:.72rem;font-family:'Orbitron';border:1px solid;display:inline-flex;align-items:center;gap:6px;font-weight:600}
 .badge-m{border-color:var(--magenta);color:var(--magenta);background:rgba(255,0,85,.1)}.badge-e{border-color:var(--emerald);color:var(--emerald);background:rgba(0,255,157,.1)}.badge-g{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,.1)}
@@ -97,22 +94,21 @@ textarea.form-control{min-height:74px;resize:vertical}select.form-control{cursor
 .rank-table .mini-badge{width:52px;height:56px;display:inline-block}.rank-table .mini-badge svg{width:100%;height:100%;display:block}
 .season-banner{border-color:var(--violet);box-shadow:0 0 26px rgba(176,122,255,.16)}
 .trend-up{color:var(--emerald);text-shadow:var(--ge)}.trend-down{color:var(--magenta);text-shadow:var(--gm)}.trend-flat{color:var(--muted)}
-.rank-ctrl{padding:16px;margin-bottom:0;transition:transform .3s,border-color .3s,box-shadow .3s}
-.rank-ctrl:hover{border-color:var(--gold);box-shadow:0 0 22px rgba(255,215,0,.18)}
+.rank-ctrl{padding:16px;margin-bottom:0}
 .rc-head{display:flex;align-items:center;gap:14px}
 .rc-info{flex:1;min-width:0}
 .rc-name{font-family:'Orbitron';font-weight:800;font-size:1.05rem;letter-spacing:.5px}
 .rc-rank{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:2px 0 4px}
 .ctrl-row{display:flex;gap:6px;margin-top:12px}
-.cb{flex:1;padding:10px 4px;border-radius:7px;border:1px solid;font-family:'Orbitron';font-size:.78rem;font-weight:800;cursor:pointer;background:transparent;transition:transform .15s,background .2s,color .2s,box-shadow .2s;position:relative;overflow:hidden}
-.cb:hover{transform:translateY(-3px)}.cb:active{transform:scale(.9)}
-.cb-plus{border-color:var(--emerald);color:var(--emerald)}.cb-plus:hover{background:var(--emerald);color:#000;box-shadow:var(--ge)}
-.cb-minus{border-color:var(--magenta);color:var(--magenta)}.cb-minus:hover{background:var(--magenta);color:#fff;box-shadow:var(--gm)}
-.cb-up{border-color:var(--gold);color:var(--gold)}.cb-up:hover{background:var(--gold);color:#000;box-shadow:var(--gg)}
-.cb-down{border-color:var(--orange);color:var(--orange)}.cb-down:hover{background:var(--orange);color:#000;box-shadow:0 0 12px var(--orange)}
+.cb{flex:1;padding:10px 4px;border-radius:7px;border:1px solid;font-family:'Orbitron';font-size:.78rem;font-weight:800;cursor:pointer;background:transparent;transition:.2s}
+.cb:hover{transform:translateY(-3px)}
+.cb-plus{border-color:var(--emerald);color:var(--emerald)}.cb-plus:hover{background:var(--emerald);color:#000}
+.cb-minus{border-color:var(--magenta);color:var(--magenta)}.cb-minus:hover{background:var(--magenta);color:#fff}
+.cb-up{border-color:var(--gold);color:var(--gold)}.cb-up:hover{background:var(--gold);color:#000}
+.cb-down{border-color:var(--orange);color:var(--orange)}.cb-down:hover{background:var(--orange);color:#000}
 .cb-reset{border-color:var(--muted);color:var(--muted)}.cb-reset:hover{background:var(--muted);color:#000}
 .del-btn{background:transparent;border:1px solid var(--magenta);color:var(--magenta);border-radius:5px;cursor:pointer;padding:5px 9px;transition:.2s}
-.del-btn:hover{background:var(--magenta);color:#fff;box-shadow:var(--gm)}
+.del-btn:hover{background:var(--magenta);color:#fff}
 tr.cal-off{opacity:.45}
 .cal-nav{display:flex;align-items:center;gap:14px;margin:18px 0}.cal-nav .mn{font-family:'Orbitron';font-size:1.3rem;min-width:230px;text-align:center;color:var(--cyan);text-shadow:var(--gc)}
 .heatmap{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin-bottom:22px}
@@ -179,14 +175,9 @@ table{width:100%;border-collapse:collapse}th{text-align:left;padding:11px;color:
 <main class="main" id="app-container"></main>
 <div class="modal no-print" id="admin-modal"><div class="modal-box"><h3 class="cyan"><i class="fas fa-shield-alt"></i> ADMIN ACCESS · NOAMANE</h3><input type="password" id="admin-pass" class="form-control" placeholder="MASTER KEY" style="margin-top:18px" onkeypress="if(event.key==='Enter')verifyAdmin()"><div style="display:flex;gap:10px;margin-top:18px"><button class="btn btn-emerald" onclick="verifyAdmin()">UNLOCK</button><button class="btn btn-magenta" onclick="closeModal('admin-modal')">CANCEL</button></div></div></div>
 <div class="modal no-print" id="member-modal"><div class="modal-box"><h3 class="cyan"><i class="fas fa-user-clock"></i> MEMBER LOGIN</h3><p class="muted" style="margin:14px 0">Enter your personal attendance code</p><input type="password" id="member-pass" class="form-control" placeholder="e.g. HOSSAM123" onkeypress="if(event.key==='Enter')verifyMember()"><div style="display:flex;gap:10px;margin-top:18px"><button class="btn btn-emerald" onclick="verifyMember()">LOGIN</button><button class="btn btn-magenta" onclick="closeModal('member-modal')">CANCEL</button></div></div></div>
-<div class="modal no-print" id="day-modal"><div class="modal-box" style="text-align:left"><h3 class="cyan" id="day-title" style="text-align:center">LOG DAY</h3><p class="muted" id="day-auto-note" style="text-transform:none;letter-spacing:0;display:none;margin-bottom:10px">⚡ This day has logged trades — the total is AUTO from trades. Manual amount is ignored; news is saved.</p><div style="display:flex;gap:8px;margin:18px 0"><button class="btn btn-emerald" id="ob-win" onclick="setOutcome('win')">🟢 PROFIT</button><button class="btn btn-magenta" id="ob-loss" onclick="setOutcome('loss')">🔴 LOSS</button><button class="btn" id="ob-be" onclick="setOutcome('be')" style="border-color:var(--muted);color:var(--muted)">⚪ B/E</button></div><input type="number" id="day-amt" class="form-control" placeholder="AMOUNT ($) — 0 for breakeven"><textarea id="day-news" class="form-control" placeholder="📰 High Impact News Context (optional)"></textarea><div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-emerald" onclick="saveDay()">SAVE</button><button class="btn btn-magenta" onclick="clearDay()">CLEAR</button><button class="btn" onclick="closeModal('day-modal')" style="border-color:var(--muted);color:var(--muted)">CANCEL</button></div></div></div>
+<div class="modal no-print" id="day-modal"><div class="modal-box" style="text-align:left"><h3 class="cyan" id="day-title" style="text-align:center">LOG DAY</h3><p class="muted" id="day-auto-note" style="text-transform:none;letter-spacing:0;display:none;margin-bottom:10px">⚡ This day has logged trades — total is AUTO from trades; manual amount ignored, news saved.</p><div style="display:flex;gap:8px;margin:18px 0"><button class="btn btn-emerald" id="ob-win" onclick="setOutcome('win')">🟢 PROFIT</button><button class="btn btn-magenta" id="ob-loss" onclick="setOutcome('loss')">🔴 LOSS</button><button class="btn" id="ob-be" onclick="setOutcome('be')" style="border-color:var(--muted);color:var(--muted)">⚪ B/E</button></div><input type="number" id="day-amt" class="form-control" placeholder="AMOUNT ($) — 0 for breakeven"><textarea id="day-news" class="form-control" placeholder="📰 High Impact News Context (optional)"></textarea><div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-emerald" onclick="saveDay()">SAVE</button><button class="btn btn-magenta" onclick="clearDay()">CLEAR</button><button class="btn" onclick="closeModal('day-modal')" style="border-color:var(--muted);color:var(--muted)">CANCEL</button></div></div></div>
 <script>
-/* ===== VISIBLE ERROR REPORTER ===== */
-window.addEventListener('error',function(e){
-  var m=document.getElementById('app-container');
-  if(!m){m=document.createElement('main');m.id='app-container';m.className='main';document.body.appendChild(m);}
-  m.innerHTML='<div class="fatal">⚠️ JS ERROR (sifet had l-capture):\n'+(e.message||'unknown')+'\nline: '+(e.lineno||'?')+'</div>';
-});
+window.addEventListener('error',function(e){var m=document.getElementById('app-container');if(!m){m=document.createElement('main');m.id='app-container';m.className='main';document.body.appendChild(m);}m.innerHTML='<div class="fatal">⚠️ JS ERROR (sifet had l-capture):\n'+(e.message||'unknown')+'\nline: '+(e.lineno||'?')+'</div>';});
 const ADMIN_KEY="ALPHA2026";
 const MEMBER_CODES={"HOSSAM123":"HOSSAM","YASSINE456":"YASSINE","MONCEF789":"MONCEF","TAHA101":"TAHA","AMINE202":"AMINE"};
 const MEMBER_DISCORD={};
@@ -284,7 +275,7 @@ function trendIcon(t){return t==='up'?'<span class="trend-up" title="Climbing">�
 const firebaseConfig={apiKey:"AIzaSyBPFG8TJEMrtgRPpKJekUgaB4Qy47N2-64",authDomain:"alpha-matrix-57042.firebaseapp.com",databaseURL:"https://alpha-matrix-57042-default-rtdb.firebaseio.com",projectId:"alpha-matrix-57042"};
 let fbOK=false;
 try{firebase.initializeApp(firebaseConfig);db=firebase.database();fbOK=true;
- db.ref('alphaMatrix_full_v10').on('value',snap=>{
+ db.ref('alphaMatrix_full_v11').on('value',snap=>{
   const d=snap.val();
   if(d&&typeof d==='object')state={...state,...d};
   ensureMembers();ensureSeason();autoClose();renderAll();
@@ -294,71 +285,28 @@ try{firebase.initializeApp(firebaseConfig);db=firebase.database();fbOK=true;
 }catch(e){console.error('Firebase init failed',e);db=null;
  const b=document.getElementById('db-badge');if(b){b.innerHTML='<i class="fas fa-plug"></i> OFFLINE';b.className='badge badge-g';}
  ensureMembers();ensureSeason();}
-function save(){if(db){try{db.ref('alphaMatrix_full_v10').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
+function save(){if(db){try{db.ref('alphaMatrix_full_v11').set(state);}catch(e){console.error(e);}}else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}
 async function hook(url,p){try{await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}catch(e){console.error(e);}}
 function mention(name){const id=MEMBER_DISCORD[name];return id?`<@${id}>`:null;}
-function selfTest(){
- const t=[];
- t.push(['targets=10',state.targets.length===10]);
- t.push(['nb=goal-withdraw',state.targets.every(x=>Math.abs((x.goal-x.withdraw)-x.nb)<0.01)]);
- t.push(['dailyGoals=10',DAILY_GOALS.length===10]);
- t.push(['ranks>0',RANKS.length>0]);
- t.push(['team=6',team.length===6]);
- t.push(['start=152.04',Math.abs(START_BALANCE-152.04)<0.001]);
- const bad=t.filter(x=>!x[1]);
- console.log('%cSELF-TEST '+(bad.length?'FAIL':'OK'),'color:#00FF9D;font-weight:bold',t.map(x=>x[0]+':'+(x[1]?'✓':'✗')).join(' '));
- return bad.length===0;
-}
+function selfTest(){const t=[];t.push(['targets=10',state.targets.length===10]);t.push(['nb=goal-withdraw',state.targets.every(x=>Math.abs((x.goal-x.withdraw)-x.nb)<0.01)]);t.push(['dailyGoals=10',DAILY_GOALS.length===10]);t.push(['ranks>0',RANKS.length>0]);t.push(['team=6',team.length===6]);t.push(['start=152.04',Math.abs(START_BALANCE-152.04)<0.001]);const bad=t.filter(x=>!x[1]);console.log('%cSELF-TEST '+(bad.length?'FAIL':'OK'),'color:#00FF9D;font-weight:bold',t.map(x=>x[0]+':'+(x[1]?'✓':'✗')).join(' '));return bad.length===0;}
 function cms(name){let pnl=0,w=0,l=0,be=0,gp=0,gl=0,n=0;const each=(p,o)=>{pnl+=p;n++;if(o==='win'){w++;gp+=p;}else if(o==='loss'){l++;gl+=Math.abs(p);}else be++;};
  state.trades.forEach(t=>{if((t.member||null)===name)each(t.pnl,t.outcome);});
  const wr=n?+((w/(w+l||1))*100).toFixed(1):0;const pf=gl>0?+(gp/gl).toFixed(2):(gp>0?99:0);return{pnl,w,l,be,n,wr,pf,gp,gl};}
-/* trades with cal!==false aggregate into calendar */
 function dayTradeSum(key){let s=0,c=0;state.trades.forEach(t=>{if(t.cal!==false&&t.date&&t.date.slice(0,10)===key){s+=t.pnl;c++;}});return{sum:s,count:c};}
-function dayInfo(key){
- const ts=dayTradeSum(key);
- const m=state.calendar[key];
+function dayInfo(key){const ts=dayTradeSum(key);const m=state.calendar[key];
  if(ts.count>0){return{total:ts.sum,hasData:true,source:'auto',count:ts.count,news:(m&&m.news)||null};}
  if(m){return{total:(m.amount!=null?parseFloat(m.amount):0),hasData:true,source:'manual',count:0,news:m.news||null,outcome:m.outcome};}
- return{total:0,hasData:false,source:null,count:0,news:null};
-}
-function buildDailyTotals(){
- const keys={};
- state.trades.forEach(t=>{if(t.cal!==false&&t.date)keys[t.date.slice(0,10)]=1;});
- Object.keys(state.calendar).forEach(k=>{keys[k]=1;});
- const out={};
- Object.keys(keys).forEach(k=>{const di=dayInfo(k);if(di.hasData)out[k]=di.total;});
- return out;
-}
+ return{total:0,hasData:false,source:null,count:0,news:null};}
+function buildDailyTotals(){const keys={};state.trades.forEach(t=>{if(t.cal!==false&&t.date)keys[t.date.slice(0,10)]=1;});Object.keys(state.calendar).forEach(k=>{keys[k]=1;});const out={};Object.keys(keys).forEach(k=>{const di=dayInfo(k);if(di.hasData)out[k]=di.total;});return out;}
 function activeLevelIdx(){const i=state.targets.findIndex(t=>!t.done);return i<0?state.targets.length-1:i;}
-function dailyGoalInfo(){
- const li=activeLevelIdx();
- const range=DAILY_GOALS[li]||DAILY_GOALS[DAILY_GOALS.length-1];
- const min=range[0],max=range[1];
- const todayPnl=+(dayInfo(todayKey()).total).toFixed(2);
- let status,label,color;
+function dailyGoalInfo(){const li=activeLevelIdx();const range=DAILY_GOALS[li]||DAILY_GOALS[DAILY_GOALS.length-1];const min=range[0],max=range[1];const todayPnl=+(dayInfo(todayKey()).total).toFixed(2);let status,label,color;
  if(todayPnl<0){status='loss';label='LOSS DAY ⚠️';color='var(--magenta)';}
  else if(todayPnl>=max){status='crush';label='GOAL CRUSHED 🔥';color='var(--gold)';}
  else if(todayPnl>=min){status='reach';label='GOAL REACHED ✅';color='var(--emerald)';}
  else if(todayPnl>0){status='track';label='ON TRACK…';color='var(--cyan)';}
  else{status='none';label='NO PROFIT YET';color='var(--muted)';}
- const pct=Math.max(0,Math.min(100,(todayPnl/min)*100));
- return{level:li+1,min,max,todayPnl,status,label,color,pct};
-}
-function renderDailyGoal(){
- const g=dailyGoalInfo();
- return `<div class="glass daily-goal">
-   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-     <h3 style="margin:0;color:var(--gold)"><i class="fas fa-crosshairs"></i> DAILY GOAL · LEVEL ${g.level}</h3>
-     <span style="font-family:Orbitron;font-weight:800;color:${g.color}">${g.label}</span>
-   </div>
-   <div style="display:flex;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px">
-     <div><span class="muted">Today P&L</span><div class="stat ${g.todayPnl>=0?'emerald':'magenta'}" style="font-size:1.6rem">${g.todayPnl>=0?'+':''}$${g.todayPnl.toFixed(2)}</div></div>
-     <div style="text-align:right"><span class="muted">Target Range</span><div class="stat gold" style="font-size:1.6rem">$${g.min} – $${g.max}</div></div>
-   </div>
-   <div class="progress-bar gold-bar"><div class="progress-fill gold-fill" style="width:${g.pct}%"></div><div class="progress-text">$${g.todayPnl.toFixed(2)} / $${g.min}</div></div>
-   <div class="muted" style="text-transform:none;letter-spacing:0">Auto-calculated from today's TRADE LOG. Hit the range to stay on pace for Level ${g.level}.</div>
- </div>`;
-}
+ const pct=Math.max(0,Math.min(100,(todayPnl/min)*100));return{level:li+1,min,max,todayPnl,status,label,color,pct};}
+function renderDailyGoal(){const g=dailyGoalInfo();return `<div class="glass daily-goal"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h3 style="margin:0;color:var(--gold)"><i class="fas fa-crosshairs"></i> DAILY GOAL · LEVEL ${g.level}</h3><span style="font-family:Orbitron;font-weight:800;color:${g.color}">${g.label}</span></div><div style="display:flex;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px"><div><span class="muted">Today P&L</span><div class="stat ${g.todayPnl>=0?'emerald':'magenta'}" style="font-size:1.6rem">${g.todayPnl>=0?'+':''}$${g.todayPnl.toFixed(2)}</div></div><div style="text-align:right"><span class="muted">Target Range</span><div class="stat gold" style="font-size:1.6rem">$${g.min} – $${g.max}</div></div></div><div class="progress-bar gold-bar"><div class="progress-fill gold-fill" style="width:${g.pct}%"></div><div class="progress-text">$${g.todayPnl.toFixed(2)} / $${g.min}</div></div><div class="muted" style="text-transform:none;letter-spacing:0">Auto-calculated from today's TRADE LOG. Hit the range to stay on pace for Level ${g.level}.</div></div>`;}
 function lastAttendance(name){let last=null;state.attendance.logs.forEach(l=>{if(l.member===name&&l.checkIn){const d=l.checkIn.slice(0,10);if(!last||d>last)last=d;}});return last;}
 function pushStarLossRecord(name){const meta=state.memberMeta[name];if(!meta.starsLost7d)meta.starsLost7d=[];meta.starsLost7d.push(Date.now());}
 function mutateStarLoss(name){const md=state.memberRanks[name];if(md.stars>0){md.stars--;}else if(md.rankIndex>0){md.rankIndex--;const low=RANKS[md.rankIndex]||RANKS[0];md.stars=low.starsNeeded===Infinity?0:Math.max(0,low.starsNeeded-1);}}
@@ -371,21 +319,13 @@ function grantDisciplineStars(name){ensureMembers();const meta=state.memberMeta[
  if(!meta.lastDisciplineDate){meta.lastDisciplineDate=today;return 0;}
  let granted=0;let d=new Date(meta.lastDisciplineDate+'T00:00:00');d.setDate(d.getDate()+1);
  const end=new Date(today+'T00:00:00');end.setDate(end.getDate()-1);let guard=0;
- while(d<=end&&guard<400){guard++;
-  const ds=d.toISOString().slice(0,10);
+ while(d<=end&&guard<400){guard++;const ds=d.toISOString().slice(0,10);
   const attended=state.attendance.logs.some(l=>l.member===name&&l.checkIn&&l.checkIn.slice(0,10)===ds);
   const clean=!state.disciplineLog.some(x=>x.member===name&&x.date===ds);
   if(attended&&clean){grantStar(name);granted++;}
   d.setDate(d.getDate()+1);}
- meta.lastDisciplineDate=today;
- if(granted>0)flash(name);
- return granted;}
-function loseStar(name){ensureMembers();const md=state.memberRanks[name];const before=(RANKS[md.rankIndex]||RANKS[0]).name;const bs=md.stars;
- pushStarLossRecord(name);mutateStarLoss(name);
- const after=(RANKS[md.rankIndex]||RANKS[0]).name;
- flash(name);
- if(after!==before)notifyRank(name,'DOWN',before,after,bs,md.stars);
- checkMemberStatus(name);}
+ meta.lastDisciplineDate=today;if(granted>0)flash(name);return granted;}
+function loseStar(name){ensureMembers();const md=state.memberRanks[name];const before=(RANKS[md.rankIndex]||RANKS[0]).name;const bs=md.stars;pushStarLossRecord(name);mutateStarLoss(name);const after=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);if(after!==before)notifyRank(name,'DOWN',before,after,bs,md.stars);checkMemberStatus(name);}
 function flash(name){ui.flash[name]=1;FX.rankup();setTimeout(()=>{['badge-','badge-t-','badge-p-','badge-c-'].forEach(pre=>{const el=document.getElementById(pre+name);if(el)el.classList.remove('rankup');});const me=document.getElementById('badge-me');if(me)me.classList.remove('rankup');delete ui.flash[name];},1400);}
 async function notifyRank(name,dir,oldN,newN){const up=dir==='UP';const st=cms(name);if(up)FX.rankup();else FX.down();
  await hook(HR_WEBHOOK,{username:"Alpha Matrix Rank Bot",avatar_url:BOT_AVATAR,embeds:[{title:up?'🎉 RANK UP!':'⚠️ RANK DOWN',description:`**${name}** ${up?'promoted to':'demoted to'} **${newN}**`,color:up?3066993:15158332,fields:[{name:'👤',value:`**${name}**`,inline:true},{name:up?'⬆️ From':'⬇️ From',value:oldN,inline:true},{name:up?'⬆️ To':'⬇️ To',value:newN,inline:true},{name:'📊',value:`P&L $${st.pnl.toFixed(2)} • WR ${st.wr}% • PF ${st.pf>=99?'∞':st.pf}`,inline:false}],footer:{text:'Alpha Matrix • Ranked'},timestamp:new Date().toISOString()}]});}
@@ -402,64 +342,23 @@ function runSeasonDecay(){ensureMembers();ensureSeason();const report=[];
   else{action='HARD_DECAY';mutateStarLoss(name);}
   report.push({name,action,from,to:(RANKS[md.rankIndex]||RANKS[0]).name,attendedDays,daysInactive});});
  team.forEach(name=>{const md=state.memberRanks[name];state.memberMeta[name].seasonStartRankIdx=md.rankIndex;state.memberMeta[name].seasonStartStars=md.stars;});
- state.lastDecayedSeasonId=state.season.id;
- state.season={id:state.season.id+1,start:new Date().toISOString().slice(0,10),days:SEASON_DAYS};
- return report;}
+ state.lastDecayedSeasonId=state.season.id;state.season={id:state.season.id+1,start:new Date().toISOString().slice(0,10),days:SEASON_DAYS};return report;}
 window.endSeason=function(){if(!isAdmin)return;if(!confirm('End the current season NOW and apply rank decay (attendance + discipline only)?'))return;
  const endedId=state.season.id;const report=runSeasonDecay();team.forEach(checkMemberStatus);save();renderAll();
- hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:'🌙 SEASON '+endedId+' COMPLETE — RANK DECAY APPLIED',description:'Season evaluation finished (attendance + discipline only — trades not involved). New season started.',color:10181046,
-  fields:report.map(x=>({name:(x.action==='HARD_DECAY'?'📉 ':x.action==='SOFT_DECAY'?'⬇ ':' ')+x.name,value:`${x.from} → **${x.to}** · attended:${x.attendedDays} · idle:${x.daysInactive>9000?'∞':x.daysInactive}d`,inline:true})),
-  footer:{text:'Alpha Matrix • Seasonal Ranked System'},timestamp:new Date().toISOString()}]});
+ hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:'🌙 SEASON '+endedId+' COMPLETE — RANK DECAY APPLIED',description:'Season evaluation finished (attendance + discipline only). New season started.',color:10181046,fields:report.map(x=>({name:(x.action==='HARD_DECAY'?'📉 ':x.action==='SOFT_DECAY'?'⬇ ':' ')+x.name,value:`${x.from} → **${x.to}** · attended:${x.attendedDays} · idle:${x.daysInactive>9000?'∞':x.daysInactive}d`,inline:true})),footer:{text:'Alpha Matrix • Seasonal Ranked System'},timestamp:new Date().toISOString()}]});
  FX.win();toast('🌙 Season ended & decay applied');};
 function checkMemberStatus(name){ensureMembers();const meta=state.memberMeta[name];const now=Date.now();
  meta.starsLost7d=(meta.starsLost7d||[]).filter(t=>now-t<=RAPID_LOSS_WINDOW*864e5);
- const lost=meta.starsLost7d.length;
- const lastA=lastAttendance(name);
- const daysInactive=lastA?Math.floor((now-new Date(lastA+'T00:00:00'))/864e5):0;
+ const lost=meta.starsLost7d.length;const lastA=lastAttendance(name);const daysInactive=lastA?Math.floor((now-new Date(lastA+'T00:00:00'))/864e5):0;
  const reasons=[];let decayed=false;
- if(lastA&&daysInactive>=INACTIVITY_DECAY_DAYS){
-   if(!meta.lastInactivityDecay||(now-new Date(meta.lastInactivityDecay))>=7*864e5){const b=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);decayed=true;meta.lastInactivityDecay=new Date().toISOString();reasons.push('👻 No meeting '+daysInactive+' days → forced decay (was '+b+')');}
-   else reasons.push('👻 No meeting '+daysInactive+' days — decay pending');
- } else if(lastA&&daysInactive>=INACTIVITY_WARN_DAYS){reasons.push('👻 No meeting '+daysInactive+' days — attend sessions to stay ranked');}
- if(lost>=RAPID_LOSS_THRESHOLD){
-   if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendIndariya(name,lost,daysInactive);}
- } else if(reasons.length){
-   if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendWarning(name,reasons,lost,daysInactive,decayed);}
- }}
+ if(lastA&&daysInactive>=INACTIVITY_DECAY_DAYS){if(!meta.lastInactivityDecay||(now-new Date(meta.lastInactivityDecay))>=7*864e5){const b=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);decayed=true;meta.lastInactivityDecay=new Date().toISOString();reasons.push('👻 No meeting '+daysInactive+' days → forced decay (was '+b+')');}else reasons.push('👻 No meeting '+daysInactive+' days — decay pending');}
+ else if(lastA&&daysInactive>=INACTIVITY_WARN_DAYS){reasons.push('👻 No meeting '+daysInactive+' days — attend sessions to stay ranked');}
+ if(lost>=RAPID_LOSS_THRESHOLD){if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendIndariya(name,lost,daysInactive);}}
+ else if(reasons.length){if(!meta.lastWarningDate||(now-new Date(meta.lastWarningDate))>=24*3600e3){meta.lastWarningDate=new Date().toISOString();sendWarning(name,reasons,lost,daysInactive,decayed);}}}
 function sendIndariya(name,lost,daysInactive){const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);const m=mention(name);const nm=m||('**'+name+'**');
- hook(HR_WEBHOOK,{username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,
-  content:m?`🚨🚨 ${m} 🚨`:undefined,
-  embeds:[{title:"🚨   I N D A R I Y A   K B I R A   🚨🚨🚨",
-   description:`# ⚠️ INDARIYA ⚠️\n### ${nm}\n\n**RANK STARS COLLAPSING.** The system detected **${lost} stars lost in ${RAPID_LOSS_WINDOW} days** — a rapid decline. This is a **FINAL warning** before further demotion.\n\n**Sala7 7alek daba.** Attend meetings, respect risk rules, stop FOMO. Your rank is on the line.`,
-   color:15158332,
-   fields:[
-    {name:'👤 Member',value:`**${name}**`,inline:true},
-    {name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},
-    {name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},
-    {name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
-    {name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} • ${st.wr}% • ${st.pf>=99?'∞':st.pf}`,inline:true},
-    {name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},
-    {name:'⚖️ Consequence',value:'**Immediate star decay in progress.** If the decline continues, automatic rank demotion follows each cycle.',inline:false},
-    {name:'✅ Required Action',value:'Show up. Zero strikes/absences. Rebuild your stars.',inline:false}],
-   footer:{text:'FINAL WARNING • Alpha Matrix Discipline • '+new Date().toLocaleString()},
-   timestamp:new Date().toISOString()}]});}
+ hook(HR_WEBHOOK,{username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,content:m?`🚨 ${m} 🚨`:undefined,embeds:[{title:"🚨   I N D A R I Y A   K B I R A   🚨🚨🚨",description:`# ⚠️ INDARIYA ⚠️\n### ${nm}\n\n**RANK STARS COLLAPSING.** The system detected **${lost} stars lost in ${RAPID_LOSS_WINDOW} days** — a rapid decline. This is a **FINAL warning** before further demotion.\n\n**Sala7 7alek daba.** Attend meetings, respect risk rules, stop FOMO. Your rank is on the line.`,color:15158332,fields:[{name:'👤 Member',value:`**${name}**`,inline:true},{name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},{name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},{name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},{name:'📉 P&L / WR / PF',value:`$${st.pnl.toFixed(2)} • ${st.wr}% • ${st.pf>=99?'∞':st.pf}`,inline:true},{name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},{name:'⚖️ Consequence',value:'**Immediate star decay in progress.** If the decline continues, automatic rank demotion follows each cycle.',inline:false},{name:'✅ Required Action',value:'Show up. Zero strikes/absences. Rebuild your stars.',inline:false}],footer:{text:'FINAL WARNING • Alpha Matrix Discipline • '+new Date().toLocaleString()},timestamp:new Date().toISOString()}]});}
 function sendWarning(name,reasons,lost,daysInactive,decayed){const md=state.memberRanks[name];const r=RANKS[md.rankIndex]||RANKS[0];const st=cms(name);const m=mention(name);const nm=m||('**'+name+'**');
- hook(HR_WEBHOOK,{username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,
-  content:m?`🚨 ${m} — PERFORMANCE ALERT`:undefined,
-  embeds:[{title:"🚨   P E R F O R M A N C E   A L E R T   🚨",
-   description:`### ⚠️ ${nm} — YOUR RANK IS AT RISK\n\nThe discipline system detected issues with your recent attendance & conduct. Act **immediately** or further demotion follows.`,
-   color:15158332,
-   fields:[
-    {name:'👤 Member',value:`**${name}**`,inline:true},
-    {name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},
-    {name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},
-    {name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},
-    {name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},
-    {name:'🔍 Detected Issues',value:reasons.map(x=>'• '+x).join('\n'),inline:false},
-    {name:'⚖️ Consequence',value:decayed?'**Rank/Star forcibly reduced.** Continued issues trigger further demotion.':'**Warning issued.** Improve within the grace window or automatic decay applies.',inline:false},
-    {name:'✅ Required Action',value:'Attend meetings, respect risk rules, zero strikes/absences.',inline:false}],
-   footer:{text:'URGENT • Alpha Matrix Discipline • '+new Date().toLocaleString()},
-   timestamp:new Date().toISOString()}]});}
+ hook(HR_WEBHOOK,{username:"Alpha Matrix Discipline",avatar_url:BOT_AVATAR,content:m?`🚨 ${m} — PERFORMANCE ALERT`:undefined,embeds:[{title:"🚨   P E R F O R M A N C E   A L E R T   🚨",description:`### ⚠️ ${nm} — YOUR RANK IS AT RISK\n\nThe discipline system detected issues with your recent attendance & conduct. Act **immediately** or further demotion follows.`,color:15158332,fields:[{name:'👤 Member',value:`**${name}**`,inline:true},{name:'🎖️ Current Rank',value:`${r.emoji} **${r.name}**`,inline:true},{name:'⚡ Stars Lost ('+RAPID_LOSS_WINDOW+'d)',value:`**${lost}**`,inline:true},{name:'👻 Days w/o Meeting',value:daysInactive>0?`**${daysInactive}d**`:'n/a',inline:true},{name:'🛡️ Strikes / Absences',value:`${state.strikes[name]||0} / ${state.absences[name]||0}`,inline:true},{name:'🔍 Detected Issues',value:reasons.map(x=>'• '+x).join('\n'),inline:false},{name:'⚖️ Consequence',value:decayed?'**Rank/Star forcibly reduced.** Continued issues trigger further demotion.':'**Warning issued.** Improve within the grace window or automatic decay applies.',inline:false},{name:'✅ Required Action',value:'Attend meetings, respect risk rules, zero strikes/absences.',inline:false}],footer:{text:'URGENT • Alpha Matrix Discipline • '+new Date().toLocaleString()},timestamp:new Date().toISOString()}]});}
 window.forceWarn=function(name){if(!isAdmin)return;const meta=state.memberMeta[name];sendWarning(name,['🛠️ Admin-issued disciplinary warning'],(meta.starsLost7d||[]).length,lastAttendance(name)?Math.floor((Date.now()-new Date(lastAttendance(name)+'T00:00:00'))/864e5):0,false);meta.lastWarningDate=new Date().toISOString();save();FX.click();toast('⚠️ Warning sent to '+name);};
 window.forceDecay=function(name){if(!isAdmin)return;if(!confirm('Force one decay step on '+name+'?'))return;const before=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;applyStarLoss(name,1);const after=(RANKS[state.memberRanks[name].rankIndex]||RANKS[0]).name;flash(name);FX.down();save();renderAll();toast('📉 '+name+': '+before+' → '+after);};
 function autoClose(){if(!state.attendance.activeSessions)return;const now=Date.now(),MAX=12*3600e3;Object.keys(state.attendance.activeSessions).forEach(m=>{const s=state.attendance.activeSessions[m];if(!s)return;const st=new Date(s.startTime).getTime();if(now-st>MAX){const co=new Date(st+MAX),d=Math.floor(MAX/1000);state.attendance.logs.push({member:m,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,autoClosed:true});delete state.attendance.activeSessions[m];save();}});}
@@ -475,8 +374,8 @@ function verifyMember(){const code=document.getElementById('member-pass').value.
  if(state.attendance.activeSessions[mn]){const s=state.attendance.activeSessions[mn];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:mn,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,autoClosed:true});delete state.attendance.activeSessions[mn];save();}
  currentMember=mn;localStorage.setItem('alpha_member',mn);document.getElementById('member-modal').style.display='none';document.getElementById('member-pass').value='';FX.win();updateAuth();renderAll();}else{FX.loss();alert('❌ INVALID CODE');}}
 window.safeLogout=async()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember])await forceOut(currentMember,'Logged Out');isAdmin=false;currentMember=null;localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');FX.cout();updateAuth();renderAll();};
-async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v10/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v10/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
-window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v10.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
+async function forceOut(member,reason){if(!state.attendance.activeSessions||!state.attendance.activeSessions[member])return;const s=state.attendance.activeSessions[member];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason});delete state.attendance.activeSessions[member];if(db){try{await db.ref('alphaMatrix_full_v11/attendance/activeSessions/'+member).remove();await db.ref('alphaMatrix_full_v11/attendance/logs').set(state.attendance.logs);}catch(e){save();}}else save();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🔴 LEFT MEETING",description:`**${member}** — ${reason}`,color:15158332,fields:[{name:'👤',value:`**${member}**`,inline:true},{name:'⏱️',value:`**${fmtDur(d)}**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:co.toISOString()}]});}
+window.addEventListener('beforeunload',()=>{if(currentMember&&state.attendance.activeSessions&&state.attendance.activeSessions[currentMember]){const s=state.attendance.activeSessions[currentMember];const co=new Date(),d=Math.floor((co-new Date(s.startTime))/1000);state.attendance.logs.push({member:currentMember,checkIn:s.startTime,checkOut:co.toISOString(),durationSec:d,reason:'Browser Closed'});delete state.attendance.activeSessions[currentMember];if(db)navigator.sendBeacon('https://alpha-matrix-57042-default-rtdb.firebaseio.com/alphaMatrix_full_v11.json',JSON.stringify(state));else localStorage.setItem('alphaMatrix_local',JSON.stringify(state));}});
 function updateAuth(){const mb=document.getElementById('mode-badge'),ub=document.getElementById('user-badge'),un=document.getElementById('user-name-display'),lb=document.getElementById('logout-btn'),mlb=document.getElementById('member-login-btn');
  if(isAdmin){mb.innerHTML='<i class="fas fa-user-shield"></i> ADMIN';mb.className='badge badge-e';ub.style.display='none';lb.style.display='block';mlb.style.display='none';}
  else if(currentMember){mb.innerHTML='<i class="fas fa-user-clock"></i> MEMBER';mb.className='badge badge-g';ub.style.display='inline-flex';un.textContent=currentMember;lb.style.display='block';mlb.style.display='none';}
@@ -484,20 +383,25 @@ function updateAuth(){const mb=document.getElementById('mode-badge'),ub=document
 const NAV=[{id:'ranking',i:'fa-trophy',l:'RANKED LADDER'},{id:'dashboard',i:'fa-rocket',l:'COMMAND CENTER'},{id:'performance',i:'fa-chart-line',l:'EQUITY CURVE'},{id:'attendance',i:'fa-clock',l:'ATTENDANCE'},{id:'targets',i:'fa-bullseye',l:'MILESTONES'},{id:'wallet',i:'fa-bitcoin',l:'BINANCE WALLET'},{id:'logger',i:'fa-cloud-upload-alt',l:'TRADE LOG'},{id:'team',i:'fa-users',l:'TEAM RULES'},{id:'absences',i:'fa-user-slash',l:'ABSENCES'},{id:'risk',i:'fa-calculator',l:'RISK CONSOLE'},{id:'calendar',i:'fa-calendar-alt',l:'CALENDAR'},{id:'analytics',i:'fa-chart-bar',l:'ANALYTICS'},{id:'broadcast',i:'fa-broadcast-tower',l:'BROADCAST'}];
 function renderNav(){document.getElementById('nav-list').innerHTML=NAV.map(n=>`<div class="nav-item ${ui.view===n.id?'active':''}" onclick="switchView('${n.id}')"><i class="fas ${n.i}"></i> <span>${n.l}</span></div>`).join('');}
 function switchView(id){FX.click();ui.view=id;renderNav();renderAll();}
+/* ===== renderAll M3A POST-RENDER INITIALIZERS (l-fix dyal curve + timers) ===== */
 function renderAll(){
  ensureMembers();ensureSeason();
  let app=document.getElementById('app-container');
  if(!app){app=document.createElement('main');app.id='app-container';app.className='main';document.body.appendChild(app);}
- app.innerHTML='';if(timerInterval)clearInterval(timerInterval);if(equityChart){equityChart.destroy();equityChart=null;}
+ app.innerHTML='';
+ if(timerInterval)clearInterval(timerInterval);
+ if(equityChart){equityChart.destroy();equityChart=null;}
  const nb=document.getElementById('news-badge');if(nb)nb.style.display=highImpactToday()?'inline-flex':'none';
  const R={ranking:renderRanking,dashboard:renderDashboard,performance:renderPerformance,attendance:renderAttendance,targets:renderTargets,wallet:renderWallet,logger:renderLogger,team:()=>renderTeam('strikes'),absences:()=>renderTeam('absences'),risk:renderRisk,calendar:renderCalendar,analytics:renderAnalytics,broadcast:renderBroadcast};
  try{ if(R[ui.view])app.innerHTML=R[ui.view](); else app.innerHTML=renderDashboard(); }
  catch(e){ console.error('RENDER ERROR on view "'+ui.view+'":',e);
-  app.innerHTML=`<h2 class="red"><i class="fas fa-triangle-exclamation"></i> RENDER ERROR</h2><div class="glass" style="border-color:var(--red)"><p>The <b>${ui.view}</b> view crashed. Usually stale local data.</p><pre class="err-pre">${(e&&e.stack)?e.stack:(e&&e.message)||e}</pre><button class="btn btn-magenta" style="max-width:300px" onclick="hardReset()"><i class="fas fa-rotate"></i> HARD RESET LOCAL DATA</button></div>`; }
+  app.innerHTML=`<h2 class="red"><i class="fas fa-triangle-exclamation"></i> RENDER ERROR</h2><div class="glass" style="border-color:var(--red)"><p>The <b>${ui.view}</b> view crashed.</p><pre class="err-pre">${(e&&e.stack)?e.stack:(e&&e.message)||e}</pre><button class="btn btn-magenta" style="max-width:300px" onclick="hardReset()"><i class="fas fa-rotate"></i> HARD RESET LOCAL DATA</button></div>`; }
+ if(ui.view==='performance') renderEquity();
+ if(ui.view==='attendance') startTimers();
  app.querySelectorAll('.glass').forEach((c,i)=>{c.style.animation='revealUp .5s both';c.style.animationDelay=(i*35)+'ms';});
  updateStats();
 }
-window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v10').remove();}catch(e){}}location.reload();};
+window.hardReset=()=>{try{localStorage.removeItem('alphaMatrix_local');localStorage.removeItem('alpha_admin');localStorage.removeItem('alpha_member');}catch(e){}if(db){try{db.ref('alphaMatrix_full_v11').remove();}catch(e){}}location.reload();};
 function baseFor(i){const ai=activeLevelIdx();if(i===ai)return state.activeBalance;return i>0?state.targets[i-1].nb:START_BALANCE;}
 function renderDashboard(){const c=state.targets.filter(t=>t.done).length,pr=c/state.targets.length*100,ai=activeLevelIdx();const at=state.targets[ai]||state.targets[0];
  const me=isAdmin?'NOAMANE':currentMember;let meRank='';if(me&&state.memberRanks[me]){const r=RANKS[state.memberRanks[me].rankIndex]||RANKS[0],tc='tier-'+r.tier;meRank=`<div class="glass" style="text-align:center"><div class="muted">YOUR RANK</div><div class="${tc}" style="margin:8px auto"><div class="rank-badge-wrap" style="width:92px;height:100px">${badgeSVG(r)}</div></div><div class="rank-name">${r.name} ${trendIcon(trendOf(me))}</div>${starRow(r,state.memberRanks[me].stars)}</div>`;}
@@ -515,12 +419,12 @@ function renderPerformance(){return `<h2><i class="fas fa-chart-line"></i> EQUIT
 function renderBroadcast(){const tk=todayKey(),tt=state.trades.filter(t=>t.date&&t.date.split('T')[0]===tk);const wa=new Date(Date.now()-7*864e5).toISOString().split('T')[0],wt=state.trades.filter(t=>t.date&&t.date>=wa);
  return `<h2><i class="fas fa-broadcast-tower"></i> BROADCAST HUB<span class="sub">Daily & weekly reports → Discord</span></h2><div class="grid grid-2"><div class="glass" style="border-color:var(--red)"><h3 class="magenta">📊 DAILY RECAP</h3><div style="background:rgba(0,0,0,.3);padding:14px;border-radius:8px;margin:14px 0"><div style="display:flex;justify-content:space-between"><span class="muted">Today trades</span><strong class="cyan">${tt.length}</strong></div><div style="display:flex;justify-content:space-between;margin-top:6px"><span class="muted">Last sent</span><strong>${state.lastDailySent||'Never'}</strong></div></div><textarea id="daily-notes" class="form-control" placeholder="📰 Extra news context"></textarea><button class="btn btn-magenta" onclick="pushDaily()"><i class="fab fa-discord"></i> SEND DAILY</button></div><div class="glass" style="border-color:var(--orange)"><h3 class="orange">🏆 WEEKLY REPORT</h3><div style="background:rgba(0,0,0,.3);padding:14px;border-radius:8px;margin:14px 0"><div style="display:flex;justify-content:space-between"><span class="muted">Week trades</span><strong class="cyan">${wt.length}</strong></div><div style="display:flex;justify-content:space-between;margin-top:6px"><span class="muted">Last sent</span><strong>${state.lastWeeklySent||'Never'}</strong></div></div><textarea id="weekly-notes" class="form-control" placeholder="🔮 Next week bias"></textarea><button class="btn btn-gold" onclick="pushWeekly()"><i class="fab fa-discord"></i> SEND WEEKLY</button></div></div>
   <div class="glass" style="border-color:var(--red)"><h3 class="red"><i class="fas fa-rotate"></i> RECOVERY</h3><p class="muted" style="margin-bottom:14px;text-transform:none;letter-spacing:0">If any page looks broken, wipe local data and reload. Cloud data stays safe.</p><button class="btn btn-magenta" style="max-width:300px" onclick="hardReset()"><i class="fas fa-rotate"></i> HARD RESET LOCAL DATA</button></div>`;}
+function startTimers(){if(!state.attendance.activeSessions)return;timerInterval=setInterval(()=>{Object.keys(state.attendance.activeSessions).forEach(m=>{const el=document.getElementById('timer-'+m);if(el){const s=new Date(state.attendance.activeSessions[m].startTime).getTime();el.textContent=fmtDur(Math.floor((Date.now()-s)/1000));}});},1000);}
 function renderAttendance(){const ms=currentMember?[currentMember]:team;let cards=ms.map(m=>{const a=state.attendance.activeSessions&&state.attendance.activeSessions[m],sc=a?'online':'offline',st=a?'IN MEETING':'OFFLINE';let b='';if(isAdmin||currentMember===m)b=a?`<button class="btn btn-magenta" onclick="checkOut('${m}')">CHECK OUT</button>`:`<button class="btn btn-emerald" onclick="checkIn('${m}')">CHECK IN</button>`;else b=`<button class="btn" disabled>LOCKED</button>`;return `<div class="glass" style="text-align:center;border-color:${a?'var(--emerald)':'var(--border)'}"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px"><span class="status-dot ${sc}"></span><h3 style="margin:0">${m}</h3></div><div class="timer-display" id="timer-${m}">00:00:00</div><div class="muted" style="margin-bottom:14px">${st}</div>${b}</div>`;}).join('');
  const fl=(state.attendance.logs||[]).filter(l=>isAdmin||(currentMember&&l.member===currentMember));let lh=fl.slice().reverse().slice(0,20).map(l=>{const d=fmtDur(l.durationSec),dt=new Date(l.checkIn).toLocaleDateString(),ci=new Date(l.checkIn).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),co=l.checkOut?new Date(l.checkOut).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'-',au=l.autoClosed?' <span style="color:var(--orange);font-size:.66rem">(AUTO)</span>':'';return `<tr><td><strong class="cyan">${l.member}</strong>${au}</td><td>${ci}</td><td>${co}</td><td class="gold">${d}</td><td class="muted">${dt}</td></tr>`;}).join('');if(!fl.length)lh='<tr><td colspan="5" style="text-align:center;color:var(--muted)">No logs yet</td></tr>';
  return `<h2><i class="fas fa-clock"></i> ATTENDANCE<span class="sub">Live meeting timer · feeds daily discipline stars</span></h2>${currentMember?`<p class="muted" style="margin-bottom:16px">Logged as <strong class="cyan">${currentMember}</strong></p>`:''}<div class="grid grid-3">${cards}</div><div class="glass" style="margin-top:26px"><h3><i class="fas fa-history"></i> MEETING LOGS</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>MEMBER</th><th>IN</th><th>OUT</th><th>DURATION</th><th>DATE</th></tr></thead><tbody>${lh}</tbody></table></div></div>`;}
 function renderTargets(){const ai=activeLevelIdx();return `<h2><i class="fas fa-bullseye"></i> MILESTONES MATRIX<span class="sub">Active target · locked progression</span></h2>${renderDailyGoal()}<div class="grid grid-3">${state.targets.map((t,i)=>{const ia=i===ai,il=i>ai;let b=t.done?`<button class="btn btn-emerald" disabled><i class="fas fa-check"></i> SECURED</button>`:il?`<button class="btn" disabled><i class="fas fa-lock"></i> LOCKED</button>`:ia&&isAdmin?`<button class="btn btn-emerald" onclick="withdraw(${i})"><i class="fas fa-rocket"></i> EXECUTE</button>`:`<button class="btn" disabled>VIEW</button>`;const base=baseFor(i);return `<div class="glass" style="border-color:${ia?'var(--cyan)':t.done?'var(--emerald)':'#222'}"><h3>LEVEL ${t.id}</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0"><div><span class="muted">Goal</span><br><strong>$${t.goal.toFixed(2)}</strong></div><div><span class="muted">Withdraw</span><br><strong class="gold">$${t.withdraw.toFixed(2)}</strong></div><div><span class="muted">Base</span><br><strong>$${base.toFixed(2)}</strong></div><div><span class="muted">Profit Needed</span><br><strong class="emerald">+$${(t.goal-base).toFixed(2)}</strong></div></div>${b}</div>`;}).join('')}</div>`;}
 function renderWallet(){const wh=state.targets.filter(t=>t.done).map(t=>({l:t.id,a:t.withdraw}));return `<h2><i class="fab fa-bitcoin"></i> BINANCE WALLET<span class="sub">Secured profits tracker</span></h2><div class="glass wallet-display"><div class="wallet-icon"><i class="fab fa-bitcoin"></i></div><div class="muted">TOTAL ACCUMULATED</div><div class="wallet-amount">$${state.binanceWallet.toFixed(2)}</div></div><div class="glass"><h3><i class="fas fa-history"></i> WITHDRAWAL HISTORY</h3><table><thead><tr><th>LEVEL</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>${wh.length?wh.map(w=>`<tr><td class="cyan">Level ${w.l}</td><td class="gold">$${w.a.toFixed(2)}</td><td><span class="badge badge-e">SECURED</span></td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;color:var(--muted)">No withdrawals yet</td></tr>'}</tbody></table></div>`;}
-/* ===== TRADE LOG: date picker + auto-calendar option + delete ===== */
 function renderLogger(){return `<h2><i class="fas fa-cloud-upload-alt"></i> TRADE LOG<span class="sub">Pick any date · optional auto-calendar · delete mistakes</span></h2><div class="grid grid-2"><div class="glass"><h3>PUSH TRADE</h3>${isAdmin?`<select id="log-sym" class="form-control">${Object.keys(ASSETS).map(k=>`<option value="${k}">${ASSETS[k].label}</option>`).join('')}</select><select id="log-out" class="form-control"><option value="win">🟢 WIN</option><option value="loss">🔴 LOSS</option><option value="be">⚪ BREAKEVEN</option></select><input type="date" id="log-date" class="form-control" value="${todayKey()}"><input type="number" id="log-pnl" class="form-control" placeholder="P&L ($)"><textarea id="log-news" class="form-control" placeholder="📰 News context"></textarea><label class="chk-row"><input type="checkbox" id="log-cal" checked><span>⚡ Auto-add to Calendar</span></label><button class="btn btn-emerald" onclick="addTrade()"><i class="fas fa-cloud-upload-alt"></i> PUSH</button>`:`<div style="text-align:center;padding:40px;color:var(--magenta)"><i class="fas fa-lock" style="font-size:3rem"></i><br>ADMIN REQUIRED</div>`}</div><div class="glass"><h3>RECENT LEDGER</h3><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>SYM</th><th>P&L</th><th>BY</th><th>DATE</th><th>CAL</th>${isAdmin?'<th>DEL</th>':''}</tr></thead><tbody>${state.trades.slice(0,15).map((t,idx)=>{const d=t.date?new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}):'-';const oc=t.pnl>=0?'emerald':'magenta';return `<tr class="${t.cal===false?'cal-off':''}"><td>${t.symbol}</td><td class="${oc}">${t.pnl>=0?'+':''}$${t.pnl.toFixed(2)}</td><td class="muted">${t.member||'-'}</td><td style="font-size:.78rem">${d}</td><td>${t.cal===false?'<span class="muted">OFF</span>':'<span class="emerald">⚡</span>'}</td>${isAdmin?`<td><button class="del-btn" onclick="deleteTrade(${idx})" title="Delete trade"><i class="fas fa-trash"></i></button></td>`:''}</tr>`;}).join('')}</tbody></table></div></div></div>`;}
 function renderTeam(type){const is=type==='strikes',c=is?'magenta':'gold',t=is?'STRIKES':'ABSENCES',ic=is?'fa-exclamation-triangle':'fa-user-slash';return `<h2><i class="fas ${ic}"></i> ${t}<span class="sub">Each +1 = −⭐ · infinite pagination · Discord alert</span></h2><div class="grid grid-3">${team.map(name=>{const cnt=state[type][name]||0;let cp=ui.pages[type][name]!==undefined?ui.pages[type][name]:Math.max(0,Math.ceil(cnt/5)-1);const mp=Math.max(0,Math.ceil(cnt/5)-1);if(cp<0)cp=0;if(cp>mp+1)cp=mp+1;const sr=cp*5+1,er=sr+4;const btns=[];for(let i=sr;i<=er;i++){const a=i<=cnt;btns.push(`<button class="strike-btn ${is?'':'abs-btn'} ${a?'active':''}" ${!isAdmin?'disabled':''} onclick="toggleTrack('${type}','${name}',${i})">${i}</button>`);}return `<div class="glass"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3 style="margin:0">${name}</h3><span class="badge badge-${is?'m':'g'}">${cnt}</span></div><div class="strike-row">${btns.join('')}</div><div class="pagination-row"><button class="page-btn" ${cp===0||!isAdmin?'disabled':''} onclick="changePage('${type}','${name}',${cp-1})"><i class="fas fa-arrow-left"></i></button><div class="page-indicator">PAGE ${cp+1}</div><button class="page-btn" ${!isAdmin?'disabled':''} onclick="changePage('${type}','${name}',${cp+1})"><i class="fas fa-arrow-right"></i></button></div>${cnt>=3?`<div style="margin-top:14px;color:var(--${c});font-family:Orbitron;font-size:.78rem;text-align:center"><i class="fas fa-bell"></i> WARNING</div>`:''}</div>`;}).join('')}</div>`;}
 function renderRisk(){const we=weekEco();const hi=highImpactToday();
@@ -534,23 +438,15 @@ function renderCalendar(){const tk=todayKey();
  for(let d=1;d<=dim;d++){const k=fmtKey(YEAR,calMonth,d);const di=dayInfo(k);const itc=k===tk;const hasN=ECO.some(e=>e.date===k&&e.imp==='High');
   let cls='day';if(itc)cls+=' today';if(hasN)cls+=' hasnews';if(di.source==='auto')cls+=' auto';
   let content=`<div class="day-num">${d}</div>`;
-  if(di.hasData){
-    const total=di.total;
-    cls+= total>0?' win':(total<0?' loss':' be');
-    const am=Math.abs(total);const dp=am>=1000?(am/1000).toFixed(1)+'k':am;
-    if(total!==0)content+=`<div class="day-amt">${total>0?'+':'-'}$${dp}</div>`;else content+=`<div class="day-amt">B/E</div>`;
-  }
-  const dn=dayName(YEAR,calMonth,d);
-  const titleTxt=`${dn}${di.source==='auto'?` · ⚡ auto from ${di.count} trade(s)`:''}${hasN?' · 📰 High Impact':''}`;
-  const ca=isAdmin?`onclick="openDay('${k}',${d})"`:'';
+  if(di.hasData){const total=di.total;cls+= total>0?' win':(total<0?' loss':' be');const am=Math.abs(total);const dp=am>=1000?(am/1000).toFixed(1)+'k':am;if(total!==0)content+=`<div class="day-amt">${total>0?'+':'-'}$${dp}</div>`;else content+=`<div class="day-amt">B/E</div>`;}
+  const dn=dayName(YEAR,calMonth,d);const titleTxt=`${dn}${di.source==='auto'?` · ⚡ auto from ${di.count} trade(s)`:''}${hasN?' · 📰 High Impact':''}`;const ca=isAdmin?`onclick="openDay('${k}',${d})"`:'';
   dh+=`<div class="${cls}" ${ca} title="${titleTxt}">${content}</div>`;}
- return `<h2><i class="fas fa-calendar-alt"></i> PERFORMANCE CALENDAR<span class="sub">⚡ = day total AUTO-aggregated from TRADE LOG · manual = fallback for trade-less days</span></h2>
+ return `<h2><i class="fas fa-calendar-alt"></i> PERFORMANCE CALENDAR<span class="sub">⚡ = day total AUTO from TRADE LOG · manual = fallback</span></h2>
   <div class="glass"><h3>YEARLY OVERVIEW</h3><div class="heatmap">${hm.map((h,mi)=>{const col=h.c===0?'#0c1018':h.s>=0?'rgba(0,255,157,'+(0.25+Math.min(.6,Math.abs(h.s)/300))+')':'rgba(255,0,85,'+(0.25+Math.min(.6,Math.abs(h.s)/300))+')';return `<div class="hm-cell" style="background:${col}" onclick="calMonth=${mi};renderAll()"><span class="hm-m">${h.mn.slice(0,3)}</span><span class="hm-v" style="color:${h.s>=0?'var(--emerald)':'var(--magenta)'}">${h.c?((h.s>=0?'+':'-')+'$'+Math.abs(h.s).toFixed(0)):'—'}</span></div>`;}).join('')}</div></div>
   <div class="glass"><div class="cal-nav no-print"><button class="btn btn-sm" style="width:auto" onclick="calMonth=(calMonth+11)%12;renderAll()"><i class="fas fa-arrow-left"></i> PREV</button><div class="mn">${MONTHS[calMonth]} ${YEAR}</div><button class="btn btn-sm" style="width:auto" onclick="calMonth=(calMonth+1)%12;renderAll()">NEXT <i class="fas fa-arrow-right"></i></button></div><div class="days-header">${DL.map(d=>`<div class="day-label ${d.t}">${d.n}</div>`).join('')}</div><div class="days-grid">${dh}</div></div>`;}
 function renderAnalytics(){let gW=0,gL=0,lk=0;state.trades.forEach(t=>t.pnl>0?gW+=t.pnl:gL+=Math.abs(t.pnl));state.leaks.forEach(l=>lk+=l.amt);
  const dt=buildDailyTotals();const vals=Object.values(dt);const winD=vals.filter(v=>v>0);const lossD=vals.filter(v=>v<0);
- const aw=winD.length?winD.reduce((a,b)=>a+b,0)/winD.length:0;const al=lossD.length?lossD.reduce((a,b)=>a+b,0)/lossD.length:0;
- const daysLogged=Object.keys(dt).length;
+ const aw=winD.length?winD.reduce((a,b)=>a+b,0)/winD.length:0;const al=lossD.length?lossD.reduce((a,b)=>a+b,0)/lossD.length:0;const daysLogged=Object.keys(dt).length;
  return `<h2><i class="fas fa-chart-bar"></i> ANALYTICS<span class="sub">Performance ratios & leaked capital</span></h2><div class="grid grid-2"><div class="glass"><h3>RATIOS</h3><ul style="list-style:none;line-height:2.4"><li>Gross Profits: <strong class="emerald">$${gW.toFixed(2)}</strong></li><li>Gross Losses: <strong class="magenta">-$${gL.toFixed(2)}</strong></li><li>Avg Winning Day: <strong class="cyan">$${aw.toFixed(2)}</strong></li><li>Avg Losing Day: <strong class="red">$${al.toFixed(2)}</strong></li><li>Account Days Logged: <strong>${daysLogged}</strong></li><li>Total Trades Pushed: <strong class="cyan">${state.trades.length}</strong></li></ul></div><div class="glass"><h3 class="magenta">LEAKED CAPITAL LOG</h3>${isAdmin?`<select id="lk-type" class="form-control"><option>FOMO Entry</option><option>Over-leverage</option><option>No Stop Loss</option><option>Revenge Trade</option><option>News Trading</option><option>Rule Break</option></select><input type="text" id="lk-r" class="form-control" placeholder="Setup / Reason"><input type="number" id="lk-a" class="form-control" placeholder="Lost $"><button class="btn btn-magenta" onclick="addLeak()"><i class="fas fa-plus"></i> PUSH LOG</button>`:''}<table style="margin-top:16px"><thead><tr><th>TYPE / REASON</th><th>LOST</th></tr></thead><tbody>${state.leaks.map(l=>`<tr><td>${l.type?`<span class="news-tag">${l.type}</span> `:''}${l.reason}</td><td class="magenta">-$${l.amt.toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="margin-top:14px;text-align:right">Total Leaked Capital: <strong class="magenta">$${lk.toFixed(2)}</strong></div></div></div>`;}
 function fmtDur(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(c).padStart(2,'0')}`;}
 function daysInM(y,m){return new Date(y,m+1,0).getDate();}
@@ -559,8 +455,7 @@ function fmtKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).p
 function dayName(y,m,d){return new Date(y,m,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
 function animVal(el,to,suf){if(!el)return;const from=parseFloat(el.dataset.v||0);el.dataset.v=to;const dur=600,st=performance.now();const pre=(to<0?'-':'')+(suf==='$'?'$':'');const post=suf==='%'?'%':'';const av=Math.abs(to);function step(t){const p=Math.min(1,(t-st)/dur);const v=from+(av-from)*p;el.textContent=pre+(suf==='$'?v.toFixed(2):v.toFixed(suf==='%'?1:2))+post;if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
 function renderEquity(){const cv=document.getElementById('equityChart');if(!cv||typeof Chart==='undefined')return;
- const dd=buildDailyTotals();
- const sk=Object.keys(dd).sort();const lb=sk.map(k=>new Date(k+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+ const dd=buildDailyTotals();const sk=Object.keys(dd).sort();const lb=sk.map(k=>new Date(k+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
  const cum=[];let r=START_BALANCE;sk.forEach(k=>{r+=dd[k];cum.push(r);});
  const dv=Object.values(dd);const bd=dv.length?Math.max(...dv):0;const wd=dv.length?Math.min(...dv):0;const winD=dv.filter(v=>v>0);const lossD=dv.filter(v=>v<0);const aw=winD.length?winD.reduce((a,b)=>a+b,0)/winD.length:0;const al=lossD.length?lossD.reduce((a,b)=>a+b,0)/lossD.length:0;const cp=cum.length?cum[cum.length-1]-START_BALANCE:0;
  animVal(document.getElementById('best-day'),bd,'$');animVal(document.getElementById('worst-day'),wd,'$');animVal(document.getElementById('avg-win'),aw,'$');animVal(document.getElementById('avg-loss'),al,'$');
@@ -576,111 +471,5 @@ function renderRanking(){
  const rows=data.map(p=>{const tc='tier-'+p.rank.tier,fl=ui.flash[p.name]?'rankup':'';const me=(currentMember===p.name)||(isAdmin&&p.name==='NOAMANE');
   return `<tr style="${me?'background:rgba(0,243,255,.08);border-left:3px solid var(--cyan)':''}"><td><div class="${tc}"><div class="mini-badge ${fl}" id="badge-t-${p.name}">${badgeSVG(p.rank)}</div></div></td><td><strong class="${me?'cyan':''}">${p.name}</strong> ${trendIcon(trendOf(p.name))}${me?' <span style="font-size:.68rem;color:var(--cyan)">(YOU)</span>':''}<div class="muted" style="font-size:.68rem">${p.rank.name}</div></td><td>${starRow(p.rank,p.stars)}</td><td class="${p.st.pnl>=0?'emerald':'magenta'}"><b>${p.st.pnl>=0?'+':''}$${p.st.pnl.toFixed(2)}</b></td><td>${p.st.wr}%</td><td>${p.st.pf>=99?'∞':p.st.pf}</td><td>${p.st.n}</td><td>${(p.str+p.abs)>0?`<span class="magenta">${p.str}/${p.abs}</span>`:`<span class="emerald">0</span>`}</td></tr>`;}).join('');
  let manualPanel='';
- if(isAdmin){
-  manualPanel=`<div class="glass" style="border-color:var(--gold);box-shadow:0 0 26px rgba(255,215,0,.12)">
-   <h3 style="color:var(--gold)"><i class="fas fa-screwdriver-wrench"></i> ADMIN RANK & SEASON CONTROL <span class="muted" style="text-transform:none;letter-spacing:0">· manual override</span></h3>
-   <p class="muted" style="text-transform:none;letter-spacing:0;margin-bottom:14px">Discipline only: <b style="color:var(--emerald)">+⭐</b> clean attended day · <b style="color:var(--magenta)">−⭐</b> strike/absence · rapid collapse → INDARIYA. <b style="color:var(--text)">Trades do NOT affect rank.</b></p>
-   <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"><button class="btn btn-gold" style="flex:1;min-width:240px" onclick="endSeason()"><i class="fas fa-moon"></i> END SEASON & APPLY DECAY</button></div>
-   <div class="grid grid-2">${team.map(m=>{
-    const md=state.memberRanks[m];const rk=RANKS[md.rankIndex]||RANKS[0];const tc='tier-'+rk.tier;const fl=ui.flash[m]?'rankup':'';
-    const lastA=lastAttendance(m);const idle=lastA?Math.floor((Date.now()-new Date(lastA+'T00:00:00'))/864e5):0;
-    const atTop=md.rankIndex>=RANKS.length-1;const atBot=md.rankIndex<=0;
-    return `<div class="rank-ctrl glass">
-      <div class="rc-head">
-        <div class="${tc}"><div class="rank-badge-wrap ${fl}" id="badge-c-${m}" style="width:62px;height:68px">${badgeSVG(rk)}</div></div>
-        <div class="rc-info"><div class="rc-name">${m} ${trendIcon(trendOf(m))}</div><div class="rc-rank" style="color:var(--gc2)">${rk.name} · ${lastA?('no-meeting '+idle+'d'):'never attended'}</div>${starRow(rk,md.stars)}</div>
-      </div>
-      <div class="ctrl-row">
-        <button class="cb cb-minus" onclick="manualStar('${m}',-1)" title="Remove a star">−★</button>
-        <button class="cb cb-plus" onclick="manualStar('${m}',1)" title="Add a star">+★</button>
-        <button class="cb cb-down" onclick="manualDemote('${m}')" title="Demote one rank" ${atBot?'disabled':''}>⬇</button>
-        <button class="cb cb-up" onclick="manualPromote('${m}')" title="Promote one rank" ${atTop?'disabled':''}>⬆</button>
-        <button class="cb cb-reset" onclick="manualReset('${m}')" title="Reset to lowest rank">↺</button>
-      </div>
-      <div class="ctrl-row">
-        <button class="cb cb-minus" onclick="forceWarn('${m}')" title="Send long Discord warning">⚠ WARN</button>
-        <button class="cb cb-down" onclick="forceDecay('${m}')" title="Force one decay step">📉 DECAY</button>
-      </div>
-    </div>`;}).join('')}</div>
-  </div>`;
- }
- return `<h2><i class="fas fa-trophy"></i> RANKED LADDER<span class="sub">Seasonal · discipline economy · trades are display-only</span></h2>
-  ${seasonBanner}
-  ${meCardSafe()}
-  <div class="glass"><h3 style="text-align:center">🏆 TOP 3 PODIUM</h3>${podium}</div>
-  <div class="glass"><h3><i class="fas fa-list-ol"></i> FULL STANDINGS</h3><div style="overflow-x:auto"><table class="rank-table"><thead><tr><th>BADGE</th><th>MEMBER</th><th>STARS</th><th>NET P&L</th><th>WR</th><th>PF</th><th>TRADES</th><th>STRK/ABS</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-  ${manualPanel}
-  <div class="glass"><h3><i class="fas fa-scroll"></i> TIER REQUIREMENTS (STARS PER SUB-RANK)</h3><div style="overflow-x:auto"><table class="rank-table"><thead><tr><th>TIER</th><th>RANGE</th><th>⭐ / SUB</th></tr></thead><tbody>${TCFG.map(t=>{const subs=t.subs===1?t.tier:`${t.tier} I → ${t.tier} ${['I','II','III','IV','V'][t.subs-1]}`;return `<tr><td><span class="tier-${t.tier}" style="font-family:Orbitron;font-weight:700">${t.emoji} ${t.tier.toUpperCase()}</span></td><td>${subs}</td><td>${t.stars.map(s=>s===Infinity?'∞':s).join(' / ')}</td></tr>`;}).join('')}</tbody></table></div></div>`;
- function meCardSafe(){const me=isAdmin?'NOAMANE':currentMember;if(!me||!state.memberRanks[me])return'';const p=data.find(x=>x.name===me);if(!p)return'';const tc='tier-'+p.rank.tier,fl=ui.flash[me]?'rankup':'';return `<div class="glass" style="text-align:center;border-color:var(--gold)"><div class="muted">YOUR CURRENT RANK</div><div class="${tc}" style="margin:8px auto"><div class="rank-badge-wrap ${fl}" id="badge-me" style="width:92px;height:100px">${badgeSVG(p.rank)}</div></div><div class="rank-name gold">${p.rank.name} ${trendIcon(trendOf(me))}</div>${starRow(p.rank,p.stars)}</div>`;}
-}
-window.checkIn=async m=>{if(!isAdmin&&currentMember!==m)return alert('❌');FX.cin();if(state.attendance.activeSessions[m])await forceOut(m,'Orphaned');state.attendance.activeSessions[m]={startTime:new Date().toISOString()};save();renderAll();await hook(MEETING_WEBHOOK,{username:"Alpha Matrix Meeting Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🟢 JOINED MEETING",description:`**${m}** entered`,color:3066993,fields:[{name:'🕒',value:`**${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false})} UTC**`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
-window.checkOut=async m=>{if(!isAdmin&&currentMember!==m)return alert('❌');FX.cout();await forceOut(m,'Manual');renderAll();};
-window.withdraw=async i=>{if(!isAdmin)return;const t=state.targets[i],nt=state.targets[i+1];state.activeBalance=t.nb;state.binanceWallet+=t.withdraw;t.done=true;FX.win();save();renderAll();await hook(HR_WEBHOOK,{username:"Alpha Matrix Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🎉 LEVEL UP",description:`Completed **Level ${t.id}**`,color:10181046,fields:[{name:'Next',value:nt?`Lvl ${nt.id} - $${nt.goal.toFixed(2)}`:'MASTER 👑',inline:true},{name:'💰',value:`+$${t.withdraw.toFixed(2)}`,inline:true},{name:'💵',value:`$${state.activeBalance.toFixed(2)}`,inline:true},{name:'🏦',value:`$${state.binanceWallet.toFixed(2)}`,inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
-/* TRADE: any date + optional auto-calendar */
-window.addTrade=async()=>{if(!isAdmin)return;
- const sym=document.getElementById('log-sym').value,out=document.getElementById('log-out').value,pnl=parseFloat(document.getElementById('log-pnl').value)||0,news=document.getElementById('log-news').value.trim();
- const dateVal=document.getElementById('log-date').value||todayKey();
- const cal=document.getElementById('log-cal').checked;
- if(out!=='be'&&pnl===0)return alert('Enter amount');
- const member=currentMember||(isAdmin?'NOAMANE':null);
- state.trades.unshift({symbol:sym,outcome:out,pnl,date:dateVal+'T12:00:00',news:news||null,member,cal:cal});
- state.activeBalance+=pnl;
- if(out==='win')FX.win();else if(out==='loss')FX.loss();else FX.be();
- save();renderAll();
- await hook(HR_WEBHOOK,{username:"Alpha Matrix Bot",avatar_url:BOT_AVATAR,embeds:[{title:"🎯 TRADE LOGGED",color:3066993,fields:[{name:'Asset',value:sym,inline:true},{name:'Outcome',value:out.toUpperCase(),inline:true},{name:'P&L',value:`**${pnl>0?'+':''}$${pnl.toFixed(2)}**`,inline:false},{name:'Date',value:dateVal,inline:true},{name:'By',value:member||'-',inline:true}],footer:{text:'Alpha Matrix'},timestamp:new Date().toISOString()}]});};
-/* DELETE trade + correct balance */
-window.deleteTrade=(i)=>{if(!isAdmin)return;const t=state.trades[i];if(!t)return;
- if(!confirm(`Delete trade ${t.symbol} (${t.pnl>=0?'+':''}$${t.pnl.toFixed(2)})? Balance will be corrected.`))return;
- state.activeBalance-=t.pnl;state.trades.splice(i,1);
- FX.loss();save();renderAll();toast('🗑 Trade deleted — balance corrected');};
-window.toggleTrack=async(type,name,lvl)=>{if(!isAdmin)return;FX.click();const cur=state[type][name]||0,nc=cur===lvl?lvl-1:lvl,added=nc>cur;state[type][name]=nc;ui.pages[type][name]=Math.max(0,Math.ceil(nc/5)-1);
- if(added){state.disciplineLog.push({member:name,type:type,date:todayKey()});loseStar(name);}
- save();renderAll();const is=type==='strikes';await hook(HR_WEBHOOK,{username:"Alpha Matrix HR",avatar_url:BOT_AVATAR,embeds:[{title:`${is?'🔴':''} TEAM UPDATE`,color:is?15158332:1752220,fields:[{name:'👤',value:`**${name}**`,inline:true},{name:'Topic',value:is?'STRIKES':'ABSENCES',inline:true},{name:'#',value:`**${nc}**`,inline:true},{name:'Action',value:added?'Added (−⭐ applied)':'Removed',inline:false}],footer:{text:'Alpha Matrix HR'},timestamp:new Date().toISOString()}]});};
-window.pushDaily=async()=>{if(!isAdmin)return;const tk=todayKey(),tt=state.trades.filter(t=>t.date&&t.date.split('T')[0]===tk);let tc=tt.length,w=tt.filter(t=>t.outcome==='win').length,pnl=tt.reduce((s,t)=>s+t.pnl,0);const wr=tc?((w/tc)*100).toFixed(1):0;const mn=document.getElementById('daily-notes')?.value.trim()||'';const te=todayEco();await hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:"📊 DAILY RECAP",description:`**${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}**`,color:15158332,fields:[{name:'Trades',value:`${tc}`,inline:true},{name:'WR',value:`${wr}%`,inline:true},{name:'P&L',value:`**${pnl>=0?'+':''}$${pnl.toFixed(2)}**`,inline:false},{name:'Balance',value:`$${state.activeBalance.toFixed(2)}`,inline:true},{name:'Wallet',value:`$${state.binanceWallet.toFixed(2)}`,inline:true},...(te.length?[{name:'📰 News Today',value:te.map(e=>e.event).join(', '),inline:false}]:[]),...(mn?[{name:'Notes',value:mn,inline:false}]:[])],footer:{text:'Alpha Matrix Daily'},timestamp:new Date().toISOString()}]});state.lastDailySent=tk;save();renderAll();FX.win();toast('✅ Daily sent');};
-window.pushWeekly=async()=>{if(!isAdmin)return;const now=new Date(),wa=new Date(now.getTime()-7*864e5);const wt=state.trades.filter(t=>t.date&&t.date>=wa.toISOString().split('T')[0]);let tc=wt.length,w=wt.filter(t=>t.outcome==='win').length,l=wt.filter(t=>t.outcome==='loss').length,pnl=wt.reduce((s,t)=>s+t.pnl,0),gp=wt.filter(t=>t.pnl>0).reduce((s,t)=>s+t.pnl,0),gl=wt.filter(t=>t.pnl<0).reduce((s,t)=>s+Math.abs(t.pnl),0);const wr=tc?((w/tc)*100).toFixed(1):0,pf=gl>0?(gp/gl).toFixed(2):'∞';const mn=document.getElementById('weekly-notes')?.value.trim()||'';await hook(HR_WEBHOOK,{username:"Alpha Matrix System",avatar_url:BOT_AVATAR,embeds:[{title:"🏆 WEEKLY REPORT",description:`**${wa.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${now.toLocaleDateString('en-US',{month:'short',day:'numeric'})}**`,color:15105570,fields:[{name:'Trades',value:`${tc}`,inline:true},{name:'WR',value:`${wr}% (${w}W/${l}L)`,inline:true},{name:'Net',value:`**${pnl>=0?'+':''}$${pnl.toFixed(2)}**`,inline:false},{name:'PF',value:`${pf}`,inline:true},{name:'Balance',value:`$${state.activeBalance.toFixed(2)}`,inline:true},{name:'Wallet',value:`$${state.binanceWallet.toFixed(2)}`,inline:true},...(mn?[{name:'Outlook',value:mn,inline:false}]:[])],footer:{text:'Alpha Matrix Weekly'},timestamp:new Date().toISOString()}]});state.lastWeeklySent=new Date().toISOString().split('T')[0];save();renderAll();FX.win();toast('✅ Weekly sent');};
-window.changePage=(t,n,p)=>{if(!isAdmin)return;FX.click();if(!ui.pages[t])ui.pages[t]={};ui.pages[t][n]=p;renderAll();};
-window.openDay=(k,d)=>{if(!isAdmin)return;FX.click();ui.dayKey=k;document.getElementById('day-title').innerText=dayName(YEAR,calMonth,d)||`DAY ${d}`;
- const hasTrades=dayTradeSum(k).count>0;
- document.getElementById('day-auto-note').style.display=hasTrades?'block':'none';
- document.getElementById('day-amt').disabled=hasTrades;
- const l=state.calendar[k];document.getElementById('day-amt').value=l&&l.amount!=null?l.amount:'';document.getElementById('day-news').value=l&&l.news?l.news:'';ui.outcome=l?l.outcome:null;['win','loss','be'].forEach(o=>{const b=document.getElementById('ob-'+o);b.style.opacity=ui.outcome===o?'1':'.5';});document.getElementById('day-modal').style.display='flex';};
-window.setOutcome=o=>{FX.click();ui.outcome=o;['win','loss','be'].forEach(x=>document.getElementById('ob-'+x).style.opacity=x===o?'1':'.5');};
-window.saveDay=()=>{if(!ui.outcome)return alert('Select outcome');const hasTrades=dayTradeSum(ui.dayKey).count>0;const a=hasTrades?0:(parseFloat(document.getElementById('day-amt').value)||0);const n=document.getElementById('day-news').value.trim();if(!hasTrades&&ui.outcome!=='be'&&a===0)return alert('Enter amount');const member=currentMember||(isAdmin?'NOAMANE':null);state.calendar[ui.dayKey]={outcome:ui.outcome,amount:a,news:n||null,member};if(ui.outcome==='win')FX.win();else if(ui.outcome==='loss')FX.loss();else FX.be();closeModal('day-modal');save();renderAll();};
-window.clearDay=()=>{delete state.calendar[ui.dayKey];closeModal('day-modal');save();renderAll();};
-window.addLeak=()=>{const tp=document.getElementById('lk-type').value,r=document.getElementById('lk-r').value,a=parseFloat(document.getElementById('lk-a').value);if(!r||!a)return alert('Fill all');state.leaks.unshift({type:tp,reason:r,amt:a});FX.loss();save();renderAll();};
-window.manualStar=function(name,delta){if(!isAdmin)return;ensureMembers();
- const md=state.memberRanks[name];const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;
- if(delta>0){const need=(RANKS[md.rankIndex]||RANKS[0]).starsNeeded;if(need===Infinity){md.stars+=1;}else if(md.stars+1>=need){if(md.rankIndex<RANKS.length-1){md.rankIndex++;md.stars=0;}else{md.stars=need;}}else md.stars+=1;}
- else{if(md.stars>0)md.stars-=1;else if(md.rankIndex>0){md.rankIndex--;const low=RANKS[md.rankIndex]||RANKS[0];md.stars=low.starsNeeded===Infinity?0:Math.max(0,low.starsNeeded-1);}else{toast('⚠️ '+name+' already at 0 stars');FX.loss();return;}}
- const newR=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);
- if(oldR!==newR)notifyAdminRank(name,delta>0?'+★ → auto promote':'−★ → auto demote',oldR,newR,oldS,md.stars);else{FX.click();toast((delta>0?'＋':'－')+'★ '+name+': '+md.stars+' star(s)');}
- save();renderAll();};
-window.manualPromote=function(name){if(!isAdmin)return;ensureMembers();const md=state.memberRanks[name];if(md.rankIndex>=RANKS.length-1){toast('⚠️ '+name+' already at max rank');FX.loss();return;}const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex++;md.stars=0;const newR=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);FX.rankup();notifyAdminRank(name,'⬆ Manual Promote',oldR,newR,oldS,0);save();renderAll();};
-window.manualDemote=function(name){if(!isAdmin)return;ensureMembers();const md=state.memberRanks[name];if(md.rankIndex<=0){toast('⚠️ '+name+' already at lowest rank');FX.loss();return;}if(!confirm('Demote '+name+' by one rank?'))return;const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex--;const low=RANKS[md.rankIndex]||RANKS[0];md.stars=low.starsNeeded===Infinity?0:Math.max(0,low.starsNeeded-1);const newR=(RANKS[md.rankIndex]||RANKS[0]).name;flash(name);FX.down();notifyAdminRank(name,'⬇ Manual Demote',oldR,newR,oldS,md.stars);save();renderAll();};
-window.manualReset=function(name){if(!isAdmin)return;ensureMembers();if(!confirm('RESET '+name+' to the lowest rank?'))return;const md=state.memberRanks[name];const oldR=(RANKS[md.rankIndex]||RANKS[0]).name;const oldS=md.stars;md.rankIndex=0;md.stars=0;const newR=(RANKS[0]||{name:'Bronze I'}).name;flash(name);FX.down();notifyAdminRank(name,'↺ Manual Reset',oldR,newR,oldS,0);save();renderAll();};
-function updateStats(){const dt=buildDailyTotals();let p=0;Object.values(dt).forEach(v=>p+=v);
- let w=0,l=0,gp=0,gl=0;state.trades.forEach(t=>{if(t.outcome==='win'){w++;gp+=t.pnl;}else if(t.outcome==='loss'){l++;gl+=Math.abs(t.pnl);}});
- const wr=(w+l)?((w/(w+l))*100):0;const pf=gl>0?(gp/gl):gp>0?99:0;
- animVal(document.getElementById('dash-wr'),wr,'%');animVal(document.getElementById('dash-pnl'),p,'$');animVal(document.getElementById('dash-bal'),state.activeBalance,'$');const pfe=document.getElementById('dash-pf');if(pfe)pfe.textContent=pf>=99?'∞':pf.toFixed(2);
- const pe=document.getElementById('dash-pnl');if(pe)pe.className='stat '+(p>=0?'emerald':'magenta');calcLot();}
-function calcLot(){const sl=parseFloat(document.getElementById('r-sl')?.value||1);const risk=parseFloat(document.getElementById('r-risk')?.value||1)/100;const fixed=parseFloat(document.getElementById('r-fixed')?.value);let pv=parseFloat(document.getElementById('r-pv')?.value||10);const asset=document.getElementById('r-asset')?.value;if(asset&&pv===10){pv=ASSETS[asset].pv;document.getElementById('r-pv').value=pv;}let riskAmt=fixed>0?fixed:state.activeBalance*risk;if(highImpactToday())riskAmt*=.5;const lot=riskAmt/(sl*pv);const res=document.getElementById('r-res');if(res)res.textContent=lot.toFixed(2);const exp=document.getElementById('r-exp');if(exp)exp.textContent=`Risk ${fixed>0?'$'+fixed.toFixed(2):((risk*100).toFixed(1)+'%')}${highImpactToday()?' · NEWS CUT 50%':''}`;
- const tbl=document.getElementById('matrix-tbl');if(tbl){const base=fixed>0?fixed:state.activeBalance*0.01;const cut=highImpactToday()?.5:1;tbl.innerHTML=Object.keys(ASSETS).map(k=>{const pv2=ASSETS[k].pv;return `<tr><td class="cyan">${ASSETS[k].label}</td>${[10,20,30,50].map(s=>`<td>${((base*cut)/(s*pv2)).toFixed(2)}</td>`).join('')}</tr>`;}).join('');}}
-/* ===== INIT ===== */
-try{
- ensureMembers();ensureSeason();
- selfTest();
- const at=document.getElementById('audio-toggle');if(at){at.classList.toggle('on',FX.on);at.querySelector('i').className=FX.on?'fas fa-volume-up':'fas fa-volume-mute';}
- if(!fbOK){const ls=localStorage.getItem('alphaMatrix_local');if(ls){try{state={...state,...JSON.parse(ls)};}catch(e){}}ensureMembers();ensureSeason();}
- (function(){ensureSeason();if(state.season.id>(state.lastDecayedSeasonId||0)&&seasonDaysLeft()<=0){const r=runSeasonDecay();console.log('Auto season decay applied:',r);}})();
- updateAuth();renderNav();renderAll();
- team.forEach(grantDisciplineStars);
- team.forEach(checkMemberStatus);
- setTimeout(checkSmart,1500);
-}catch(e){
- console.error('INIT ERROR:',e);
- const m=document.getElementById('app-container');
- if(m)m.innerHTML='<div class="fatal">️ INIT ERROR (sifet had l-capture):\n'+(e.stack||e.message)+'</div>';
-}
-</script>
-</body>
-</html>
+ if(isAdmin){manualPanel=`<div class="glass" style="border-color:var(--gold);box-shadow:0 0 26px rgba(255,215,0,.12)"><h3 style="color:var(--gold)"><i class="fas fa-screwdriver-wrench"></i> ADMIN RANK & SEASON CONTROL <span class="muted" style="text-transform:none;letter-spacing:0">· manual override</span></h3><p class="muted" style="text-transform:none;letter-spacing:0;margin-bottom:14px">Discipline only: <b style="color:var(--emerald)">+⭐</b> clean attended day · <b style="color:var(--magenta)">−⭐</b> strike/absence · rapid collapse → INDARIYA. <b style="color:var(--text)">Trades do NOT affect rank.</b></p><div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"><button class="btn btn-gold" style="flex:1;min-width:240px" onclick="endSeason()"><i class="fas fa-moon"></i> END SEASON & APPLY DECAY</button></div><div class="grid grid-2">${team.map(m=>{const md=state.memberRanks[m];const rk=RANKS[md.rankIndex]||RANKS[0];const tc='tier-'+rk.tier;const fl=ui.flash[m]?'rankup':'';const lastA=lastAttendance(m);const idle=lastA?Math.floor((Date.now()-new Date(lastA+'T00:00:00'))/864e5):0;const atTop=md.rankIndex>=RANKS.length-1;const atBot=md.rankIndex<=0;
+  return `<div class="rank-ctrl glass"><div class="rc-head"><div class="${tc}"><div class="rank-badge-wrap ${fl}" id="badge-c-${m}" style="width:62px;height:68px">${badgeSVG(rk)}</div></div><div class="rc-info"><div class="rc-name">${m} ${trendIcon(trendOf(m))}</div><div class="rc-rank" style="color:var(--gc2)">${rk.name} · ${lastA?('no-meeting '+idle+'d'):'never attended'}</div>${starRow(rk,md.stars)}</div></div><div class="ctrl-row"><button class="cb cb-minus" onclick="manualStar('${m}',-1)" title="Remove a star">−★</button><button class="cb cb-plus" onclick="manualStar('${m}',1)" title="Add a star">+★</button><button class="cb cb-down" onclick="manualDemote('${m}')" title="Demote one rank" ${atBot?'disabled':''}>⬇</button><button class="cb cb-up" onclick="manualPromote('${m}')" title="Promote one rank" ${atTop?'disabled':''}>⬆</button><button class="cb cb-reset" onclick="manualReset('${m}
