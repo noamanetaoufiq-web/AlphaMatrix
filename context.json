@@ -1,15 +1,1 @@
-{
-  "updated": "2026-10-02 23:36 UTC",
-  "f_trend": -1,
-  "f_usd": 1,
-  "f_gs": 0,
-  "f_lead": 0,
-  "season": {},
-  "notes": [
-    "Gold 4,172 vs 20d avg 4,335, 5d -3.5% -> trend bearish",
-    "DXY 101.92 (+1.7% 10d), US10Y 5.28% (+0.28 10d) -> strong",
-    "Gold in October: avg +0.9%, up 53% of the last 15 years -> neutral",
-    "Leading data (ADP/JOLTS/claims vs forecast, 30d): no releases yet -> neutral (ISM: no free source)"
-  ],
-  "lead_hist": []
-}
+{"updated":"waiting for first GitHub Action run","f_lead":0,"f_usd":0,"f_trend":0,"f_gs":0,"notes":["Run the Action once (Actions tab > Update Market Calendar > Run workflow)."],"lead_hist":[]}
