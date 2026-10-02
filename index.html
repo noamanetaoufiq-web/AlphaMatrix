@@ -351,6 +351,29 @@ function computeBias(e){
   return{pct:50,dir:null,mode:null,note:'Add the consensus forecast (and previous reading) for a pre-release lean, or the actual once it prints.'};
 }
 
+let ctxAuto=null,ctxAt=0;
+function ctxVal(d,k){return(d[k]===undefined||d[k]==='')?(ctxAuto&&Number(ctxAuto[k])||0):(Number(d[k])||0);}
+function loadContext(){if(Date.now()-ctxAt<6e5)return;ctxAt=Date.now();fetch('context.json?t='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){ctxAuto=j;renderAll();}}).catch(()=>{});}
+function newsVerdict(e){const m=EVENT_MODEL[e.event]||{};if(m.hawkDove)return null;const d=newsInput(e);if(!isNaN(parseFloat(d.actual)))return null;if(isNaN(parseFloat(d.forecast)))return null;
+const n=k=>ctxVal(d,k),t=(n('f_lead')+n('f_season'))/2,sh=Math.round(t*20),strong=30+sh,weak=30-sh,inl=40,g=Math.max(-1,Math.min(1,(-n('f_usd')+n('f_trend'))/2+n('f_gs')*0.25)),share=0.5-0.125*g;
+const bear=Math.round(strong+inl*share),bull=100-bear,diff=Math.abs(bear-bull),dir=bear>bull?'BEARISH':'BULLISH';
+const lvl=diff<6?'NO EDGE':diff<=15?'SLIGHT '+dir+' LEAN':diff<=30?'MODERATE '+dir+' LEAN':'STRONG '+dir+' LEAN';
+const br=[],bl=[];const add=(v,bt,lt)=>{if(v>0)br.push(bt);else if(v<0)bl.push(lt);};
+add(n('f_lead'),'Leading data running hot → an above-forecast print is more likely','Leading data soft → a below-forecast print is more likely');
+add(n('f_season'),'Seasonality/history leans hot','Seasonality/history leans soft');
+add(n('f_usd'),'USD & yields strong','USD & yields weak');
+add(-n('f_trend'),'Gold short-term trend bearish','Gold short-term trend bullish');
+add(-n('f_gs'),'Gold seasonality weak this month','Gold seasonality strong this month');
+return{strong,inl,weak,bear,bull,diff,dir,lvl,br,bl};}
+function renderVerdict(e,d,key){const v=newsVerdict(e);if(!v)return '';
+const mk=(label,field,labs)=>`<div class="mu" style="font-size:.6rem;margin-top:8px">${label}</div><div class="pr" style="margin-top:4px">${[-1,0,1].map((val,i)=>`<button type="button" class="pb2" style="${ctxVal(d,field)===val?'background:var(--cy);color:#04060a':''}"${isAdmin?` onclick="setNewsField('${key}','${field}','${val}')"`:' disabled'}>${labs[i]}</button>`).join('')}${isAdmin&&field!=='f_season'?`<button type="button" class="pb2" style="${(d[field]===undefined||d[field]==='')?'background:var(--gd);color:#04060a':''}" onclick="setNewsField('${key}','${field}','')">AUTO</button>`:''}</div>`;
+const row=(lbl,pct,col)=>`<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><span class="mu" style="flex:0 0 150px;font-size:.62rem">${lbl}</span><div class="pb" style="flex:1;height:8px;border-color:var(--bd)"><div style="height:100%;width:${pct}%;background:${col}"></div></div><b style="flex:0 0 38px;text-align:right;font-size:.78rem">${pct}%</b></div>`;
+const cls=v.diff<6?'mu':v.dir==='BEARISH'?'mg':'em';const li=a=>a.length?a.map(x=>`<div style="font-size:.72rem;line-height:1.5">• ${x}</div>`).join(''):'<div class="mu" style="font-size:.72rem">—</div>';
+return `<div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--bd)"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><span class="mu">SCENARIO MODEL · PRE-RELEASE</span><span class="${cls}" style="font-family:Manrope;font-weight:800;font-size:.85rem">${v.lvl}${v.diff<6?'':' · '+Math.max(v.bear,v.bull)+'% / '+Math.min(v.bear,v.bull)+'%'}</span></div>
+${row('ABOVE forecast → bearish',v.strong,'var(--mg)')}${row('IN LINE → sideways',v.inl,'var(--mu)')}${row('BELOW forecast → bullish',v.weak,'var(--em)')}
+<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap"><div style="flex:1;min-width:150px"><b class="mg" style="font-size:.7rem">BEAR CASE · ${v.bear}%</b>${li(v.br)}</div><div style="flex:1;min-width:150px"><b class="em" style="font-size:.7rem">BULL CASE · ${v.bull}%</b>${li(v.bl)}</div></div>
+<div style="margin-top:12px;padding:10px 12px;border-left:3px solid var(--gd);background:rgba(255,215,0,.05);font-size:.78rem;line-height:1.5"><b>Verdict:</b> ${v.diff<6?'No real edge — the odds are almost even. Better to wait for the print and the first reaction.':v.diff<=15?'Is the lean big? No — only a slight '+v.dir.toLowerCase()+' lean ('+Math.max(v.bear,v.bull)+'% vs '+Math.min(v.bear,v.bull)+'%). It is not a strong signal.':'There is a '+(v.diff<=30?'moderate':'strong')+' '+v.dir.toLowerCase()+' lean ('+Math.max(v.bear,v.bull)+'% vs '+Math.min(v.bear,v.bull)+'%), but a single print can still flip it.'} Wait for the report and judge the first reaction before entering (fakeout risk). Subjective model, not financial advice.</div>
+<details style="margin-top:10px"><summary class="mu" style="cursor:pointer">${isAdmin?'EDIT MARKET CONTEXT':'MARKET CONTEXT'}</summary>${mk('LEADING DATA (ADP / ISM / JOLTS…)','f_lead',['SOFT','NEUTRAL','HOT'])}${mk('SEASONALITY / HISTORY','f_season',['SOFT','NEUTRAL','HOT'])}${mk('USD & YIELDS','f_usd',['WEAK','NEUTRAL','STRONG'])}${mk('GOLD SHORT-TERM TREND','f_trend',['BEARISH','NEUTRAL','BULLISH'])}${mk('GOLD SEASONALITY (THIS MONTH)','f_gs',['WEAK','NEUTRAL','STRONG'])}${ctxAuto&&ctxAuto.notes?`<div class="mu" style="margin-top:10px;font-size:.66rem;text-transform:none;line-height:1.5">AUTO DATA (context.json) · ${ctxAuto.updated}<br>${ctxAuto.notes.join('<br>')}</div>`:''}</details></div>`;}
 function renderNewsCard(e){
   const mt=moroccoDT(e.date,e.time),today=mt.date===todayKey();
   const m=EVENT_MODEL[e.event]||{desc:'',unit:''},d=newsInput(e),bias=computeBias(e),key=newsKey(e);
@@ -382,10 +405,11 @@ function renderNewsCard(e){
       +'<div class="pb" style="height:10px;border-color:var(--bd)"><div style="height:100%;width:'+leftPct+'%;background:var(--em);float:left"></div><div style="height:100%;width:'+(100-leftPct)+'%;background:var(--mg);float:left"></div></div>'
       +'<div class="mu" style="margin-top:6px;text-transform:none;font-size:.72rem">'+bias.note+'</div>'
     +'</div>'
+    +renderVerdict(e,d,key)
   +'</div>';
 }
 function renderNews(){
-  fetchLiveCalendar();
+  fetchLiveCalendar();loadContext();
   const events=upcomingEco();
   const wk=weekEco().length;
   const mo=events.filter(e=>e.date.slice(0,7)===todayKey().slice(0,7)).length;
