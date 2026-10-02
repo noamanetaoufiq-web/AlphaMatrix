@@ -352,10 +352,10 @@ function computeBias(e){
 }
 
 let ctxAuto=null,ctxAt=0;
-function ctxVal(d,k){return(d[k]===undefined||d[k]==='')?(ctxAuto&&Number(ctxAuto[k])||0):(Number(d[k])||0);}
-function loadContext(){if(Date.now()-ctxAt<6e5)return;ctxAt=Date.now();fetch('context.json?t='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){ctxAuto=j;renderAll();}}).catch(()=>{});}
+function ctxVal(d,k,ev){if(d[k]!==undefined&&d[k]!=='')return Number(d[k])||0;if(k==='f_season')return Number(((ctxAuto&&ctxAuto.season)||{})[ev])||0;return ctxAuto&&Number(ctxAuto[k])||0;}
+function loadContext(){if(Date.now()-ctxAt<6e5)return;ctxAt=Date.now();fetch('https://raw.githubusercontent.com/noamanetaoufiq-web/AlphaMatrix/main/context.json?t='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){ctxAuto=j;renderAll();}}).catch(()=>{});}
 function newsVerdict(e){const m=EVENT_MODEL[e.event]||{};if(m.hawkDove)return null;const d=newsInput(e);if(!isNaN(parseFloat(d.actual)))return null;if(isNaN(parseFloat(d.forecast)))return null;
-const n=k=>ctxVal(d,k),t=(n('f_lead')+n('f_season'))/2,sh=Math.round(t*20),strong=30+sh,weak=30-sh,inl=40,g=Math.max(-1,Math.min(1,(-n('f_usd')+n('f_trend'))/2+n('f_gs')*0.25)),share=0.5-0.125*g;
+const n=k=>ctxVal(d,k,e.event),t=(n('f_lead')+n('f_season'))/2,sh=Math.round(t*20),strong=30+sh,weak=30-sh,inl=40,g=Math.max(-1,Math.min(1,(-n('f_usd')+n('f_trend'))/2+n('f_gs')*0.25)),share=0.5-0.125*g;
 const bear=Math.round(strong+inl*share),bull=100-bear,diff=Math.abs(bear-bull),dir=bear>bull?'BEARISH':'BULLISH';
 const lvl=diff<6?'NO EDGE':diff<=15?'SLIGHT '+dir+' LEAN':diff<=30?'MODERATE '+dir+' LEAN':'STRONG '+dir+' LEAN';
 const br=[],bl=[];const add=(v,bt,lt)=>{if(v>0)br.push(bt);else if(v<0)bl.push(lt);};
@@ -366,7 +366,7 @@ add(-n('f_trend'),'Gold short-term trend bearish','Gold short-term trend bullish
 add(-n('f_gs'),'Gold seasonality weak this month','Gold seasonality strong this month');
 return{strong,inl,weak,bear,bull,diff,dir,lvl,br,bl};}
 function renderVerdict(e,d,key){const v=newsVerdict(e);if(!v)return '';
-const mk=(label,field,labs)=>`<div class="mu" style="font-size:.6rem;margin-top:8px">${label}</div><div class="pr" style="margin-top:4px">${[-1,0,1].map((val,i)=>`<button type="button" class="pb2" style="${ctxVal(d,field)===val?'background:var(--cy);color:#04060a':''}"${isAdmin?` onclick="setNewsField('${key}','${field}','${val}')"`:' disabled'}>${labs[i]}</button>`).join('')}${isAdmin&&field!=='f_season'?`<button type="button" class="pb2" style="${(d[field]===undefined||d[field]==='')?'background:var(--gd);color:#04060a':''}" onclick="setNewsField('${key}','${field}','')">AUTO</button>`:''}</div>`;
+const mk=(label,field,labs)=>`<div class="mu" style="font-size:.6rem;margin-top:8px">${label}</div><div class="pr" style="margin-top:4px">${[-1,0,1].map((val,i)=>`<button type="button" class="pb2" style="${ctxVal(d,field,e.event)===val?'background:var(--cy);color:#04060a':''}"${isAdmin?` onclick="setNewsField('${key}','${field}','${val}')"`:' disabled'}>${labs[i]}</button>`).join('')}${isAdmin?`<button type="button" class="pb2" style="${(d[field]===undefined||d[field]==='')?'background:var(--gd);color:#04060a':''}" onclick="setNewsField('${key}','${field}','')">AUTO</button>`:''}</div>`;
 const row=(lbl,pct,col)=>`<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><span class="mu" style="flex:0 0 150px;font-size:.62rem">${lbl}</span><div class="pb" style="flex:1;height:8px;border-color:var(--bd)"><div style="height:100%;width:${pct}%;background:${col}"></div></div><b style="flex:0 0 38px;text-align:right;font-size:.78rem">${pct}%</b></div>`;
 const cls=v.diff<6?'mu':v.dir==='BEARISH'?'mg':'em';const li=a=>a.length?a.map(x=>`<div style="font-size:.72rem;line-height:1.5">• ${x}</div>`).join(''):'<div class="mu" style="font-size:.72rem">—</div>';
 return `<div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--bd)"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><span class="mu">SCENARIO MODEL · PRE-RELEASE</span><span class="${cls}" style="font-family:Manrope;font-weight:800;font-size:.85rem">${v.lvl}${v.diff<6?'':' · '+Math.max(v.bear,v.bull)+'% / '+Math.min(v.bear,v.bull)+'%'}</span></div>
