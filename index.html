@@ -353,7 +353,7 @@ function computeBias(e){
 
 let ctxAuto=null,ctxAt=0;
 function ctxVal(d,k){return(d[k]===undefined||d[k]==='')?(ctxAuto&&Number(ctxAuto[k])||0):(Number(d[k])||0);}
-function loadContext(){if(Date.now()-ctxAt<6e5)return;ctxAt=Date.now();fetch('https://raw.githubusercontent.com/noamanetaoufiq-web/AlphaMatrix/main/context.json?t='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){ctxAuto=j;renderAll();}}).catch(()=>{});}
+function loadContext(){if(Date.now()-ctxAt<6e5)return;ctxAt=Date.now();fetch('context.json?t='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){ctxAuto=j;renderAll();}}).catch(()=>{});}
 function newsVerdict(e){const m=EVENT_MODEL[e.event]||{};if(m.hawkDove)return null;const d=newsInput(e);if(!isNaN(parseFloat(d.actual)))return null;if(isNaN(parseFloat(d.forecast)))return null;
 const n=k=>ctxVal(d,k),t=(n('f_lead')+n('f_season'))/2,sh=Math.round(t*20),strong=30+sh,weak=30-sh,inl=40,g=Math.max(-1,Math.min(1,(-n('f_usd')+n('f_trend'))/2+n('f_gs')*0.25)),share=0.5-0.125*g;
 const bear=Math.round(strong+inl*share),bull=100-bear,diff=Math.abs(bear-bull),dir=bear>bull?'BEARISH':'BULLISH';
