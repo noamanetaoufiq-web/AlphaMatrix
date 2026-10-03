@@ -37,7 +37,7 @@ def jround(x):  # JS Math.round
     return math.floor(x + 0.5)
 
 
-def model(ctx, title):
+def model(ctx, title, nas=False):
     """Same maths as newsVerdict() in index.html."""
     ev = next((v for k, v in APP_NAME.items() if k in title), None)
     n = lambda k: float(ctx.get(k, 0) or 0)
@@ -45,16 +45,22 @@ def model(ctx, title):
     t = (n("f_lead") + season) / 2
     sh = jround(t * 20)
     strong, weak, inl = 30 + sh, 30 - sh, 40
-    g = max(-1.0, min(1.0, (-n("f_usd") + n("f_trend")) / 2 + n("f_gs") * 0.25))
+    if nas:
+        g = max(-1.0, min(1.0, (n("n_trend") - n("n_yld") - n("n_vix")) / 3 + n("n_ns") * 0.25))
+    else:
+        g = max(-1.0, min(1.0, (-n("f_usd") + n("f_trend")) / 2 + n("f_gs") * 0.25))
     bear = jround(strong + inl * (0.5 - 0.125 * g))
     bull = 100 - bear
     diff = abs(bear - bull)
     d = "BEARISH" if bear > bull else "BULLISH"
     lvl = "NO EDGE" if diff < 6 else f"SLIGHT {d} LEAN" if diff <= 15 else f"MODERATE {d} LEAN" if diff <= 30 else f"STRONG {d} LEAN"
     br, bl = [], []
-    for v, bt, lt in ((n("f_lead"), "Leading data hot", "Leading data soft"), (season, "Release seasonality hot", "Release seasonality soft"),
-                      (n("f_usd"), "USD & yields strong", "USD & yields weak"), (-n("f_trend"), "Gold trend bearish", "Gold trend bullish"),
-                      (-n("f_gs"), "Gold seasonality weak", "Gold seasonality strong")):
+    common = ((n("f_lead"), "Leading data hot", "Leading data soft"), (season, "Release seasonality hot", "Release seasonality soft"))
+    own = ((-n("n_trend"), "NASDAQ trend bearish", "NASDAQ trend bullish"), (n("n_yld"), "US10Y rising", "US10Y falling"),
+           (n("n_vix"), "VIX elevated", "VIX calm"), (-n("n_ns"), "NASDAQ seasonality weak", "NASDAQ seasonality strong")) if nas else \
+          ((n("f_usd"), "USD & yields strong", "USD & yields weak"), (-n("f_trend"), "Gold trend bearish", "Gold trend bullish"),
+           (-n("f_gs"), "Gold seasonality weak", "Gold seasonality strong"))
+    for v, bt, lt in common + own:
         (br if v > 0 else bl if v < 0 else []).append(bt if v > 0 else lt)
     return dict(strong=strong, inl=inl, weak=weak, bear=bear, bull=bull, lvl=lvl, br=br, bl=bl, diff=diff)
 
@@ -67,12 +73,14 @@ def embed(ev, mins, ctx):
     if ev.get("forecast") and not any(k in ev["title"] for k in SKIP_MODEL):
         m = model(ctx, ev["title"])
         color = 9807270 if m["diff"] < 6 else 15158332 if m["bear"] > m["bull"] else 3066993
-        fields = [
-            {"name": f"Gold lean · {m['lvl']} ({max(m['bear'], m['bull'])}% / {min(m['bear'], m['bull'])}%)",
-             "value": f"Above forecast (bearish) **{m['strong']}%** · In line **{m['inl']}%** · Below (bullish) **{m['weak']}%**"},
-            {"name": "Bear case", "value": "\n".join("• " + x for x in m["br"]) or "—", "inline": True},
-            {"name": "Bull case", "value": "\n".join("• " + x for x in m["bl"]) or "—", "inline": True},
-        ]
+        fields = []
+        for label, mm in (("XAUUSD", m), ("NASDAQ", model(ctx, ev["title"], nas=True))):
+            fields += [
+                {"name": f"{label} · {mm['lvl']} ({max(mm['bear'], mm['bull'])}% / {min(mm['bear'], mm['bull'])}%)",
+                 "value": f"Above forecast (bearish) **{mm['strong']}%** · In line **{mm['inl']}%** · Below (bullish) **{mm['weak']}%**"},
+                {"name": f"{label} bear case", "value": "\n".join("• " + x for x in mm["br"]) or "—", "inline": True},
+                {"name": f"{label} bull case", "value": "\n".join("• " + x for x in mm["bl"]) or "—", "inline": True},
+            ]
     return {"title": f"⚠️ {ev.get('impact', '').upper()} NEWS · {ev['title']}", "description": desc, "color": color, "fields": fields,
             "footer": {"text": "Subjective model, not financial advice. Wait for the print and the first reaction."},
             "timestamp": dt.datetime.now(dt.timezone.utc).isoformat()}
