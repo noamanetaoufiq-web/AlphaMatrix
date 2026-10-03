@@ -9,6 +9,7 @@ computed automatically (no manual clicking). Run hourly by
   f_gs    : gold seasonality, this month (Yahoo GC=F monthly history, last 15 years)
   f_lead  : leading data ADP/ISM/JOLTS/claims (actual vs forecast, public calendar feed,
             remembered for 30 days)
+  n_trend / n_yld / n_vix / n_ns : NASDAQ-100 trend, US10Y direction, VIX level, NASDAQ seasonality
 Values are -1 / 0 / +1 (same meaning as the buttons on the News page).
 f_season (seasonality of the *release itself*, e.g. NFP) has no free data source,
 so it stays a manual button.
@@ -46,11 +47,11 @@ def word(v, pos, neg):
     return pos if v > 0 else neg if v < 0 else "neutral"
 
 
-def gold_trend():
-    c = [x[1] for x in yahoo("GC=F", "3mo", "1d")]
+def trend(sym="GC=F", name="Gold", pos="bullish", neg="bearish"):
+    c = [x[1] for x in yahoo(sym, "3mo", "1d")]
     last, sma, chg = c[-1], sum(c[-20:]) / 20, c[-1] / c[-6] - 1
     v = 1 if last > sma and chg > 0 else -1 if last < sma and chg < 0 else 0
-    return v, f"Gold {last:,.0f} vs 20d avg {sma:,.0f}, 5d {chg:+.1%} -> trend {word(v, 'bullish', 'bearish')}"
+    return v, f"{name} {last:,.0f} vs 20d avg {sma:,.0f}, 5d {chg:+.1%} -> trend {word(v, pos, neg)}"
 
 
 def usd_yields():
@@ -64,8 +65,8 @@ def usd_yields():
     return v, f"DXY {d[-1]:.2f} ({uc:+.1%} 10d), US10Y {y[-1]:.2f}% ({yc:+.2f} 10d) -> {word(v, 'strong', 'weak')}"
 
 
-def gold_season():
-    pts = yahoo("GC=F", "max", "1mo")
+def season(sym="GC=F", name="Gold"):
+    pts = yahoo(sym, "max", "1mo")
     m = dt.datetime.utcnow().month
     rets = []
     for i in range(1, len(pts)):
@@ -75,8 +76,38 @@ def gold_season():
     rets = rets[-15:]
     avg, pos = sum(rets) / len(rets), sum(1 for r in rets if r > 0) / len(rets)
     v = 1 if pos >= 0.6 and avg > 0 else -1 if pos <= 0.4 and avg < 0 else 0
-    name = dt.date(2000, m, 1).strftime("%B")
-    return v, f"Gold in {name}: avg {avg:+.1%}, up {pos:.0%} of the last {len(rets)} years -> {word(v, 'strong', 'weak')}"
+    mon = dt.date(2000, m, 1).strftime("%B")
+    return v, f"{name} in {mon}: avg {avg:+.1%}, up {pos:.0%} of the last {len(rets)} years -> {word(v, 'strong', 'weak')}"
+
+
+def gold_trend():
+    return trend("GC=F", "Gold")
+
+
+def gold_season():
+    return season("GC=F", "Gold")
+
+
+def nas_trend():
+    return trend("%5ENDX", "NASDAQ-100")
+
+
+def nas_season():
+    return season("%5ENDX", "NASDAQ-100")
+
+
+def yields_dir():
+    y = [x[1] for x in yahoo("%5ETNX", "1mo", "1d")]
+    yc = y[-1] - y[-11]
+    v = 1 if yc > 0.10 else -1 if yc < -0.10 else 0
+    return v, f"US10Y {y[-1]:.2f}% ({yc:+.2f} in 10d) -> {word(v, 'rising', 'falling')}"
+
+
+def vix_level():
+    c = [x[1] for x in yahoo("%5EVIX", "1mo", "1d")]
+    last, chg = c[-1], c[-1] / c[-11] - 1
+    v = 1 if last >= 22 or chg >= 0.20 else -1 if last <= 16 and chg <= 0.05 else 0
+    return v, f"VIX {last:.1f} ({chg:+.0%} in 10d) -> {word(v, 'elevated', 'calm')}"
 
 
 def num(s):
@@ -175,7 +206,8 @@ def main():
         except Exception:
             old = {}
     res, notes, hist, okc = {}, [], old.get("lead_hist", []), 0
-    for key, fn in (("f_trend", gold_trend), ("f_usd", usd_yields), ("f_gs", gold_season), ("f_lead", lambda: leading(hist))):
+    for key, fn in (("f_trend", gold_trend), ("f_usd", usd_yields), ("f_gs", gold_season), ("f_lead", lambda: leading(hist)),
+                    ("n_trend", nas_trend), ("n_yld", yields_dir), ("n_vix", vix_level), ("n_ns", nas_season)):
         try:
             out = fn()
             res[key] = out[0]
