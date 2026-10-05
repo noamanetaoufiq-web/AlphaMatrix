@@ -7,8 +7,9 @@ index.html                              the app
 context.json                            auto market context (written by the Action)
 scripts/fetch_calendar.py               -> news.json
 scripts/fetch_context.py                -> context.json
+scripts/fetch_bias.py                   -> bias.json (daily/weekly/monthly bias, drivers, investor positioning)
 scripts/notify_news.py                  -> Discord alert before high-impact news (+ alerts.json)
-.github/workflows/update-calendar.yml   runs the 3 scripts every hour
+.github/workflows/update-calendar.yml   runs the 4 scripts every hour
 ```
 
 First run: Actions -> "Update Market Calendar" -> Run workflow.
