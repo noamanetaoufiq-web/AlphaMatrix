@@ -45,11 +45,14 @@ jobs:
 
       - name: Commit generated data files if changed
         run: |
-          git add -A news.json context.json bias.json alerts.json 2>/dev/null || true
+          for f in news.json context.json bias.json alerts.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit -m "chore: update market data [skip ci]"
+            git pull --rebase origin main
             git push
           else
             echo "No changes - nothing to commit."
