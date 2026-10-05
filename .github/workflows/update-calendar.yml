@@ -32,6 +32,10 @@ jobs:
         run: python scripts/fetch_context.py
         continue-on-error: true
 
+      - name: Fetch daily/weekly/monthly bias into bias.json
+        run: python scripts/fetch_bias.py
+        continue-on-error: true
+
       - name: Discord alert before high-impact news
         run: python scripts/notify_news.py
         continue-on-error: true
@@ -39,9 +43,9 @@ jobs:
           DISCORD_NEWS_WEBHOOK: ${{ secrets.DISCORD_NEWS_WEBHOOK }}
           NEWS_ALERT_TEST: ${{ inputs.test_alert && '1' || '0' }}
 
-      - name: Commit news.json / context.json / alerts.json if changed
+      - name: Commit generated data files if changed
         run: |
-          git add -A news.json context.json alerts.json 2>/dev/null || true
+          git add -A news.json context.json bias.json alerts.json 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
