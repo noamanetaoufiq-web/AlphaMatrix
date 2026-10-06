@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-06 08:40 UTC",
+  "updated": "2026-10-06 15:45 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -9,26 +9,26 @@
   ],
   "assets": {
     "XAUUSD": {
-      "price": 4174.5,
+      "price": 4193.4,
       "tf": {
         "daily": {
-          "score": 0.5,
-          "label": "MODERATE BULLISH",
+          "score": 0.88,
+          "label": "STRONG BULLISH",
           "dir": "Bullish",
-          "pct": 70,
+          "pct": 85,
           "drivers": [
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+0.4% over 1d",
+              "reading": "+0.9% over 1d",
               "v": 1,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "-0.1% over 1d",
-              "v": 0,
+              "reading": "-0.4% over 1d",
+              "v": 1,
               "w": 1.5
             },
             {
@@ -49,14 +49,14 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "-0.1% over 5d",
+              "reading": "+0.3% over 5d",
               "v": 0,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.7% over 5d",
+              "reading": "+0.4% over 5d",
               "v": 0,
               "w": 1.5
             },
@@ -85,21 +85,21 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "-6.7% over 21d",
+              "reading": "-6.3% over 21d",
               "v": -1,
               "w": 2
             },
             {
               "key": "ma",
               "name": "Long-term trend (vs 100d avg)",
-              "reading": "-3.2%",
+              "reading": "-2.8%",
               "v": -1,
               "w": 1.5
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+3.0% over 21d",
+              "reading": "+2.7% over 21d",
               "v": -1,
               "w": 1.5
             },
@@ -130,23 +130,14 @@
       "investors": [
         "Large speculators (CFTC, 2026-09-29) are net long 218,632 contracts in gold, -9,492 vs 4 weeks ago: cutting exposure.",
         "VIX 15.4: moderate risk appetite.",
-        "US dollar +3.0% in 1 month: stronger dollar, a headwind for gold."
+        "US dollar +2.7% in 1 month: stronger dollar, a headwind for gold."
       ],
       "zones": {
         "symbol": "GC=F",
         "daily": {
           "tf": "1H",
-          "price": 4173.5,
+          "price": 4194.9,
           "supply": [
-            {
-              "top": 4194.0,
-              "bottom": 4184.4,
-              "fresh": true,
-              "strength": 1.4,
-              "formed": "2026-10-05 13:00",
-              "inside": false,
-              "dist": 0.26
-            },
             {
               "top": 4300.6,
               "bottom": 4293.8,
@@ -154,23 +145,32 @@
               "strength": 1.7,
               "formed": "2026-09-28 00:00",
               "inside": false,
-              "dist": 2.88
+              "dist": 2.36
+            },
+            {
+              "top": 4345.3,
+              "bottom": 4333.9,
+              "fresh": false,
+              "strength": 1.5,
+              "formed": "2026-09-25 13:00",
+              "inside": false,
+              "dist": 3.31
             }
           ],
           "demand": []
         },
         "weekly": {
           "tf": "4H",
-          "price": 4173.5,
+          "price": 4194.9,
           "supply": [
             {
               "top": 4226.8,
               "bottom": 4207.6,
-              "fresh": true,
+              "fresh": false,
               "strength": 1.8,
               "formed": "2026-10-02 12:00",
               "inside": false,
-              "dist": 0.82
+              "dist": 0.3
             },
             {
               "top": 4327.6,
@@ -179,7 +179,7 @@
               "strength": 2.0,
               "formed": "2026-09-28 00:00",
               "inside": false,
-              "dist": 2.9
+              "dist": 2.38
             }
           ],
           "demand": [
@@ -190,13 +190,13 @@
               "strength": 2.3,
               "formed": "2026-08-05 00:00",
               "inside": false,
-              "dist": -0.91
+              "dist": -1.41
             }
           ]
         },
         "monthly": {
           "tf": "1D",
-          "price": 4173.5,
+          "price": 4194.9,
           "supply": [
             {
               "top": 4351.6,
@@ -205,7 +205,7 @@
               "strength": 1.4,
               "formed": "2026-09-28 04:00",
               "inside": false,
-              "dist": 2.98
+              "dist": 2.46
             },
             {
               "top": 4697.7,
@@ -214,7 +214,7 @@
               "strength": 1.2,
               "formed": "2026-08-28 04:00",
               "inside": false,
-              "dist": 11.42
+              "dist": 10.85
             }
           ],
           "demand": [
@@ -225,54 +225,54 @@
               "strength": 2.0,
               "formed": "2026-08-05 04:00",
               "inside": false,
-              "dist": -0.5
+              "dist": -1.01
             }
           ]
         }
       }
     },
     "NASDAQ": {
-      "price": 31076.44,
+      "price": 31339.14,
       "tf": {
         "daily": {
-          "score": 0.64,
-          "label": "MODERATE BULLISH",
+          "score": 0.86,
+          "label": "STRONG BULLISH",
           "dir": "Bullish",
-          "pct": 76,
+          "pct": 84,
           "drivers": [
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+0.9% over 1d",
+              "reading": "+0.8% over 1d",
               "v": 1,
               "w": 2
             },
             {
               "key": "y10",
               "name": "US10Y yield",
-              "reading": "5.31% (+0.03 in 1d)",
-              "v": 0,
+              "reading": "5.26% (-0.05 in 1d)",
+              "v": 1,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "-0.1% over 1d",
-              "v": 0,
+              "reading": "-0.4% over 1d",
+              "v": 1,
               "w": 0.5
             },
             {
               "key": "vix",
               "name": "Fear (VIX)",
-              "reading": "VIX 15.4 (-0% in 1d)",
+              "reading": "VIX 15.4 (-1% in 1d)",
               "v": 1,
               "w": 1.5
             },
             {
               "key": "lead",
               "name": "Tech leadership (NDX vs S&P)",
-              "reading": "+0.2% over 1d",
-              "v": 1,
+              "reading": "-0.0% over 1d",
+              "v": 0,
               "w": 1
             }
           ]
@@ -286,21 +286,21 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+2.6% over 5d",
+              "reading": "+3.3% over 5d",
               "v": 1,
               "w": 2
             },
             {
               "key": "y10",
               "name": "US10Y yield",
-              "reading": "5.31% (+0.07 in 5d)",
+              "reading": "5.26% (+0.00 in 5d)",
               "v": 0,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.7% over 5d",
+              "reading": "+0.4% over 5d",
               "v": 0,
               "w": 0.5
             },
@@ -314,7 +314,7 @@
             {
               "key": "lead",
               "name": "Tech leadership (NDX vs S&P)",
-              "reading": "+1.5% over 5d",
+              "reading": "+1.1% over 5d",
               "v": 1,
               "w": 1
             },
@@ -336,42 +336,42 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+5.4% over 21d",
+              "reading": "+6.1% over 21d",
               "v": 1,
               "w": 2
             },
             {
               "key": "ma",
               "name": "Long-term trend (vs 100d avg)",
-              "reading": "+5.3%",
+              "reading": "+6.1%",
               "v": 1,
               "w": 1.5
             },
             {
               "key": "y10",
               "name": "US10Y yield",
-              "reading": "5.31% (+0.55 in 21d)",
+              "reading": "5.26% (+0.47 in 21d)",
               "v": -1,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+3.0% over 21d",
+              "reading": "+2.7% over 21d",
               "v": -1,
               "w": 0.5
             },
             {
               "key": "vix",
               "name": "Fear (VIX)",
-              "reading": "VIX 15.4 (+1% in 21d)",
+              "reading": "VIX 15.4 (+0% in 21d)",
               "v": 1,
               "w": 1.5
             },
             {
               "key": "lead",
               "name": "Tech leadership (NDX vs S&P)",
-              "reading": "+5.1% over 21d",
+              "reading": "+4.5% over 21d",
               "v": 1,
               "w": 1
             },
@@ -394,16 +394,16 @@
       },
       "investors": [
         "Large speculators (CFTC, 2026-09-29) are net long 51,247 contracts in Nasdaq, +25,357 vs 4 weeks ago: adding to exposure.",
-        "US10Y 5.31% (+0.55 in 1 month): rising yields pressure growth stocks.",
+        "US10Y 5.26% (+0.47 in 1 month): rising yields pressure growth stocks.",
         "VIX 15.4: moderate risk appetite.",
-        "Tech vs S&P 500 over 1 month: +5.1% -> investors are rotating into tech.",
-        "US dollar +3.0% in 1 month: dollar moving, watch the reaction in risk assets."
+        "Tech vs S&P 500 over 1 month: +4.5% -> investors are rotating into tech.",
+        "US dollar +2.7% in 1 month: dollar moving, watch the reaction in risk assets."
       ],
       "zones": {
         "symbol": "^NDX",
         "daily": {
           "tf": "1H",
-          "price": 31076.44,
+          "price": 31330.58,
           "supply": [],
           "demand": [
             {
@@ -413,7 +413,7 @@
               "strength": 1.6,
               "formed": "2026-10-01 16:30",
               "inside": false,
-              "dist": -2.27
+              "dist": -3.06
             },
             {
               "top": 28794.12,
@@ -422,19 +422,19 @@
               "strength": 1.6,
               "formed": "2026-08-04 13:30",
               "inside": false,
-              "dist": -7.34
+              "dist": -8.1
             }
           ]
         },
         "weekly": {
           "tf": "4H",
-          "price": 31076.44,
+          "price": 31330.58,
           "supply": [],
           "demand": []
         },
         "monthly": {
           "tf": "1D",
-          "price": 31076.44,
+          "price": 31330.58,
           "supply": [],
           "demand": [
             {
@@ -444,7 +444,7 @@
               "strength": 1.6,
               "formed": "2026-09-21 13:30",
               "inside": false,
-              "dist": -4.61
+              "dist": -5.38
             }
           ]
         }
