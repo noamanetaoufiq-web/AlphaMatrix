@@ -13,6 +13,8 @@ Periods are anchored to the market closes:
 
 Zones: daily bias -> 1H chart, weekly -> 4H chart, monthly -> 1D chart.
 
+Prices: gold = SPOT XAUUSD (Yahoo XAUUSD=X, same market as a broker chart; GC=F futures only as a fallback because futures
+trade ~$30 above spot), Nasdaq = ^NDX. The page can also apply a broker offset (admin "MATCH" button).
 Sources (free, key-less; each is optional - a missing source only removes its factor):
   Yahoo (prices), FRED (real yield, breakeven, 2Y, Fed funds), CFTC COT, news.json (today's events).
 A transparent rule-based lean, NOT a prediction and NOT financial advice.
@@ -51,14 +53,16 @@ def ohlc(sym, rng, interval):
     for i, t in enumerate(r["timestamp"]):
         o, h, l, c = q["open"][i], q["high"][i], q["low"][i], q["close"][i]
         if None not in (o, h, l, c):
-            out.append({"t": t, "d": dt.datetime.fromtimestamp(t, ET).date(), "o": o, "h": h, "l": l, "c": c})
+            # spot FX/gold bars are stamped around the 22:00-00:00 UTC roll: +2h maps Sunday-evening opens to Monday
+            d = (dt.datetime.utcfromtimestamp(t) + dt.timedelta(hours=2)).date() if sym.endswith("=X") else dt.datetime.fromtimestamp(t, ET).date()
+            out.append({"t": t, "d": d, "o": o, "h": h, "l": l, "c": c})
     return out
 
 
 def drop_open(bars):
     """Daily bias is built on COMPLETED sessions only: drop today's bar until 17:00 New York."""
     now = dt.datetime.now(ET)
-    if bars and bars[-1]["d"] == now.date() and now.weekday() < 5 and now.hour < 17:
+    if bars and (bars[-1]["d"] > now.date() or (bars[-1]["d"] == now.date() and now.weekday() < 5 and now.hour < 17)):
         return bars[:-1]
     return bars
 
@@ -420,7 +424,7 @@ def events_today():
 
 def main():
     D, notes = {}, []
-    src = {"gold": lambda: daily("GC=F"), "ndx": lambda: daily("%5ENDX", alt="NQ=F"), "spx": lambda: daily("%5EGSPC"),
+    src = {"gold": lambda: daily("XAUUSD=X", alt="GC=F"), "ndx": lambda: daily("%5ENDX", alt="NQ=F"), "spx": lambda: daily("%5EGSPC"),
            "dxy": lambda: daily("DX-Y.NYB"), "tnx": lambda: daily("%5ETNX"), "vix": lambda: daily("%5EVIX"),
            "ry": lambda: fred("DFII10"), "be": lambda: fred("T10YIE"), "dgs2": lambda: fred("DGS2"), "dff": lambda: fred("DFF"),
            "cot_g": lambda: cftc("GOLD - COMMODITY EXCHANGE"), "cot_n": lambda: cftc("NASDAQ", "MINI"),
@@ -439,7 +443,7 @@ def main():
         bars = D.get("gold" if asset == "XAUUSD" else "ndx")
         tf = {t: build(asset, t, D) for t in TH} if bars else {}
         data["assets"][asset] = {"price": round(bars[-1]["c"], 2) if bars else None, "tf": tf, "investors": investors(asset, D),
-                                 "zones": zones_for(["GC=F"] if asset == "XAUUSD" else ["%5ENDX", "NQ=F"], notes)}
+                                 "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["%5ENDX", "NQ=F"], notes)}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
