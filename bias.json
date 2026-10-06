@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-05 20:43 UTC",
+  "updated": "2026-10-06 01:42 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -9,7 +9,7 @@
   ],
   "assets": {
     "XAUUSD": {
-      "price": 4167.9,
+      "price": 4162.5,
       "tf": {
         "daily": {
           "score": 0.0,
@@ -20,14 +20,14 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+0.1% over 1d",
+              "reading": "+0.0% over 1d",
               "v": 0,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.2% over 1d",
+              "reading": "-0.1% over 1d",
               "v": 0,
               "w": 1.5
             },
@@ -41,23 +41,23 @@
           ]
         },
         "weekly": {
-          "score": -0.27,
-          "label": "SLIGHT BEARISH",
-          "dir": "Bearish",
-          "pct": 61,
+          "score": 0.0,
+          "label": "NEUTRAL",
+          "dir": "Neutral",
+          "pct": 50,
           "drivers": [
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "-0.0% over 5d",
+              "reading": "-0.1% over 5d",
               "v": 0,
               "w": 2
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.9% over 5d",
-              "v": -1,
+              "reading": "+0.7% over 5d",
+              "v": 0,
               "w": 1.5
             },
             {
@@ -85,21 +85,21 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "-8.2% over 21d",
+              "reading": "-8.3% over 21d",
               "v": -1,
               "w": 2
             },
             {
               "key": "ma",
               "name": "Long-term trend (vs 100d avg)",
-              "reading": "-3.5%",
+              "reading": "-3.6%",
               "v": -1,
               "w": 1.5
             },
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+3.2% over 21d",
+              "reading": "+2.9% over 21d",
               "v": -1,
               "w": 1.5
             },
@@ -130,13 +130,13 @@
       "investors": [
         "Large speculators (CFTC, 2026-09-29) are net long 218,632 contracts in gold, -9,492 vs 4 weeks ago: cutting exposure.",
         "VIX 15.5: moderate risk appetite.",
-        "US dollar +3.2% in 1 month: stronger dollar, a headwind for gold."
+        "US dollar +2.9% in 1 month: stronger dollar, a headwind for gold."
       ],
       "zones": {
         "symbol": "GC=F",
         "daily": {
           "tf": "1H",
-          "price": 4167.3,
+          "price": 4163.8,
           "supply": [
             {
               "top": 4194.0,
@@ -145,7 +145,7 @@
               "strength": 1.4,
               "formed": "2026-10-05 13:00",
               "inside": false,
-              "dist": 0.41
+              "dist": 0.49
             },
             {
               "top": 4300.6,
@@ -154,10 +154,19 @@
               "strength": 1.7,
               "formed": "2026-09-28 00:00",
               "inside": false,
-              "dist": 3.04
+              "dist": 3.12
             }
           ],
           "demand": [
+            {
+              "top": 4169.2,
+              "bottom": 4160.6,
+              "fresh": false,
+              "strength": 1.2,
+              "formed": "2026-10-06 00:00",
+              "inside": true,
+              "dist": 0.13
+            },
             {
               "top": 4162.4,
               "bottom": 4157.6,
@@ -165,13 +174,13 @@
               "strength": 1.2,
               "formed": "2026-10-05 06:00",
               "inside": false,
-              "dist": -0.12
+              "dist": -0.03
             }
           ]
         },
         "weekly": {
           "tf": "4H",
-          "price": 4167.3,
+          "price": 4163.8,
           "supply": [
             {
               "top": 4226.8,
@@ -180,7 +189,7 @@
               "strength": 1.8,
               "formed": "2026-10-02 12:00",
               "inside": false,
-              "dist": 0.97
+              "dist": 1.05
             },
             {
               "top": 4327.6,
@@ -189,7 +198,7 @@
               "strength": 2.0,
               "formed": "2026-09-28 00:00",
               "inside": false,
-              "dist": 3.05
+              "dist": 3.14
             }
           ],
           "demand": [
@@ -200,13 +209,13 @@
               "strength": 2.3,
               "formed": "2026-08-05 00:00",
               "inside": false,
-              "dist": -0.76
+              "dist": -0.68
             }
           ]
         },
         "monthly": {
           "tf": "1D",
-          "price": 4167.2,
+          "price": 4163.8,
           "supply": [
             {
               "top": 4351.6,
@@ -215,7 +224,7 @@
               "strength": 1.4,
               "formed": "2026-09-28 04:00",
               "inside": false,
-              "dist": 3.14
+              "dist": 3.22
             },
             {
               "top": 4697.7,
@@ -224,7 +233,7 @@
               "strength": 1.2,
               "formed": "2026-08-28 04:00",
               "inside": false,
-              "dist": 11.59
+              "dist": 11.68
             }
           ],
           "demand": [
@@ -235,7 +244,7 @@
               "strength": 2.0,
               "formed": "2026-08-05 04:00",
               "inside": false,
-              "dist": -0.35
+              "dist": -0.27
             }
           ]
         }
@@ -267,7 +276,7 @@
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.2% over 1d",
+              "reading": "-0.1% over 1d",
               "v": 0,
               "w": 0.5
             },
@@ -288,10 +297,10 @@
           ]
         },
         "weekly": {
-          "score": 0.62,
+          "score": 0.69,
           "label": "MODERATE BULLISH",
           "dir": "Bullish",
-          "pct": 75,
+          "pct": 78,
           "drivers": [
             {
               "key": "trend",
@@ -310,8 +319,8 @@
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+0.9% over 5d",
-              "v": -1,
+              "reading": "+0.7% over 5d",
+              "v": 0,
               "w": 0.5
             },
             {
@@ -367,7 +376,7 @@
             {
               "key": "usd",
               "name": "US dollar (DXY)",
-              "reading": "+3.2% over 21d",
+              "reading": "+2.9% over 21d",
               "v": -1,
               "w": 0.5
             },
@@ -407,7 +416,7 @@
         "US10Y 5.31% (+0.55 in 1 month): rising yields pressure growth stocks.",
         "VIX 15.5: moderate risk appetite.",
         "Tech vs S&P 500 over 1 month: +5.1% -> investors are rotating into tech.",
-        "US dollar +3.2% in 1 month: dollar moving, watch the reaction in risk assets."
+        "US dollar +2.9% in 1 month: dollar moving, watch the reaction in risk assets."
       ],
       "zones": {
         "symbol": "^NDX",
