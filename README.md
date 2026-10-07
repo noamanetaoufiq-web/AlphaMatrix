@@ -4,6 +4,7 @@ Upload as-is to the repo root:
 
 ```
 index.html                              the app
+price-proxy-worker.js                   (optional) Cloudflare Worker = reliable live price proxy
 context.json                            auto market context (written by the Action)
 scripts/fetch_calendar.py               -> news.json
 scripts/fetch_context.py                -> context.json
