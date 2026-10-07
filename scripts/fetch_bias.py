@@ -4,12 +4,12 @@ Builds bias.json: DAILY / WEEKLY / MONTHLY bias for XAUUSD and NASDAQ-100, what 
 versus the previous period, the drivers behind each reading, what big investors are doing,
 and supply & demand zones per timeframe.
 
-Periods are anchored to the market closes:
-  DAILY   = the last COMPLETED session (recomputed after each close, 17:00 New York).
-  WEEKLY  = the trading week Sunday evening -> Friday close (Monday bar -> Friday bar),
-            "week to date" until Friday, final after Friday's close.
-  MONTHLY = month to date since the last close of the previous month, same logic as weekly.
-  "What changed" = this reading vs the same analysis recomputed at the end of the previous period.
+Each bias is an OUTLOOK that is built once a period CLOSES and stays locked for the next period:
+  DAILY   = built right after the 17:00 New York close, valid for the next session.
+  WEEKLY  = built after Friday's close (Sunday evening -> Friday week), valid for the coming week.
+  MONTHLY = built after the last session of the month, valid for the coming month.
+  "What changed" = this outlook vs the previous one. The page tracks the live price against the
+  reference close ("since the close: +0.3%, in line with the bias").
 
 Zones: daily bias -> 1H chart, weekly -> 4H chart, monthly -> 1D chart.
 
@@ -242,19 +242,62 @@ def _build(asset, tf, D, asof):
             "pct": 50 if dire == "Neutral" else min(90, 50 + round(40 * a)), "asof": str(asof), "period": period, "status": status, "drivers": F}
 
 
+def pick_asof(tf, dates):
+    """Last COMPLETED period: daily = last closed session, weekly = last closed week (Friday),
+    monthly = last closed month. While a period is still running we use the previous one, so the
+    bias stays locked until the next close."""
+    last = dates[-1]
+    if tf == "daily":
+        return last
+    today = dt.datetime.now(ET).date()
+    st = period_start(tf, last)
+    if tf == "weekly":
+        done = last.weekday() == 4 or today.weekday() >= 5 or period_start("weekly", today) > st
+    else:
+        nxt = last + dt.timedelta(days=1)
+        while nxt.weekday() > 4:
+            nxt += dt.timedelta(days=1)
+        done = nxt.month != last.month or today.month != last.month
+    return last if done else next((d for d in reversed(dates) if d < st), None)
+
+
+def outlook(tf, asof):
+    if tf == "daily":
+        t = asof + dt.timedelta(days=1)
+        while t.weekday() > 4:
+            t += dt.timedelta(days=1)
+        return f"Outlook for {t:%a %b %d} (built from the {asof:%a %b %d} close)", t
+    if tf == "weekly":
+        t = period_start("weekly", asof) + dt.timedelta(days=7)
+        return f"Outlook for the week of {t:%b %d} (built from the week ending {asof:%a %b %d})", t
+    t = (asof.replace(day=1) + dt.timedelta(days=32)).replace(day=1)
+    return f"Outlook for {t:%B %Y} (built from the {asof:%B} close)", t
+
+
 def build(asset, tf, D):
     dates = sorted({b["d"] for b in D.get("gold" if asset == "XAUUSD" else "ndx", [])})
     if not dates:
         return None
-    asof = dates[-1]
+    asof = pick_asof(tf, dates)
+    if asof is None:
+        return None
     cur = _build(asset, tf, D, asof)
-    prev_asof = dates[-2] if tf == "daily" and len(dates) > 1 else next((d for d in reversed(dates) if d < period_start(tf, asof)), None) if tf != "daily" else None
+    if tf == "daily":
+        i = dates.index(asof)
+        prev_asof = dates[i - 1] if i > 0 else None
+    else:
+        prev_asof = next((d for d in reversed(dates) if d < period_start(tf, asof)), None)
     if prev_asof:
         pv = _build(asset, tf, D, prev_asof)
         pk = {f["key"]: f for f in pv["drivers"]}
         flips = [{"name": f["name"], "from": pk[f["key"]]["v"], "to": f["v"]} for f in cur["drivers"] if f["key"] in pk and pk[f["key"]]["v"] != f["v"]]
-        cur["changes"] = {"vs": {"daily": "previous close", "weekly": "last week", "monthly": "last month"}[tf], "prev_label": pv["label"],
-                          "prev_period": pv["period"], "score_delta": round(cur["score"] - pv["score"], 2), "flips": flips}
+        cur["changes"] = {"vs": {"daily": "the previous day's outlook", "weekly": "last week's outlook", "monthly": "last month's outlook"}[tf],
+                          "prev_label": pv["label"], "prev_period": pv["period"], "score_delta": round(cur["score"] - pv["score"], 2), "flips": flips}
+    cur["period"], target = outlook(tf, asof)
+    cur["status"] = "active" if dt.datetime.now(ET).date() >= target else "upcoming"
+    cur["target"] = str(target)
+    cur["built_from"] = str(asof)
+    cur["ref_price"] = round(next(b["c"] for b in reversed(D["gold" if asset == "XAUUSD" else "ndx"]) if b["d"] <= asof), 2)
     return cur
 
 
@@ -369,7 +412,7 @@ def find_zones(bars, lookback):
     out = {"supply": [], "demand": []}
     for z in keep:
         item = {"top": round(z["top"], 2), "bottom": round(z["bottom"], 2), "fresh": z["fresh"], "strength": round(min(z["strength"], 9.9), 1), "kind": z["kind"],
-                "formed": dt.datetime.utcfromtimestamp(bars[z["idx"]]["t"]).strftime("%Y-%m-%d %H:%M"),
+                "formed": dt.datetime.utcfromtimestamp(bars[z["idx"]]["t"]).strftime("%Y-%m-%d %H:%M"), "rec": round(z["idx"] / n, 2),
                 "inside": z["bottom"] <= px <= z["top"], "dist": round(((z["top"] if z["type"] == "demand" else z["bottom"]) - px) / px * 100, 2)}
         if z["type"] == "demand" and z["bottom"] <= px:
             out["demand"].append(item)
@@ -377,8 +420,23 @@ def find_zones(bars, lookback):
             out["supply"].append(item)
     out["demand"].sort(key=lambda x: -x["dist"])
     out["supply"].sort(key=lambda x: x["dist"])
-    out["demand"], out["supply"] = out["demand"][:3], out["supply"][:3]
+    out["demand"], out["supply"] = out["demand"][:6], out["supply"][:6]
     return out, round(px, 2)
+
+
+def grade_zones(res):
+    """Quality grade A/B/C: size of the move, freshness, base vs swing, recency, and confluence
+    (the same zone also exists on another timeframe). Keeps the 3 best zones per side."""
+    tfs = [t for t in ("daily", "weekly", "monthly") if res.get(t)]
+    for t in tfs:
+        for side in ("supply", "demand"):
+            for z in res[t][side]:
+                conf = [res[o]["tf"] for o in tfs if o != t and any(min(z["top"], y["top"]) > max(z["bottom"], y["bottom"]) for y in res[o][side])]
+                sc = min(z["strength"], 4) / 4 * 35 + (25 if z["fresh"] else 8) + (10 if z["kind"] == "base" else 4) + z["rec"] * 10 + min(20, 15 * len(conf))
+                z["conf"], z["score"], z["grade"] = conf, round(sc), "A" if sc >= 65 else "B" if sc >= 45 else "C"
+    for t in tfs:
+        res[t]["supply"] = sorted(sorted(res[t]["supply"], key=lambda z: -z["score"])[:3], key=lambda z: z["dist"])
+        res[t]["demand"] = sorted(sorted(res[t]["demand"], key=lambda z: -z["score"])[:3], key=lambda z: -z["dist"])
 
 
 def zones_for(cands, notes):
@@ -402,6 +460,7 @@ def zones_for(cands, notes):
         for tf, bars, lb, label in (("daily", h1, 500, "1H"), ("weekly", to_4h(h1) if h1 else None, 300, "4H"), ("monthly", d1, 260, "1D")):
             z, px = find_zones(bars, lb) if bars else (None, None)
             res[tf] = {"tf": label, "price": px, **(z or {"supply": [], "demand": []})}
+        grade_zones(res)
         return res
     notes.append("zones: no candle data")
     return None
