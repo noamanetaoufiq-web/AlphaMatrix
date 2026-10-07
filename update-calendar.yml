@@ -1,0 +1,72 @@
+name: Update Market Calendar
+
+"on":
+  schedule:
+    - cron: '5 * * * *'   # every hour at minute 5 (GitHub may delay this a few minutes under load)
+    - cron: '12 21,22 * * 1-5'   # right after the 17:00 New York close (summer / winter time): builds the next-day and, on Friday, next-week outlook
+    - cron: '40 21 * * 0'        # Sunday evening, before the market reopens: refreshes the weekly outlook
+  workflow_dispatch:       # lets you trigger it manually from the Actions tab
+    inputs:
+      test_alert:
+        description: 'Send a test Discord alert (needs DISCORD_NEWS_WEBHOOK secret)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-calendar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch calendar into news.json
+        run: |
+          s=scripts/fetch_calendar.py; [ -f "$s" ] || s=fetch_calendar.py
+          python "$s"
+
+      - name: Fetch market context into context.json
+        run: |
+          s=scripts/fetch_context.py; [ -f "$s" ] || s=fetch_context.py
+          python "$s" || echo "::warning::fetch_context.py failed, see the log above"
+        continue-on-error: true
+
+      - name: Fetch daily/weekly/monthly bias into bias.json
+        run: |
+          s=scripts/fetch_bias.py; [ -f "$s" ] || s=fetch_bias.py
+          python "$s" || echo "::warning::fetch_bias.py failed, see the log above"
+        continue-on-error: true
+
+      - name: Discord alert before high-impact news
+        run: |
+          s=scripts/notify_news.py; [ -f "$s" ] || s=notify_news.py
+          python "$s" || echo "::warning::notify_news.py failed, see the log above"
+        continue-on-error: true
+        env:
+          DISCORD_NEWS_WEBHOOK: ${{ secrets.DISCORD_NEWS_WEBHOOK }}
+          NEWS_ALERT_TEST: ${{ inputs.test_alert && '1' || '0' }}
+
+      - name: Show generated files
+        run: ls -la *.json || true
+
+      - name: Commit generated data files if changed
+        run: |
+          for f in news.json context.json bias.json alerts.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: update market data [skip ci]"
+            git pull --rebase origin main
+            git push
+          else
+            echo "No changes - nothing to commit."
+          fi
