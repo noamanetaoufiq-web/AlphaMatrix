@@ -13,7 +13,8 @@ Each bias is an OUTLOOK that is built once a period CLOSES and stays locked for 
 
 Zones: daily bias -> 1H chart, weekly -> 4H chart, monthly -> 1D chart.
 
-Prices: gold = SPOT XAUUSD (Yahoo XAUUSD=X, same market as a broker chart; GC=F futures only as a fallback because futures
+Prices: with an OANDA token (secret OANDA_TOKEN) gold = OANDA XAU_USD and Nasdaq = OANDA NAS100_USD CFD candles
+(the same kind of price as a broker chart). Without it: gold = SPOT XAUUSD (Yahoo XAUUSD=X, same market as a broker chart; GC=F futures only as a fallback because futures
 trade ~$30 above spot), Nasdaq = ^NDX. The page can also apply a broker offset (admin "MATCH" button).
 Sources (free, key-less; each is optional - a missing source only removes its factor):
   Yahoo (prices), FRED (real yield, breakeven, 2Y, Fed funds), CFTC COT, news.json (today's events).
@@ -22,6 +23,7 @@ A transparent rule-based lean, NOT a prediction and NOT financial advice.
 import datetime as dt
 import json
 import math
+import os
 import sys
 import urllib.parse
 import urllib.request
@@ -36,6 +38,12 @@ TH = {  # "meaningful move" over a FULL period (scaled by sqrt(elapsed/full) whi
     "monthly": dict(px=0.035, dxy=0.02, ry=0.20, y10=0.30, be=0.10, vix=0.25, rel=0.015),
 }
 FULL = {"daily": 1, "weekly": 5, "monthly": 21}
+
+# CFD feed (OANDA practice API, free demo token) = the same kind of price as a broker chart.
+OANDA_TOKEN = os.environ.get("OANDA_TOKEN", "").strip()
+OANDA_HOST = os.environ.get("OANDA_HOST", "https://api-fxpractice.oanda.com").strip()
+OANDA_MAP = {"XAUUSD": "XAU_USD", "NASDAQ": "NAS100_USD"}
+SRC = {}
 
 
 # ----------------------------------------------------------------------------- data
@@ -57,6 +65,39 @@ def ohlc(sym, rng, interval):
             d = (dt.datetime.utcfromtimestamp(t) + dt.timedelta(hours=2)).date() if sym.endswith("=X") else dt.datetime.fromtimestamp(t, ET).date()
             out.append({"t": t, "d": d, "o": o, "h": h, "l": l, "c": c})
     return out
+
+
+def oanda_bars(instr, gran, count):
+    """Completed OANDA candles (mid). Daily candles use the 17:00 New York alignment, so the
+    Sunday-evening open belongs to Monday: this matches the Sunday -> Friday week."""
+    url = f"{OANDA_HOST}/v3/instruments/{instr}/candles?granularity={gran}&count={count}&price=M"
+    if gran in ("D", "W", "M"):
+        url += "&dailyAlignment=17&alignmentTimezone=America%2FNew_York"
+    req = urllib.request.Request(url, headers={"Authorization": "Bearer " + OANDA_TOKEN, "Accept-Datetime-Format": "UNIX", **UA})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        j = json.loads(r.read().decode("utf-8"))
+    out = []
+    for c in j.get("candles", []):
+        if not c.get("complete") or "mid" not in c:
+            continue
+        ts, m = int(float(c["time"])), c["mid"]
+        base = ts + 12 * 3600 if gran == "D" else ts
+        out.append({"t": ts, "d": dt.datetime.fromtimestamp(base, ET).date(), "o": float(m["o"]), "h": float(m["h"]), "l": float(m["l"]), "c": float(m["c"])})
+    return out
+
+
+def price_daily(asset, sym, alt=None):
+    if OANDA_TOKEN:
+        try:
+            b = oanda_bars(OANDA_MAP[asset], "D", 600)
+            if len(b) > 30:
+                SRC[asset] = "OANDA " + OANDA_MAP[asset]
+                return b
+        except Exception as e:
+            print(f"warning: OANDA {asset}: {e}", file=sys.stderr)
+    b = daily(sym, alt=alt)
+    SRC[asset] = "Yahoo " + sym.replace("%5E", "^")
+    return b
 
 
 def drop_open(bars):
@@ -439,7 +480,20 @@ def grade_zones(res):
         res[t]["demand"] = sorted(sorted(res[t]["demand"], key=lambda z: -z["score"])[:3], key=lambda z: -z["dist"])
 
 
-def zones_for(cands, notes):
+def zones_for(cands, notes, asset=None):
+    if OANDA_TOKEN and asset in OANDA_MAP:
+        try:
+            ins = OANDA_MAP[asset]
+            h1, h4, d1 = oanda_bars(ins, "H1", 2500), oanda_bars(ins, "H4", 1000), oanda_bars(ins, "D", 600)
+            res = {"symbol": "OANDA " + ins}
+            for tf, bars, lb, label in (("daily", h1, 500, "1H"), ("weekly", h4, 300, "4H"), ("monthly", d1, 260, "1D")):
+                z, px = find_zones(bars, lb) if bars else (None, None)
+                res[tf] = {"tf": label, "price": px, **(z or {"supply": [], "demand": []})}
+            grade_zones(res)
+            return res
+        except Exception as e:
+            print(f"warning: OANDA zones {asset}: {e}", file=sys.stderr)
+            notes.append("OANDA zones failed, using Yahoo")
     for sym in cands:
         h1 = None
         for rng in ("6mo", "3mo", "1mo"):
@@ -483,7 +537,7 @@ def events_today():
 
 def main():
     D, notes = {}, []
-    src = {"gold": lambda: daily("XAUUSD=X", alt="GC=F"), "ndx": lambda: daily("%5ENDX", alt="NQ=F"), "spx": lambda: daily("%5EGSPC"),
+    src = {"gold": lambda: price_daily("XAUUSD", "XAUUSD=X", alt="GC=F"), "ndx": lambda: price_daily("NASDAQ", "%5ENDX", alt="NQ=F"), "spx": lambda: daily("%5EGSPC"),
            "dxy": lambda: daily("DX-Y.NYB"), "tnx": lambda: daily("%5ETNX"), "vix": lambda: daily("%5EVIX"),
            "ry": lambda: fred("DFII10"), "be": lambda: fred("T10YIE"), "dgs2": lambda: fred("DGS2"), "dff": lambda: fred("DFF"),
            "cot_g": lambda: cftc("GOLD - COMMODITY EXCHANGE"), "cot_n": lambda: cftc("NASDAQ", "MINI"),
@@ -502,7 +556,7 @@ def main():
         bars = D.get("gold" if asset == "XAUUSD" else "ndx")
         tf = {t: build(asset, t, D) for t in TH} if bars else {}
         data["assets"][asset] = {"price": round(bars[-1]["c"], 2) if bars else None, "tf": tf, "investors": investors(asset, D),
-                                 "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["%5ENDX", "NQ=F"], notes)}
+                                 "source": SRC.get(asset), "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["%5ENDX", "NQ=F"], notes, asset)}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
