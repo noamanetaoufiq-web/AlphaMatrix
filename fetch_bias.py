@@ -537,7 +537,7 @@ def events_today():
 
 def main():
     D, notes = {}, []
-    src = {"gold": lambda: price_daily("XAUUSD", "XAUUSD=X", alt="GC=F"), "ndx": lambda: price_daily("NASDAQ", "%5ENDX", alt="NQ=F"), "spx": lambda: daily("%5EGSPC"),
+    src = {"gold": lambda: price_daily("XAUUSD", "XAUUSD=X", alt="GC=F"), "ndx": lambda: price_daily("NASDAQ", "NQ=F", alt="%5ENDX"), "spx": lambda: daily("%5EGSPC"),
            "dxy": lambda: daily("DX-Y.NYB"), "tnx": lambda: daily("%5ETNX"), "vix": lambda: daily("%5EVIX"),
            "ry": lambda: fred("DFII10"), "be": lambda: fred("T10YIE"), "dgs2": lambda: fred("DGS2"), "dff": lambda: fred("DFF"),
            "cot_g": lambda: cftc("GOLD - COMMODITY EXCHANGE"), "cot_n": lambda: cftc("NASDAQ", "MINI"),
@@ -556,7 +556,7 @@ def main():
         bars = D.get("gold" if asset == "XAUUSD" else "ndx")
         tf = {t: build(asset, t, D) for t in TH} if bars else {}
         data["assets"][asset] = {"price": round(bars[-1]["c"], 2) if bars else None, "tf": tf, "investors": investors(asset, D),
-                                 "source": SRC.get(asset), "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["%5ENDX", "NQ=F"], notes, asset)}
+                                 "source": SRC.get(asset), "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["NQ=F", "%5ENDX"], notes, asset)}
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
