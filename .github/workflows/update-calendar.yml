@@ -43,8 +43,6 @@ jobs:
           s=scripts/fetch_bias.py; [ -f "$s" ] || s=fetch_bias.py
           python "$s" || echo "::warning::fetch_bias.py failed, see the log above"
         continue-on-error: true
-        env:
-          OANDA_TOKEN: ${{ secrets.OANDA_TOKEN }}
 
       - name: Discord alert before high-impact news
         run: |
