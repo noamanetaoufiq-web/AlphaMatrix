@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09 23:57 UTC",
+  "updated": "2026-10-10 00:49 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -30,7 +30,7 @@
             {
               "key": "close",
               "name": "Close strength (position in day's range)",
-              "reading": "closed at 83% of the range",
+              "reading": "closed at 84% of the range",
               "v": 1,
               "w": 1
             },
@@ -282,7 +282,7 @@
           ],
           "demand": [
             {
-              "top": 4169.4,
+              "top": 4169.5,
               "bottom": 4166.4,
               "fresh": true,
               "strength": 2.1,
@@ -290,7 +290,7 @@
               "formed": "2026-10-09 01:00",
               "rec": 0.96,
               "inside": false,
-              "dist": -1.21,
+              "dist": -1.2,
               "conf": [
                 "4H"
               ],
@@ -315,7 +315,7 @@
               "grade": "A"
             },
             {
-              "top": 4102.33,
+              "top": 4102.28,
               "bottom": 4091.2,
               "fresh": true,
               "strength": 4.5,
@@ -826,7 +826,7 @@
           "supply": [
             {
               "top": 31253.25,
-              "bottom": 31235.75,
+              "bottom": 31235.5,
               "fresh": true,
               "strength": 4.0,
               "kind": "swing",
@@ -858,14 +858,14 @@
             },
             {
               "top": 31466.0,
-              "bottom": 31445.75,
+              "bottom": 31445.25,
               "fresh": true,
               "strength": 3.7,
               "kind": "swing",
               "formed": "2026-10-08 02:00",
               "rec": 0.91,
               "inside": false,
-              "dist": 1.04,
+              "dist": 1.03,
               "conf": [
                 "4H"
               ],
@@ -891,7 +891,7 @@
               "grade": "A"
             },
             {
-              "top": 30612.5,
+              "top": 30612.75,
               "bottom": 30555.75,
               "fresh": true,
               "strength": 1.6,
@@ -932,14 +932,14 @@
           "supply": [
             {
               "top": 31369.75,
-              "bottom": 31186.25,
+              "bottom": 31183.5,
               "fresh": false,
               "strength": 1.6,
               "kind": "base",
               "formed": "2026-10-08 16:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 0.2,
+              "dist": 0.19,
               "conf": [
                 "1H"
               ],
@@ -948,14 +948,14 @@
             },
             {
               "top": 31466.0,
-              "bottom": 31430.5,
+              "bottom": 31429.25,
               "fresh": true,
               "strength": 5.7,
               "kind": "swing",
               "formed": "2026-10-08 00:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 0.99,
+              "dist": 0.98,
               "conf": [
                 "1H"
               ],
@@ -1012,7 +1012,7 @@
               "grade": "A"
             },
             {
-              "top": 29708.25,
+              "top": 29708.75,
               "bottom": 29659.25,
               "fresh": true,
               "strength": 5.4,
@@ -1020,7 +1020,7 @@
               "formed": "2026-09-18 16:00",
               "rec": 0.68,
               "inside": false,
-              "dist": -4.55,
+              "dist": -4.54,
               "conf": [],
               "score": 71,
               "grade": "A"
