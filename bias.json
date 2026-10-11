@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-11 06:53 UTC",
+  "updated": "2026-10-11 13:50 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -30,7 +30,7 @@
             {
               "key": "close",
               "name": "Close strength (position in day's range)",
-              "reading": "closed at 78% of the range",
+              "reading": "closed at 79% of the range",
               "v": 1,
               "w": 1
             },
@@ -282,7 +282,7 @@
           ],
           "demand": [
             {
-              "top": 4169.3,
+              "top": 4169.5,
               "bottom": 4166.4,
               "fresh": true,
               "strength": 2.1,
@@ -298,7 +298,7 @@
               "grade": "A"
             },
             {
-              "top": 4135.4,
+              "top": 4135.8,
               "bottom": 4129.2,
               "fresh": true,
               "strength": 2.6,
@@ -306,7 +306,7 @@
               "formed": "2026-10-08 16:00",
               "rec": 0.94,
               "inside": false,
-              "dist": -1.92,
+              "dist": -1.91,
               "conf": [
                 "4H",
                 "1D"
@@ -315,7 +315,7 @@
               "grade": "A"
             },
             {
-              "top": 4102.33,
+              "top": 4102.28,
               "bottom": 4091.2,
               "fresh": true,
               "strength": 4.5,
@@ -406,7 +406,7 @@
               "grade": "A"
             },
             {
-              "top": 4135.4,
+              "top": 4135.8,
               "bottom": 4129.2,
               "fresh": true,
               "strength": 3.5,
@@ -414,7 +414,7 @@
               "formed": "2026-10-08 16:00",
               "rec": 0.97,
               "inside": false,
-              "dist": -1.92,
+              "dist": -1.91,
               "conf": [
                 "1H",
                 "1D"
@@ -423,7 +423,7 @@
               "grade": "A"
             },
             {
-              "top": 4115.54,
+              "top": 4115.58,
               "bottom": 4091.2,
               "fresh": true,
               "strength": 2.5,
@@ -826,7 +826,7 @@
           "supply": [
             {
               "top": 31253.25,
-              "bottom": 31235.75,
+              "bottom": 31235.5,
               "fresh": true,
               "strength": 4.0,
               "kind": "swing",
@@ -858,7 +858,7 @@
             },
             {
               "top": 31466.0,
-              "bottom": 31445.75,
+              "bottom": 31445.25,
               "fresh": true,
               "strength": 3.7,
               "kind": "swing",
@@ -891,7 +891,7 @@
               "grade": "A"
             },
             {
-              "top": 30612.5,
+              "top": 30612.75,
               "bottom": 30555.75,
               "fresh": true,
               "strength": 1.6,
@@ -899,7 +899,7 @@
               "formed": "2026-10-01 17:00",
               "rec": 0.71,
               "inside": false,
-              "dist": -1.6,
+              "dist": -1.59,
               "conf": [
                 "4H",
                 "1D"
@@ -932,14 +932,14 @@
           "supply": [
             {
               "top": 31369.75,
-              "bottom": 31186.25,
+              "bottom": 31183.5,
               "fresh": false,
               "strength": 1.6,
               "kind": "base",
               "formed": "2026-10-08 16:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 0.25,
+              "dist": 0.24,
               "conf": [
                 "1H"
               ],
@@ -948,7 +948,7 @@
             },
             {
               "top": 31466.0,
-              "bottom": 31430.5,
+              "bottom": 31429.25,
               "fresh": true,
               "strength": 5.7,
               "kind": "swing",
@@ -1012,7 +1012,7 @@
               "grade": "A"
             },
             {
-              "top": 29708.25,
+              "top": 29708.75,
               "bottom": 29659.25,
               "fresh": true,
               "strength": 5.4,
