@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-11 00:09 UTC",
+  "updated": "2026-10-11 06:53 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -863,13 +863,13 @@
               "strength": 3.7,
               "kind": "swing",
               "formed": "2026-10-08 02:00",
-              "rec": 0.92,
+              "rec": 0.91,
               "inside": false,
               "dist": 1.08,
               "conf": [
                 "4H"
               ],
-              "score": 86,
+              "score": 85,
               "grade": "A"
             }
           ],
@@ -914,7 +914,7 @@
               "strength": 5.6,
               "kind": "swing",
               "formed": "2026-09-30 11:00",
-              "rec": 0.66,
+              "rec": 0.65,
               "inside": false,
               "dist": -1.74,
               "conf": [

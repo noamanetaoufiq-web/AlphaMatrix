@@ -1,65 +1,101 @@
 [
   {
-    "title": "ISM Services PMI",
+    "title": "Core CPI m/m",
     "country": "USD",
-    "date": "2026-10-05T10:00:00-04:00",
-    "impact": "Medium",
-    "forecast": "55.1",
-    "previous": "55.4",
-    "actual": ""
-  },
-  {
-    "title": "President Trump Speaks",
-    "country": "USD",
-    "date": "2026-10-07T13:00:00-04:00",
-    "impact": "Medium",
-    "forecast": "",
-    "previous": "",
-    "actual": ""
-  },
-  {
-    "title": "FOMC Meeting Minutes",
-    "country": "USD",
-    "date": "2026-10-07T14:00:00-04:00",
+    "date": "2026-10-14T08:30:00-04:00",
     "impact": "High",
-    "forecast": "",
-    "previous": "",
+    "forecast": "0.2%",
+    "previous": "0.3%",
     "actual": ""
   },
   {
-    "title": "FOMC Member Waller Speaks",
+    "title": "Core CPI y/y",
     "country": "USD",
-    "date": "2026-10-08T04:30:00-04:00",
+    "date": "2026-10-14T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "2.5%",
+    "previous": "2.4%",
+    "actual": ""
+  },
+  {
+    "title": "CPI m/m",
+    "country": "USD",
+    "date": "2026-10-14T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "0.6%",
+    "previous": "0.4%",
+    "actual": ""
+  },
+  {
+    "title": "CPI y/y",
+    "country": "USD",
+    "date": "2026-10-14T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "3.6%",
+    "previous": "3.4%",
+    "actual": ""
+  },
+  {
+    "title": "Core PPI m/m",
+    "country": "USD",
+    "date": "2026-10-15T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "0.3%",
+    "previous": "0.2%",
+    "actual": ""
+  },
+  {
+    "title": "Core Retail Sales m/m",
+    "country": "USD",
+    "date": "2026-10-15T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "0.5%",
+    "previous": "1.4%",
+    "actual": ""
+  },
+  {
+    "title": "PPI m/m",
+    "country": "USD",
+    "date": "2026-10-15T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "0.5%",
+    "previous": "0.4%",
+    "actual": ""
+  },
+  {
+    "title": "Retail Sales m/m",
+    "country": "USD",
+    "date": "2026-10-15T08:30:00-04:00",
+    "impact": "High",
+    "forecast": "0.3%",
+    "previous": "1.2%",
+    "actual": ""
+  },
+  {
+    "title": "Philly Fed Manufacturing Index",
+    "country": "USD",
+    "date": "2026-10-15T08:30:00-04:00",
     "impact": "Medium",
-    "forecast": "",
-    "previous": "",
+    "forecast": "26.5",
+    "previous": "37.8",
     "actual": ""
   },
   {
     "title": "Unemployment Claims",
     "country": "USD",
-    "date": "2026-10-08T08:30:00-04:00",
+    "date": "2026-10-15T08:30:00-04:00",
     "impact": "Medium",
-    "forecast": "200K",
+    "forecast": "195K",
     "previous": "197K",
     "actual": ""
   },
   {
-    "title": "Prelim UoM Consumer Sentiment",
+    "title": "Fed Chairman Warsh Speaks",
     "country": "USD",
-    "date": "2026-10-09T10:00:00-04:00",
-    "impact": "Medium",
-    "forecast": "47.5",
-    "previous": "47.8",
-    "actual": ""
-  },
-  {
-    "title": "Prelim UoM Inflation Expectations",
-    "country": "USD",
-    "date": "2026-10-09T10:00:00-04:00",
-    "impact": "Medium",
+    "date": "2026-10-15T23:30:00-04:00",
+    "impact": "High",
     "forecast": "",
-    "previous": "4.6%",
+    "previous": "",
     "actual": ""
   }
 ]
