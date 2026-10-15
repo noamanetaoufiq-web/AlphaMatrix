@@ -520,6 +520,47 @@ def zones_for(cands, notes, asset=None):
     return None
 
 
+# ----------------------------------------------------------------------------- CFD snapshot (broker-like price, no API key)
+CFD_TICKERS = {"XAUUSD": ["OANDA:XAUUSD", "FOREXCOM:XAUUSD", "CAPITALCOM:GOLD"], "NASDAQ": ["OANDA:NAS100USD", "FOREXCOM:NSXUSD", "CAPITALCOM:US100"]}
+PRICE_PROXY = os.environ.get("PRICE_PROXY", "https://price-proxy.noamanetaoufiq.workers.dev").strip().rstrip("/")
+
+
+def tv_price(asset):
+    """CFD price from the public TradingView scanner (same kind of price as an Exness/OANDA chart)."""
+    for t in CFD_TICKERS[asset]:
+        for market in ("forex", "cfd", "global"):
+            try:
+                body = json.dumps({"symbols": {"tickers": [t], "query": {"types": []}}, "columns": ["close", "update_mode"]}).encode()
+                req = urllib.request.Request(f"https://scanner.tradingview.com/{market}/scan", data=body, method="POST",
+                                             headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0", "Origin": "https://www.tradingview.com", "Referer": "https://www.tradingview.com/"})
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    d = (json.loads(r.read().decode()).get("data") or [{}])[0].get("d")
+                if d and float(d[0]) > 0:
+                    return {"price": float(d[0]), "ticker": t}
+            except Exception as e:
+                print(f"warning: tv {t} {market}: {e}", file=sys.stderr)
+    return None
+
+
+def cfd_snapshot(asset, ysym):
+    """CFD price + the Yahoo price used by the analysis -> offset the page applies to price AND zones."""
+    cfd = tv_price(asset)
+    if not cfd:
+        try:
+            j = get(f"{PRICE_PROXY}/?feed={asset}&yf={urllib.parse.quote(ysym)}")
+            cfd = j.get("cfd")
+        except Exception as e:
+            print(f"warning: cfd feed {asset}: {e}", file=sys.stderr)
+    try:
+        y = ohlc(ysym, "1d", "1m")[-1]["c"]
+    except Exception as e:
+        print(f"warning: yahoo last {ysym}: {e}", file=sys.stderr)
+        y = None
+    if not cfd or y is None:
+        return None
+    return {"price": round(cfd["price"], 2), "yahoo": round(y, 2), "offset": round(cfd["price"] - y, 2), "ticker": cfd.get("ticker", ""), "ts": int(dt.datetime.utcnow().timestamp())}
+
+
 def events_today():
     try:
         news = json.load(open("news.json", encoding="utf-8"))
@@ -557,6 +598,12 @@ def main():
         tf = {t: build(asset, t, D) for t in TH} if bars else {}
         data["assets"][asset] = {"price": round(bars[-1]["c"], 2) if bars else None, "tf": tf, "investors": investors(asset, D),
                                  "source": SRC.get(asset), "zones": zones_for(["XAUUSD=X", "GC=F"] if asset == "XAUUSD" else ["NQ=F", "%5ENDX"], notes, asset)}
+        z = data["assets"][asset]["zones"]
+        ysym = (z.get("symbol") if z else None) or ("XAUUSD=X" if asset == "XAUUSD" else "NQ=F")
+        if ysym.startswith("OANDA"):
+            ysym = "XAUUSD=X" if asset == "XAUUSD" else "NQ=F"
+        data["assets"][asset]["cfd"] = cfd_snapshot(asset, ysym.replace("^", "%5E"))
+        data["assets"][asset]["cfd_sym"] = ysym
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
