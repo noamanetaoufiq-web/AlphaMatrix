@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-16 22:38 UTC",
+  "updated": "2026-10-16 23:35 UTC",
   "events_today": [
     "Fed Chairman Warsh Speaks at 03:30 (Morocco)"
   ],
@@ -550,7 +550,7 @@
         "yahoo": 4186.7,
         "offset": -21.28,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1792190294
+        "ts": 1792193711
       },
       "cfd_sym": "GC=F"
     },
