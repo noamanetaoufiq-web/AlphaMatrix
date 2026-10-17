@@ -66,7 +66,7 @@ def model(ctx, title, nas=False):
 
 
 def embed(ev, mins, ctx):
-    ma = ZoneInfo("Africa/Casablanca")
+    ma = dt.timezone(dt.timedelta(hours=int(os.environ.get("MA_UTC_OFFSET", "0"))))  # Morocco = GMT, fixed on purpose
     when = dt.datetime.fromisoformat(ev["date"]).astimezone(ma)
     desc = f"🕒 **{when:%H:%M}** (Morocco) · in ~{mins} min\nForecast: **{ev.get('forecast') or 'n/a'}** · Previous: **{ev.get('previous') or 'n/a'}**"
     fields, color = [], 9807270
