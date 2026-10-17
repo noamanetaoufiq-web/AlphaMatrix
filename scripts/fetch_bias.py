@@ -31,7 +31,9 @@ from zoneinfo import ZoneInfo
 
 OUT = "bias.json"
 UA = {"User-Agent": "Mozilla/5.0"}
-ET, MA = ZoneInfo("America/New_York"), ZoneInfo("Africa/Casablanca")
+ET = ZoneInfo("America/New_York")
+# Morocco = GMT (UTC+0). Fixed offset on purpose: do not depend on the runner's tzdata. Change MA_UTC_OFFSET if Morocco changes its clock again.
+MA = dt.timezone(dt.timedelta(hours=int(os.environ.get("MA_UTC_OFFSET", "0"))))
 TH = {  # "meaningful move" over a FULL period (scaled by sqrt(elapsed/full) while the period is in progress)
     "daily": dict(px=0.004, dxy=0.003, ry=0.03, y10=0.04, be=None, vix=0.08, rel=0.002),
     "weekly": dict(px=0.012, dxy=0.008, ry=0.08, y10=0.12, be=0.03, vix=0.15, rel=0.006),
@@ -218,6 +220,31 @@ def _build(asset, tf, D, asof):
         if tf == "daily" and b["h"] > b["l"]:
             pos = (b["c"] - b["l"]) / (b["h"] - b["l"])
             add("close", "Close strength (position in day's range)", f"closed at {pos:.0%} of the range", 1 if pos >= 0.7 else -1 if pos <= 0.3 else 0, 1)
+        # structure: where did the period close relative to the PREVIOUS period's range (break = real signal)
+        if tf == "daily":
+            prev = bars[-2] if len(bars) >= 2 else None
+        else:
+            pst = period_start(tf, st - dt.timedelta(days=1)) if st else None
+            pb = [x for x in bars if pst and pst <= x["d"] < st]
+            prev = {"h": max(x["h"] for x in pb), "l": min(x["l"] for x in pb)} if pb else None
+        if prev:
+            cl = bars[-1]["c"]
+            what = {"daily": "yesterday's", "weekly": "last week's", "monthly": "last month's"}[tf]
+            add("struct", f"Structure (close vs {what} range)",
+                "closed above the high" if cl > prev["h"] else "closed below the low" if cl < prev["l"] else "closed inside the range",
+                1 if cl > prev["h"] else -1 if cl < prev["l"] else 0, 1.5)
+        if tf == "daily" and len(bars) >= 50:
+            m20, m50 = sum(x["c"] for x in bars[-20:]) / 20, sum(x["c"] for x in bars[-50:]) / 50
+            cl = bars[-1]["c"]
+            add("ma", "Trend (price vs 20d / 50d avg)", f"{cl / m20 - 1:+.1%} / {cl / m50 - 1:+.1%}",
+                1 if cl > m20 > m50 else -1 if cl < m20 < m50 else 0, 1)
+        if len(bars) >= 20:
+            cs = [x["c"] for x in bars[-60:]]
+            gains = [max(0, cs[i] - cs[i - 1]) for i in range(1, len(cs))][-14:]
+            loss = [max(0, cs[i - 1] - cs[i]) for i in range(1, len(cs))][-14:]
+            ag, al = sum(gains) / len(gains), sum(loss) / len(loss)
+            rsi = 100 if al == 0 else 100 - 100 / (1 + ag / al)
+            add("rsi", "Stretch (RSI 14, contrarian)", f"RSI {rsi:.0f}", -1 if rsi >= 75 else 1 if rsi <= 25 else 0, 0.5)
         if tf == "weekly" and len(bars) >= 20:
             dev = bars[-1]["c"] / (sum(x["c"] for x in bars[-20:]) / 20) - 1
             add("ma", "Trend structure (vs 20d avg)", f"{dev:+.1%}", sgn(dev, 0.005), 1)
@@ -268,6 +295,13 @@ def _build(asset, tf, D, asof):
     sw = sum(f["w"] for f in F)
     score = sum(f["w"] * f["v"] for f in F) / sw if sw else 0.0
     a = abs(score)
+    # confidence: shrink when few factors are available and when the factors disagree (a lean built from
+    # 3 correlated inputs must not read like 86%)
+    nz = [f for f in F if f["v"]]
+    nzw = sum(f["w"] for f in nz)
+    agree = (sum(f["w"] for f in nz if (f["v"] > 0) == (score > 0)) / nzw) if nzw and score else 0.0
+    cover = min(1.0, sw / 7.0)
+    conf = a * (0.4 + 0.6 * agree) * (0.5 + 0.5 * cover)
     lvl = "NEUTRAL" if a < 0.15 else "SLIGHT" if a < 0.4 else "MODERATE" if a < 0.7 else "STRONG"
     dire = "Neutral" if a < 0.15 else "Bullish" if score > 0 else "Bearish"
     if tf == "daily":
@@ -280,7 +314,7 @@ def _build(asset, tf, D, asof):
             nxt += dt.timedelta(days=1)
         period, status = f"{st:%B %Y} · day {k}/{N}", "closed" if nxt.month != asof.month else "in progress"
     return {"score": round(score, 2), "label": lvl if dire == "Neutral" else f"{lvl} {dire.upper()}", "dir": dire,
-            "pct": 50 if dire == "Neutral" else min(90, 50 + round(40 * a)), "asof": str(asof), "period": period, "status": status, "drivers": F}
+            "pct": 50 if dire == "Neutral" else min(82, 50 + round(40 * conf)), "agree": round(agree, 2), "factors": len(F), "asof": str(asof), "period": period, "status": status, "drivers": F}
 
 
 def pick_asof(tf, dates):
