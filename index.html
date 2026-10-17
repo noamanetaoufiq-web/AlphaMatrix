@@ -248,7 +248,7 @@ function utcHM(ms){return new Date(ms).toISOString().slice(11,16);}
 const FOMC2026=['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-16'];
 function firstFriday(y,m){const d=new Date(y,m,1);return 1+((5-d.getDay()+7)%7);}
 function ecoEvents(){const ev=[];for(let m=0;m<12;m++){const k=String(m+1).padStart(2,'0');ev.push({date:YEAR+'-'+k+'-'+String(firstFriday(YEAR,m)).padStart(2,'0'),time:utcHM(etUtcMs(YEAR+'-'+k+'-'+String(firstFriday(YEAR,m)).padStart(2,'0'),'08:30')),imp:'High',event:'Non-Farm Payrolls',cur:'USD'});ev.push({date:YEAR+'-'+k+'-13',time:utcHM(etUtcMs(YEAR+'-'+k+'-13','08:30')),imp:'High',event:'CPI Inflation',cur:'USD'});const fm=FOMC2026.find(x=>x.startsWith(YEAR+'-'+k));if(fm)ev.push({date:fm,time:utcHM(etUtcMs(fm,'14:00')),imp:'High',event:'FOMC Rate Decision',cur:'USD'});}return ev;}
-const ECO=ecoEvents();
+const ECO=ecoEvents();const BASE_ECO=ECO.map(e=>Object.assign({est:true},e));
 function emFor(name){name=name||'';if(EVENT_MODEL[name])return EVENT_MODEL[name];
 const n=name.toLowerCase();let m;
 if(/fomc|federal funds|fed chair|powell|monetary policy|rate statement|press conference|minutes/.test(n))m={unit:'',scale:1,hawkDove:true,desc:'A hawkish tone historically firms up USD and pressures Gold; a dovish one tends to lift it. Mark what the market expects, then the outcome.'};
@@ -272,7 +272,7 @@ const NAS_DESC={'Non-Farm Payrolls':'Hot jobs data lifts yields and pushes back 
 window._nc=window._nc||'XAUUSD';
 function setNewsCat(c){window._nc=c;renderAll();}
 function renderNasCard(e){const mt=moroccoDT(e.date,e.time,e.when),d=newsInput(e),today=mt.date===todayKey(),v=x=>(x==null||x==='')?'—':x;const key=newsKey(e),b=computeBias(e),rx=(b.mode==='REACTION'&&b.dir)?'<div style="margin-top:12px"><span class="mu">NASDAQ REACTION · rate-driven</span> <b class="'+(b.dir==='Bearish'?'mg':'em')+'">'+b.pct+'% '+b.dir.toUpperCase()+'</b></div>':'';
-return '<div class="g" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px"><div><span class="mu">'+mt.date.slice(5)+' · '+mt.time+' (Morocco)'+(today?' · TODAY':'')+'</span><h3 style="margin:4px 0 8px">'+e.event+'</h3><span class="news-tag" style="color:var(--cy);border-color:var(--cy);background:rgba(111,163,199,.1)">★ NASDAQ</span></div><span class="news-tag" style="color:var(--rd);border-color:var(--rd);background:rgba(255,77,77,.12)">HIGH IMPACT</span></div><div class="mu" style="margin:12px 0;text-transform:none;font-size:.78rem;line-height:1.4">'+(NAS_DESC[e.event]||'Stronger or hotter data lifts yields and rate expectations, which usually pressures rate-sensitive tech/NASDAQ. Softer data tends to help via lower yields, unless it sparks growth fear.')+'</div><div class="gr g3"><div><span class="mu" style="font-size:.6rem">PREVIOUS</span><div class="st cy" style="font-size:1.1rem">'+v(d.previous)+'</div></div><div><span class="mu" style="font-size:.6rem">FORECAST</span><div class="st cy" style="font-size:1.1rem">'+v(d.forecast)+'</div></div><div><span class="mu" style="font-size:.6rem">ACTUAL</span><div class="st cy" style="font-size:1.1rem">'+v(d.actual)+'</div></div></div><div class="mu" style="margin-top:10px;text-transform:none;font-size:.72rem">Watch: US10Y yield and the dollar right after the print. NASDAQ reacts mostly through rate expectations.</div>'+rx+renderVerdict(e,d,key,'nas')+'</div>';}
+return '<div class="g" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px"><div><span class="mu">'+mt.date.slice(5)+' · '+mt.time+' (Morocco)'+(e.est?' · ~ estimated date':'')+(today?' · TODAY':'')+'</span><h3 style="margin:4px 0 8px">'+e.event+'</h3><span class="news-tag" style="color:var(--cy);border-color:var(--cy);background:rgba(111,163,199,.1)">★ NASDAQ</span></div><span class="news-tag" style="color:var(--rd);border-color:var(--rd);background:rgba(255,77,77,.12)">HIGH IMPACT</span></div><div class="mu" style="margin:12px 0;text-transform:none;font-size:.78rem;line-height:1.4">'+(NAS_DESC[e.event]||'Stronger or hotter data lifts yields and rate expectations, which usually pressures rate-sensitive tech/NASDAQ. Softer data tends to help via lower yields, unless it sparks growth fear.')+'</div><div class="gr g3"><div><span class="mu" style="font-size:.6rem">PREVIOUS</span><div class="st cy" style="font-size:1.1rem">'+v(d.previous)+'</div></div><div><span class="mu" style="font-size:.6rem">FORECAST</span><div class="st cy" style="font-size:1.1rem">'+v(d.forecast)+'</div></div><div><span class="mu" style="font-size:.6rem">ACTUAL</span><div class="st cy" style="font-size:1.1rem">'+v(d.actual)+'</div></div></div><div class="mu" style="margin-top:10px;text-transform:none;font-size:.72rem">Watch: US10Y yield and the dollar right after the print. NASDAQ reacts mostly through rate expectations.</div>'+rx+renderVerdict(e,d,key,'nas')+'</div>';}
 const EVENT_MODEL={
   'Non-Farm Payrolls':{unit:'K',scale:150,desc:'A beat (more jobs than forecast) historically firms up USD and pressures Gold — the market prices in fewer/later rate cuts. A miss tends to do the opposite.'},
   'CPI Inflation':{unit:'%',scale:0.2,desc:'A hotter print than forecast historically firms up USD and pressures Gold. A cooler print tends to lift Gold.'},
@@ -296,11 +296,15 @@ async function fetchLiveCalendar(){
   try{
     const res=await fetch(NEWS_JSON_URL+'?t='+Date.now(),{cache:'no-store'});
     if(!res.ok)throw new Error('bad status '+res.status);
-    const items=(await res.json()).filter(it=>it&&it.country==='USD'&&it.impact==='High'&&it.date&&!isNaN(new Date(it.date)));
-    if(!items.length)throw new Error('empty');
+    const feedAll=(await res.json()).filter(it=>it&&it.date&&!isNaN(new Date(it.date)));
+    const items=feedAll.filter(it=>it.country==='USD'&&it.impact==='High');
+    if(!feedAll.length)throw new Error('empty');
     /* the REAL calendar replaces the built-in estimates: real dates, real times, every high-impact USD release */
     const live=items.map(it=>{const ms=new Date(it.date).getTime(),mt=moroccoDT('','',ms);return{date:mt.date,time:utcHM(ms),when:new Date(ms).toISOString(),imp:'High',event:ffName(it.title),cur:'USD',_it:it};}).sort((x,y)=>x.when<y.when?-1:1);
-    ECO.length=0;live.forEach(e=>ECO.push(e));
+    /* the feed only covers this week + next week: beyond that keep the built-in estimates (flagged as estimated) */
+    const allT=feedAll.map(it=>new Date(it.date).getTime()).filter(x=>!isNaN(x)),coverEnd=allT.length?moroccoDT('','',Math.max(...allT)).date:'';
+    ECO.length=0;live.forEach(e=>ECO.push(e));BASE_ECO.filter(e=>e.date>coverEnd).forEach(e=>ECO.push(Object.assign({},e)));
+    ECO.sort((x,y)=>(x.when||x.date+'T'+x.time)<(y.when||y.date+'T'+y.time)?-1:1);
     let changed=true;
     ECO.forEach(e=>{
       const hit=e._it;if(!hit)return;
@@ -414,7 +418,7 @@ function renderNewsCard(e){
   }
   return '<div class="g news-card">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">'
-      +'<div><span class="mu">'+mt.date.slice(5)+' · '+mt.time+' (Morocco)'+(today?' · TODAY':'')+'</span>'
+      +'<div><span class="mu">'+mt.date.slice(5)+' · '+mt.time+' (Morocco)'+(e.est?' · ~ estimated date':'')+(today?' · TODAY':'')+'</span>'
       +'<h3 style="margin:4px 0 8px">'+e.event+'</h3>'
       +'<div>'+NEWS_ASSETS.map(a=>'<span class="news-tag" style="'+(a==='XAUUSD'?'color:var(--gd);border-color:var(--gd);background:rgba(255,215,0,.1)':'color:var(--mu);border-color:var(--mu);background:rgba(107,114,128,.08)')+'">'+(a==='XAUUSD'?'★ ':'')+a+'</span>').join('')+'</div></div>'
       +'<span class="news-tag" style="'+impStyle+'">'+e.imp.toUpperCase()+' IMPACT</span>'
