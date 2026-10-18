@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18 03:25 UTC",
+  "updated": "2026-10-18 08:38 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -349,7 +349,7 @@
               "strength": 2.4,
               "kind": "swing",
               "formed": "2026-10-15 12:00",
-              "rec": 0.94,
+              "rec": 0.93,
               "inside": false,
               "dist": -0.4,
               "conf": [
@@ -608,13 +608,7 @@
           ]
         }
       },
-      "cfd": {
-        "price": 4165.42,
-        "yahoo": 4181.1,
-        "offset": -15.68,
-        "ticker": "OANDA:XAUUSD",
-        "ts": 1792293917
-      },
+      "cfd": null,
       "cfd_sym": "GC=F"
     },
     "NASDAQ": {
@@ -1020,7 +1014,7 @@
               "strength": 1.7,
               "kind": "base",
               "formed": "2026-10-14 15:00",
-              "rec": 0.9,
+              "rec": 0.89,
               "inside": false,
               "dist": 3.69,
               "conf": [],
