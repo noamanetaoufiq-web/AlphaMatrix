@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18 13:02 UTC",
+  "updated": "2026-10-18 16:26 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -292,14 +292,14 @@
           "supply": [
             {
               "top": 4214.6,
-              "bottom": 4209.0,
+              "bottom": 4208.9,
               "fresh": false,
               "strength": 3.7,
               "kind": "swing",
               "formed": "2026-10-13 12:00",
               "rec": 0.84,
               "inside": false,
-              "dist": 0.67,
+              "dist": 0.66,
               "conf": [
                 "4H",
                 "1D"
@@ -343,41 +343,41 @@
           ],
           "demand": [
             {
-              "top": 4164.18,
+              "top": 4164.1,
               "bottom": 4151.6,
               "fresh": true,
-              "strength": 2.4,
+              "strength": 2.5,
               "kind": "swing",
               "formed": "2026-10-15 12:00",
               "rec": 0.93,
               "inside": false,
-              "dist": -0.4,
+              "dist": -0.41,
               "conf": [
                 "4H",
                 "1D"
               ],
-              "score": 79,
+              "score": 80,
               "grade": "A"
             },
             {
-              "top": 4133.1,
-              "bottom": 4121.0,
+              "top": 4130.2,
+              "bottom": 4120.9,
               "fresh": true,
-              "strength": 1.6,
+              "strength": 1.5,
               "kind": "base",
               "formed": "2026-10-15 00:00",
               "rec": 0.91,
               "inside": false,
-              "dist": -1.15,
+              "dist": -1.22,
               "conf": [
                 "4H",
                 "1D"
               ],
-              "score": 78,
+              "score": 77,
               "grade": "A"
             },
             {
-              "top": 4102.28,
+              "top": 4102.33,
               "bottom": 4091.2,
               "fresh": false,
               "strength": 4.5,
@@ -385,7 +385,7 @@
               "formed": "2026-10-07 12:00",
               "rec": 0.66,
               "inside": false,
-              "dist": -1.89,
+              "dist": -1.88,
               "conf": [
                 "4H",
                 "1D"
@@ -401,7 +401,7 @@
           "supply": [
             {
               "top": 4224.8,
-              "bottom": 4212.4,
+              "bottom": 4212.6,
               "fresh": false,
               "strength": 2.8,
               "kind": "swing",
@@ -452,7 +452,7 @@
           ],
           "demand": [
             {
-              "top": 4166.4,
+              "top": 4166.5,
               "bottom": 4151.6,
               "fresh": false,
               "strength": 2.4,
@@ -469,20 +469,20 @@
               "grade": "B"
             },
             {
-              "top": 4133.1,
+              "top": 4130.2,
               "bottom": 4118.1,
               "fresh": true,
-              "strength": 1.3,
+              "strength": 1.2,
               "kind": "base",
               "formed": "2026-10-15 00:00",
               "rec": 0.96,
               "inside": false,
-              "dist": -1.15,
+              "dist": -1.22,
               "conf": [
                 "1H",
                 "1D"
               ],
-              "score": 76,
+              "score": 75,
               "grade": "A"
             },
             {
@@ -979,7 +979,7 @@
           "supply": [
             {
               "top": 29947.0,
-              "bottom": 29837.25,
+              "bottom": 29838.25,
               "fresh": true,
               "strength": 2.1,
               "kind": "base",
@@ -1009,7 +1009,7 @@
             },
             {
               "top": 30538.25,
-              "bottom": 30475.5,
+              "bottom": 30475.75,
               "fresh": true,
               "strength": 1.7,
               "kind": "base",
@@ -1030,7 +1030,7 @@
           "supply": [
             {
               "top": 30225.0,
-              "bottom": 30094.5,
+              "bottom": 30095.25,
               "fresh": true,
               "strength": 1.8,
               "kind": "base",
@@ -1047,7 +1047,7 @@
             },
             {
               "top": 30861.75,
-              "bottom": 30762.0,
+              "bottom": 30762.25,
               "fresh": true,
               "strength": 2.9,
               "kind": "base",
