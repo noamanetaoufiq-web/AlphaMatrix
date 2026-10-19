@@ -197,7 +197,7 @@ def neg(v):
 
 
 # ----------------------------------------------------------------------------- bias
-def _build(asset, tf, D, asof):
+def _build(asset, tf, D, asof, skip=()):
     gold = asset == "XAUUSD"
     bars = [b for b in D.get("gold" if gold else "ndx", []) if b["d"] <= asof]
     F = []
@@ -208,7 +208,7 @@ def _build(asset, tf, D, asof):
     th = {key: (v * sc if v else v) for key, v in TH[tf].items()}
 
     def add(key, name, reading, v, w):
-        if v is not None and w > 0:
+        if v is not None and w > 0 and key not in skip:
             F.append({"key": key, "name": name, "reading": reading, "v": v, "w": w})
 
     if bars:
@@ -238,13 +238,29 @@ def _build(asset, tf, D, asof):
             cl = bars[-1]["c"]
             add("ma", "Trend (price vs 20d / 50d avg)", f"{cl / m20 - 1:+.1%} / {cl / m50 - 1:+.1%}",
                 1 if cl > m20 > m50 else -1 if cl < m20 < m50 else 0, 1)
-        if len(bars) >= 20:
-            cs = [x["c"] for x in bars[-60:]]
-            gains = [max(0, cs[i] - cs[i - 1]) for i in range(1, len(cs))][-14:]
-            loss = [max(0, cs[i - 1] - cs[i]) for i in range(1, len(cs))][-14:]
-            ag, al = sum(gains) / len(gains), sum(loss) / len(loss)
-            rsi = 100 if al == 0 else 100 - 100 / (1 + ag / al)
-            add("rsi", "Stretch (RSI 14, contrarian)", f"RSI {rsi:.0f}", -1 if rsi >= 75 else 1 if rsi <= 25 else 0, 0.5)
+        if len(bars) >= 35:
+            cs = [x["c"] for x in bars]
+
+            def ema(vals, n):
+                k_, e = 2 / (n + 1), vals[0]
+                out = []
+                for v_ in vals:
+                    e = v_ * k_ + e * (1 - k_)
+                    out.append(e)
+                return out
+            e12, e26 = ema(cs, 12), ema(cs, 26)
+            macd = [x - y for x, y in zip(e12, e26)]
+            sig = ema(macd, 9)
+            hist = [x - y for x, y in zip(macd, sig)]
+            hv = 1 if hist[-1] > 0 and hist[-1] >= hist[-2] else -1 if hist[-1] < 0 and hist[-1] <= hist[-2] else 0
+            add("macd", "Momentum (MACD histogram)", "positive and rising" if hv > 0 else "negative and falling" if hv < 0 else "fading / mixed", hv, 1)
+            hi20, lo20 = max(x["h"] for x in bars[-20:]), min(x["l"] for x in bars[-20:])
+            pos = (cs[-1] - lo20) / (hi20 - lo20) if hi20 > lo20 else 0.5
+            add("range", "Position in 20-day range", f"{pos:.0%} of the 20d range", 1 if pos >= 0.7 else -1 if pos <= 0.3 else 0, 1)
+            trs = [max(bars[i]["h"] - bars[i]["l"], abs(bars[i]["h"] - bars[i - 1]["c"]), abs(bars[i]["l"] - bars[i - 1]["c"])) for i in range(len(bars) - 14, len(bars))]
+            atrp = (sum(trs) / 14) / cs[-1]
+            z = (cs[-1] / cs[-11] - 1) / (atrp * math.sqrt(10)) if atrp else 0
+            add("mom", "10-day momentum vs volatility", f"{z:+.1f} sigma", 1 if z > 0.7 else -1 if z < -0.7 else 0, 1)
         if tf == "weekly" and len(bars) >= 20:
             dev = bars[-1]["c"] / (sum(x["c"] for x in bars[-20:]) / 20) - 1
             add("ma", "Trend structure (vs 20d avg)", f"{dev:+.1%}", sgn(dev, 0.005), 1)
@@ -349,6 +365,48 @@ def outlook(tf, asof):
     return f"Outlook for {t:%B %Y} (built from the {asof:%B} close)", t
 
 
+def period_ends(dates, tf):
+    """Last trading date of every day / week / month (the moments an outlook gets locked)."""
+    if tf == "daily":
+        return list(dates)
+    g = {}
+    for d in dates:
+        g[period_start(tf, d)] = d
+    return [g[k] for k in sorted(g)]
+
+
+def backtest(asset, tf, D, skip=()):
+    """Walk-forward check on the data we already have: at every past close, build the outlook with ONLY the
+    data known then, and compare it with what the NEXT period really did. Gives the true hit-rate of the
+    bias and of each factor (Neutral calls are not counted)."""
+    key = "gold" if asset == "XAUUSD" else "ndx"
+    bars = D.get(key) or []
+    cl = {b["d"]: b["c"] for b in bars}
+    ends = period_ends(sorted(cl), tf)
+    ends = ends[-450:] if tf == "daily" else ends
+    n = hit = 0
+    fac = {}
+    for i in range(len(ends) - 1):
+        a, nx = ends[i], ends[i + 1]
+        if sum(1 for b in bars if b["d"] <= a) < 60:
+            continue
+        up = cl[nx] > cl[a]
+        try:
+            r = _build(asset, tf, D, a, skip)
+        except Exception:
+            continue
+        if r["dir"] != "Neutral":
+            n += 1
+            hit += (r["dir"] == "Bullish") == up
+        for f in r["drivers"]:
+            if f["v"]:
+                x = fac.setdefault(f["key"], [0, 0])
+                x[0] += 1
+                x[1] += (f["v"] > 0) == up
+    return {"n": n, "winrate": round(hit / n, 3) if n else None,
+            "factors": {k: {"n": v[0], "wr": round(v[1] / v[0], 3)} for k, v in fac.items() if v[0] >= 15}}
+
+
 def build(asset, tf, D):
     dates = sorted({b["d"] for b in D.get("gold" if asset == "XAUUSD" else "ndx", [])})
     if not dates:
@@ -356,14 +414,23 @@ def build(asset, tf, D):
     asof = pick_asof(tf, dates)
     if asof is None:
         return None
-    cur = _build(asset, tf, D, asof)
+    # 1) measure every factor on the past; 2) switch off the ones that are no better than a coin flip; 3) re-measure
+    try:
+        first = backtest(asset, tf, D)
+        skip = tuple(k for k, v in first["factors"].items() if v["n"] >= 40 and v["wr"] < 0.48)
+        bt = backtest(asset, tf, D, skip) if skip else first
+        bt["disabled"] = list(skip)
+    except Exception as e:
+        print(f"warning: backtest {asset} {tf}: {e}", file=sys.stderr)
+        skip, bt = (), None
+    cur = _build(asset, tf, D, asof, skip)
     if tf == "daily":
         i = dates.index(asof)
         prev_asof = dates[i - 1] if i > 0 else None
     else:
         prev_asof = next((d for d in reversed(dates) if d < period_start(tf, asof)), None)
     if prev_asof:
-        pv = _build(asset, tf, D, prev_asof)
+        pv = _build(asset, tf, D, prev_asof, skip)
         pk = {f["key"]: f for f in pv["drivers"]}
         flips = [{"name": f["name"], "from": pk[f["key"]]["v"], "to": f["v"]} for f in cur["drivers"] if f["key"] in pk and pk[f["key"]]["v"] != f["v"]]
         cur["changes"] = {"vs": {"daily": "the previous day's outlook", "weekly": "last week's outlook", "monthly": "last month's outlook"}[tf],
@@ -372,6 +439,7 @@ def build(asset, tf, D):
     cur["status"] = "active" if dt.datetime.now(ET).date() >= target else "upcoming"
     cur["target"] = str(target)
     cur["built_from"] = str(asof)
+    cur["backtest"] = bt
     cur["ref_price"] = round(next(b["c"] for b in reversed(D["gold" if asset == "XAUUSD" else "ndx"]) if b["d"] <= asof), 2)
     return cur
 
