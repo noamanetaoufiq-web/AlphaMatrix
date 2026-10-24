@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23 23:51 UTC",
+  "updated": "2026-10-24 03:37 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -392,7 +392,7 @@
           "supply": [
             {
               "top": 4050.2,
-              "bottom": 4040.4,
+              "bottom": 4040.3,
               "fresh": true,
               "strength": 3.7,
               "kind": "swing",
@@ -441,7 +441,7 @@
           ],
           "demand": [
             {
-              "top": 4006.2,
+              "top": 4005.9,
               "bottom": 4000.9,
               "fresh": false,
               "strength": 2.1,
@@ -449,7 +449,7 @@
               "formed": "2026-10-23 02:00",
               "rec": 0.96,
               "inside": false,
-              "dist": -0.09,
+              "dist": -0.1,
               "conf": [
                 "1D"
               ],
@@ -464,14 +464,14 @@
           "supply": [
             {
               "top": 4164.3,
-              "bottom": 4152.4,
+              "bottom": 4152.6,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
               "formed": "2026-10-21 20:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 3.55,
+              "dist": 3.56,
               "conf": [
                 "1H",
                 "1D"
@@ -481,7 +481,7 @@
             },
             {
               "top": 4211.2,
-              "bottom": 4201.4,
+              "bottom": 4201.2,
               "fresh": true,
               "strength": 3.1,
               "kind": "swing",
@@ -619,7 +619,7 @@
         "yahoo": 4010.0,
         "offset": -14.19,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1792799508
+        "ts": 1792813041
       },
       "cfd_sym": "GC=F"
     },
@@ -1096,7 +1096,7 @@
           "supply": [
             {
               "top": 29594.75,
-              "bottom": 29541.25,
+              "bottom": 29542.0,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
@@ -1110,9 +1110,9 @@
             },
             {
               "top": 30059.25,
-              "bottom": 29965.0,
+              "bottom": 29965.75,
               "fresh": true,
-              "strength": 1.2,
+              "strength": 1.0,
               "kind": "base",
               "formed": "2026-10-21 22:00",
               "rec": 0.91,
@@ -1122,7 +1122,7 @@
                 "4H",
                 "1D"
               ],
-              "score": 75,
+              "score": 73,
               "grade": "A"
             },
             {
@@ -1202,7 +1202,7 @@
             },
             {
               "top": 30861.75,
-              "bottom": 30762.25,
+              "bottom": 30762.0,
               "fresh": true,
               "strength": 2.9,
               "kind": "base",
