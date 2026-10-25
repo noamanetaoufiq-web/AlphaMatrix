@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-25 14:53 UTC",
+  "updated": "2026-10-25 18:13 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -392,7 +392,7 @@
           "supply": [
             {
               "top": 4050.2,
-              "bottom": 4040.3,
+              "bottom": 4040.4,
               "fresh": true,
               "strength": 3.7,
               "kind": "swing",
@@ -441,7 +441,7 @@
           ],
           "demand": [
             {
-              "top": 4005.9,
+              "top": 4006.2,
               "bottom": 4000.9,
               "fresh": false,
               "strength": 2.1,
@@ -449,7 +449,7 @@
               "formed": "2026-10-23 02:00",
               "rec": 0.96,
               "inside": false,
-              "dist": -0.05,
+              "dist": -0.04,
               "conf": [
                 "1D"
               ],
@@ -464,7 +464,7 @@
           "supply": [
             {
               "top": 4164.3,
-              "bottom": 4152.6,
+              "bottom": 4152.4,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
@@ -481,14 +481,14 @@
             },
             {
               "top": 4211.2,
-              "bottom": 4201.2,
+              "bottom": 4201.4,
               "fresh": true,
               "strength": 3.1,
               "kind": "swing",
               "formed": "2026-10-19 04:00",
               "rec": 0.9,
               "inside": false,
-              "dist": 4.82,
+              "dist": 4.83,
               "conf": [
                 "1D"
               ],
@@ -1090,23 +1090,23 @@
           "supply": [
             {
               "top": 29594.75,
-              "bottom": 29542.0,
+              "bottom": 29541.25,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
               "formed": "2026-10-22 14:00",
               "rec": 0.94,
               "inside": false,
-              "dist": 1.46,
+              "dist": 1.45,
               "conf": [],
               "score": 73,
               "grade": "A"
             },
             {
               "top": 30059.25,
-              "bottom": 29965.75,
+              "bottom": 29965.0,
               "fresh": true,
-              "strength": 1.0,
+              "strength": 1.2,
               "kind": "base",
               "formed": "2026-10-21 22:00",
               "rec": 0.91,
@@ -1116,7 +1116,7 @@
                 "4H",
                 "1D"
               ],
-              "score": 73,
+              "score": 75,
               "grade": "A"
             },
             {
@@ -1196,7 +1196,7 @@
             },
             {
               "top": 30861.75,
-              "bottom": 30762.0,
+              "bottom": 30762.25,
               "fresh": true,
               "strength": 2.9,
               "kind": "base",
