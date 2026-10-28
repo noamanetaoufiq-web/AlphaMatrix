@@ -235,6 +235,40 @@ h2{display:flex;align-items:center;gap:8px}
 .mis-name{font-family:Manrope;font-weight:800;color:#fff;font-size:1rem;line-height:1.25}.mis-meta{margin-top:4px;font-size:.7rem;color:#8fa3b8}.mis-chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.6rem;font-weight:800;letter-spacing:.1em;margin-right:6px}.mis-chip.on{color:var(--em);border:1px solid rgba(0,255,157,.5)}.mis-chip.off{color:#8fa3b8;border:1px solid rgba(143,163,184,.4)}
 .mis-desc{font-size:.84rem;line-height:1.5;color:#c3d0dc}.mis-go{padding:12px;border-radius:10px;font-weight:800;border-color:var(--em);color:var(--em);width:100%}.mis-state{font-family:Manrope;font-weight:800;font-size:.85rem}
 .mis-sub{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--bd)}
+/* ===== DESKTOP POLISH (>=861px) + shared finishing touches ===== */
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(111,163,199,.28);border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background:rgba(111,163,199,.5);background-clip:padding-box;border:2px solid transparent}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+::selection{background:rgba(111,163,199,.35)}
+@media(min-width:861px){
+.tb{height:60px;padding:0 28px;background:linear-gradient(180deg,rgba(7,10,16,.96),rgba(4,6,10,.88));backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(111,163,199,.18),0 8px 28px rgba(0,0,0,.35)}
+.sb{width:248px;padding:20px 14px;background:linear-gradient(180deg,rgba(9,13,21,.98),rgba(5,8,13,.98));border-right:1px solid rgba(111,163,199,.14)}
+.sb .ni{position:relative;padding:11px 14px;margin-bottom:4px;border-radius:10px;font-size:.84rem;letter-spacing:.07em;transition:background .15s,color .15s,transform .15s}
+.sb .ni:hover{transform:translateX(3px)}
+.sb .ni.on{color:#fff;background:linear-gradient(90deg,rgba(111,163,199,.24),rgba(111,163,199,.05));box-shadow:inset 3px 0 0 var(--cy)}
+.sb .ni .svi{font-size:1.1rem}
+.mn2{margin-left:248px;margin-top:60px;padding:30px max(40px,calc((100vw - 248px - 1120px)/2)) 60px}
+#app>h2{font-size:2.15rem;letter-spacing:.05em;margin:6px 0 12px}
+#app>h2:after{content:"";flex:1;height:1px;margin-left:14px;background:linear-gradient(90deg,rgba(111,163,199,.4),transparent)}
+.hero{padding:18px 22px;border-radius:16px;margin-bottom:22px}.hero-ic{width:54px;height:54px;font-size:1.7rem}.hero-hi{font-size:1.15rem}.hero-sub{font-size:.92rem}.hchip{font-size:.76rem;padding:6px 13px}
+.sub-note{font-size:.92rem;max-width:860px}
+.gr.g3{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.g{padding:22px;border-radius:16px}
+.g:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.podium{gap:18px;margin:12px 0 22px}.pod{padding:22px 10px 18px;border-radius:18px}.pod1{padding-top:30px;padding-bottom:26px}
+.pod-badge{width:72px;height:78px}.pod1 .pod-badge{width:96px;height:104px}.pod-name{font-size:1rem}.pod-pay{font-size:1.5rem}.pod1 .pod-pay{font-size:1.9rem}.pod-stars{font-size:.88rem}.pod-rank{font-size:.7rem}.pod-medal{font-size:.8rem}
+.lb-list{}.lb-card{padding:14px 18px;border-radius:14px;transition:transform .15s,border-color .15s}.lb-card:hover{transform:translateX(4px);border-color:rgba(111,163,199,.5)}.lb-name{font-size:1rem}.lb-pay{font-size:1.2rem}
+.lb-note{}
+.mcard{padding:20px}.mav{width:48px;height:48px}.mc-name{font-size:1.05rem}.mc-count{font-size:2.4rem}.pips .sb2.pip{height:46px}
+.mvp-list{}.mvp-row{padding:18px 20px;border-radius:16px;transition:transform .15s}.mvp-row:hover{transform:translateX(3px)}.mvp-pts{font-size:1.5rem}.mvp-hero{padding:22px 26px;border-radius:18px}.mvp-who{font-size:2rem}.mvp-crown{width:64px;height:64px;font-size:2rem}
+.mis{padding:20px}.mis-rw{min-width:62px;height:62px;font-size:1.4rem}
+.dec{padding:18px 22px}.dec-act{font-size:1.8rem}.dec-plan{font-size:.92rem}
+.news-card{padding:24px}
+.gr.g4{gap:18px}.gr.g4 .g{padding:20px}
+table{font-size:.9rem}th{padding:12px}td{padding:12px}
+tbody tr{transition:background .15s}tbody tr:hover{background:rgba(111,163,199,.05)}
+.lbox{max-width:420px;padding:40px 34px;box-shadow:0 20px 70px rgba(0,0,0,.6),0 0 60px rgba(201,169,97,.08)}
+}
+@media(min-width:1500px){.mn2{padding-left:max(56px,calc((100vw - 248px - 1240px)/2));padding-right:max(56px,calc((100vw - 248px - 1240px)/2))}}
 /* ===== MOBILE (top tab bar under the header: works in Telegram / Safari / Chrome in-app browsers) ===== */
 @media(max-width:860px){
 html,body{overflow-x:hidden;max-width:100%}
@@ -509,7 +543,7 @@ const NEWS_ALERT_MIN=45;
 function newsHookUrl(){const u=(state.newsHook||'').trim();return /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//.test(u)?u:HR_WEBHOOK;}
 function newsAlertKey(e){const it=e._it||{};return(String(it.title||e.event)+'_'+String(it.date||e.when||e.date)).replace(/[^A-Za-z0-9]+/g,'_');}
 function newsAlertEmbed(e,mins,test){const mt=moroccoDT(e.date,e.time,e.when),it=e._it||{},fc=it.forecast||'n/a',pv=it.previous||'n/a';const f=[];['gold','nas'].forEach(a=>{const D=newsDecisionData(e,a);f.push({name:(a==='nas'?'NASDAQ':'XAUUSD')+' · '+D.act+(D.ok?' ('+D.pct+'%)':''),value:D.plan.slice(0,900)});});const g=newsDecisionData(e,'gold');return{title:(test?'TEST · ':'')+'HIGH IMPACT NEWS · '+e.event,description:'**'+mt.time+'** (Morocco) · in ~'+mins+' min\nForecast: **'+fc+'** · Previous: **'+pv+'**',color:g.cls==='buy'?3066993:g.cls==='sell'?15158332:9807270,fields:f,footer:{text:'Automatic decision, not financial advice. Wait for the print and the first reaction.'},timestamp:new Date().toISOString()};}
-async function newsAlertTick(){try{if(!currentUser||!db||!dbReady||typeof ECO==='undefined')return;const now=Date.now();for(const e of ECO){if(e.imp!=='High'||!e._it||!e.when)continue;const mins=(new Date(e.when).getTime()-now)/6e4;if(!(mins>0&&mins<=NEWS_ALERT_MIN))continue;if(!ctxAuto){loadContext();if(mins>10)continue;}const key=newsAlertKey(e),ref=db.ref('alpha_bias_v1/newsAlerts/'+key);let tr;try{tr=await ref.transaction(c=>c?undefined:{by:currentUser,ts:now});}catch(er){continue;}if(!tr||!tr.committed)continue;try{const r=await fetch(newsHookUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Alpha Matrix News',embeds:[newsAlertEmbed(e,Math.max(1,Math.round(mins)))]})});if(!r.ok)throw new Error('http '+r.status);}catch(er){try{await ref.remove();}catch(x){}}}}catch(e){}}
+async function newsAlertTick(){try{if(!currentUser||!db||!dbReady||typeof ECO==='undefined')return;const now=Date.now();for(const e of ECO){if(e.imp!=='High'||!e._it||!e.when)continue;const mins=(new Date(e.when).getTime()-now)/6e4;if(!(mins>0&&mins<=NEWS_ALERT_MIN))continue;if(!ctxAuto){loadContext();if(mins>NEWS_ALERT_MIN-10)continue;}const key=newsAlertKey(e),ref=db.ref('alpha_bias_v1/newsAlerts/'+key);let tr;try{tr=await ref.transaction(c=>c?undefined:{by:currentUser,ts:now});}catch(er){continue;}if(!tr||!tr.committed)continue;try{const r=await fetch(newsHookUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Alpha Matrix News',embeds:[newsAlertEmbed(e,Math.max(1,Math.round(mins)))]})});if(!r.ok)throw new Error('http '+r.status);}catch(er){try{await ref.remove();}catch(x){}}}}catch(e){}}
 function newsAlertStart(){if(window._naT)return;window._naT=setInterval(newsAlertTick,45e3);try{loadContext();}catch(e){}setTimeout(newsAlertTick,8000);}
 function setNewsHook(v){if(!isAdmin)return;v=(v||'').trim();if(v&&!/^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//.test(v)){liveToast('That is not a Discord webhook link');return;}state.newsHook=v;save();liveToast(v?'News webhook saved':'News webhook cleared (using the default channel)');renderAll();}
 async function newsAlertTest(){if(!isAdmin)return;const e=ECO.find(x=>x.imp==='High'&&x._it)||ECO[0];if(!e){liveToast('No event to test with');return;}try{const r=await fetch(newsHookUrl(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'Alpha Matrix News',embeds:[newsAlertEmbed(e,45,true)]})});liveToast(r.ok?'Test alert sent to Discord':'Discord refused it (http '+r.status+')');}catch(er){liveToast('Could not reach Discord');}}
@@ -866,7 +900,7 @@ let biasData=null,biasAt=0,liveP={},liveTimer=null;window._bc=window._bc||'XAUUS
 function loadBias(){if(Date.now()-biasAt<3e5)return;biasAt=Date.now();fetch('https://raw.githubusercontent.com/noamanetaoufiq-web/AlphaMatrix/main/bias.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j){biasData=j;if(ui.view==='bias')softRenderBias();}else biasAt=Date.now()-27e4;}).catch(()=>{biasAt=Date.now()-27e4;});}
 function setBiasAsset(a){window._bc=a;renderAll();}
 let liveDiag={},lastLive=0;
-function softRenderBias(){const app=document.getElementById('app');if(!app||ui.view!=='bias')return;const ae=document.activeElement;if(ae&&ae.tagName==='INPUT'&&app.contains(ae))return;const y=window.scrollY,t=app.scrollTop;try{app.innerHTML=renderBias();}catch(e){}window.scrollTo(0,y);app.scrollTop=t;}
+function softRenderBias(){const app=document.getElementById('app');if(!app||ui.view!=='bias')return;const ae=document.activeElement;if(ae&&ae.tagName==='INPUT'&&app.contains(ae))return;const y=window.scrollY,t=app.scrollTop;try{app.innerHTML=heroStrip()+renderBias();}catch(e){}window.scrollTo(0,y);app.scrollTop=t;}
 async function pxRoute(A,label,url,parse){const c=new AbortController(),to=setTimeout(()=>c.abort(),8000),k=A+' · '+label;try{const r=await fetch(url,{cache:'no-store',signal:c.signal});clearTimeout(to);if(!r.ok)throw new Error('HTTP '+r.status);const out=parse(await r.json());if(!out)throw new Error('no price');liveDiag[k]='OK';if(!out.src)out.src=label;return out;}catch(e){clearTimeout(to);liveDiag[k]='FAIL '+(e.name==='AbortError'?'timeout':e.message);throw e;}}
 function pxRoutes(u){const e=encodeURIComponent(u),px=(state.priceProxy||'').trim(),own=px?[['my proxy',px+(px.includes('?')?'&':'?')+'url='+e]]:[];return own.concat([['direct',u],['allorigins','https://api.allorigins.win/raw?url='+e],['corsproxy','https://corsproxy.io/?'+e],['codetabs','https://api.codetabs.com/v1/proxy?quest='+e]]);}
 const parseYF=j=>{const q=j.chart.result[0],cl=q.indicators.quote[0].close,ts=q.timestamp;let i=cl.length-1;while(i>=0&&cl[i]==null)i--;const p=i>=0?cl[i]:q.meta.regularMarketPrice,tick=i>=0?ts[i]*1000:(q.meta.regularMarketTime||0)*1000;return p?{p:+p,fetched:Date.now(),tick,key:'YF'}:null;};
