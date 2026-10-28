@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28 18:16 UTC",
+  "updated": "2026-10-28 21:36 UTC",
   "f_trend": -1,
   "f_usd": -1,
   "f_gs": 0,
@@ -10,13 +10,13 @@
   "n_ns": 1,
   "season": {},
   "notes": [
-    "Gold 4,048 vs 20d avg 4,137, 5d -2.5% -> trend bearish",
-    "DXY 102.31 (-0.2% 10d), US10Y 5.02% (-0.17 10d) -> weak",
+    "Gold 4,081 vs 20d avg 4,138, 5d -1.7% -> trend bearish",
+    "DXY 102.13 (-0.4% 10d), US10Y 5.05% (-0.14 10d) -> weak",
     "Gold in October: avg +0.9%, up 53% of the last 15 years -> neutral",
     "Leading data (ADP/JOLTS/claims vs forecast, 30d): no releases yet -> neutral (ISM: no free source)",
-    "NASDAQ-100 29,642 vs 20d avg 30,101, 5d -0.6% -> trend bearish",
-    "US10Y 5.02% (-0.17 in 10d) -> falling",
-    "VIX 17.3 (+2% in 10d) -> neutral",
+    "NASDAQ-100 29,813 vs 20d avg 30,109, 5d -0.0% -> trend bearish",
+    "US10Y 5.05% (-0.14 in 10d) -> falling",
+    "VIX 16.9 (+0% in 10d) -> neutral",
     "NASDAQ-100 in October: avg +5.0%, up 73% of the last 15 years -> strong"
   ],
   "lead_hist": []
