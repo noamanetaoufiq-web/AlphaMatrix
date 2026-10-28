@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28 00:30 UTC",
+  "updated": "2026-10-28 04:26 UTC",
   "events_today": [
     "Federal Funds Rate at 18:00 (Morocco)",
     "FOMC Statement at 18:00 (Morocco)",
@@ -13,7 +13,7 @@
   ],
   "assets": {
     "XAUUSD": {
-      "price": 4077.8,
+      "price": 4074.6,
       "tf": {
         "daily": {
           "score": -0.13,
@@ -24,7 +24,7 @@
           "factors": 7,
           "asof": "2026-10-27",
           "period": "Outlook for Wed Oct 28 (built from the Tue Oct 27 close)",
-          "status": "upcoming",
+          "status": "active",
           "drivers": [
             {
               "key": "struct",
@@ -36,7 +36,7 @@
             {
               "key": "ma",
               "name": "Trend (price vs 20d / 50d avg)",
-              "reading": "-1.6% / -5.7%",
+              "reading": "-1.7% / -5.8%",
               "v": -1,
               "w": 1
             },
@@ -50,7 +50,7 @@
             {
               "key": "range",
               "name": "Position in 20-day range",
-              "reading": "33% of the 20d range",
+              "reading": "32% of the 20d range",
               "v": 0,
               "w": 1
             },
@@ -144,7 +144,7 @@
               "trend"
             ]
           },
-          "ref_price": 4077.8
+          "ref_price": 4074.6
         },
         "weekly": {
           "score": -0.71,
@@ -407,18 +407,18 @@
         "symbol": "GC=F",
         "daily": {
           "tf": "1H",
-          "price": 4076.9,
+          "price": 4055.9,
           "supply": [
             {
               "top": 4118.7,
-              "bottom": 4109.1,
+              "bottom": 4108.9,
               "fresh": false,
               "strength": 2.8,
               "kind": "swing",
               "formed": "2026-10-22 06:00",
               "rec": 0.82,
               "inside": false,
-              "dist": 0.79,
+              "dist": 1.31,
               "conf": [
                 "4H"
               ],
@@ -432,9 +432,9 @@
               "strength": 2.9,
               "kind": "swing",
               "formed": "2026-10-21 15:00",
-              "rec": 0.8,
+              "rec": 0.79,
               "inside": false,
-              "dist": 1.8,
+              "dist": 2.32,
               "conf": [
                 "4H",
                 "1D"
@@ -449,9 +449,9 @@
               "strength": 3.9,
               "kind": "swing",
               "formed": "2026-10-21 22:00",
-              "rec": 0.81,
+              "rec": 0.8,
               "inside": false,
-              "dist": 2.01,
+              "dist": 2.54,
               "conf": [
                 "4H",
                 "1D"
@@ -462,15 +462,15 @@
           ],
           "demand": [
             {
-              "top": 4044.0,
+              "top": 4043.6,
               "bottom": 4024.7,
               "fresh": true,
               "strength": 1.7,
               "kind": "base",
               "formed": "2026-10-27 14:00",
-              "rec": 0.98,
+              "rec": 0.97,
               "inside": false,
-              "dist": -0.81,
+              "dist": -0.3,
               "conf": [
                 "4H"
               ],
@@ -484,9 +484,9 @@
               "strength": 5.6,
               "kind": "swing",
               "formed": "2026-10-27 08:00",
-              "rec": 0.97,
+              "rec": 0.96,
               "inside": false,
-              "dist": -1.71,
+              "dist": -1.2,
               "conf": [
                 "4H",
                 "1D"
@@ -501,9 +501,9 @@
               "strength": 2.9,
               "kind": "swing",
               "formed": "2026-10-26 01:00",
-              "rec": 0.91,
+              "rec": 0.9,
               "inside": false,
-              "dist": -1.91,
+              "dist": -1.41,
               "conf": [
                 "1D"
               ],
@@ -514,18 +514,18 @@
         },
         "weekly": {
           "tf": "4H",
-          "price": 4076.9,
+          "price": 4055.9,
           "supply": [
             {
               "top": 4164.3,
-              "bottom": 4152.6,
+              "bottom": 4152.4,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
               "formed": "2026-10-21 20:00",
               "rec": 0.91,
               "inside": false,
-              "dist": 1.86,
+              "dist": 2.38,
               "conf": [
                 "1H",
                 "1D"
@@ -535,14 +535,14 @@
             },
             {
               "top": 4211.2,
-              "bottom": 4201.2,
+              "bottom": 4201.4,
               "fresh": true,
               "strength": 3.1,
               "kind": "swing",
               "formed": "2026-10-19 04:00",
-              "rec": 0.86,
+              "rec": 0.85,
               "inside": false,
-              "dist": 3.05,
+              "dist": 3.59,
               "conf": [
                 "1D"
               ],
@@ -558,7 +558,7 @@
               "formed": "2026-09-28 00:00",
               "rec": 0.54,
               "inside": false,
-              "dist": 5.34,
+              "dist": 5.89,
               "conf": [
                 "1D"
               ],
@@ -574,9 +574,9 @@
               "strength": 2.7,
               "kind": "swing",
               "formed": "2026-10-26 12:00",
-              "rec": 0.97,
+              "rec": 0.96,
               "inside": false,
-              "dist": -1.28,
+              "dist": -0.77,
               "conf": [
                 "1H",
                 "1D"
@@ -588,7 +588,7 @@
         },
         "monthly": {
           "tf": "1D",
-          "price": 4076.9,
+          "price": 4055.9,
           "supply": [
             {
               "top": 4160.6,
@@ -599,7 +599,7 @@
               "formed": "2026-10-22 04:00",
               "rec": 0.98,
               "inside": false,
-              "dist": 1.63,
+              "dist": 2.16,
               "conf": [
                 "1H",
                 "4H"
@@ -616,7 +616,7 @@
               "formed": "2026-10-16 04:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 2.83,
+              "dist": 3.36,
               "conf": [
                 "4H"
               ],
@@ -630,9 +630,9 @@
               "strength": 1.5,
               "kind": "base",
               "formed": "2026-09-28 04:00",
-              "rec": 0.92,
+              "rec": 0.91,
               "inside": false,
-              "dist": 5.71,
+              "dist": 6.25,
               "conf": [
                 "4H"
               ],
@@ -650,7 +650,7 @@
               "formed": "2026-07-29 04:00",
               "rec": 0.75,
               "inside": false,
-              "dist": -1.37,
+              "dist": -0.86,
               "conf": [
                 "1H",
                 "4H"
@@ -667,7 +667,7 @@
               "formed": "2026-07-17 04:00",
               "rec": 0.72,
               "inside": false,
-              "dist": -2.37,
+              "dist": -1.87,
               "conf": [],
               "score": 55,
               "grade": "B"
@@ -679,38 +679,38 @@
               "strength": 2.4,
               "kind": "swing",
               "formed": "2025-11-05 05:00",
-              "rec": 0.06,
+              "rec": 0.05,
               "inside": false,
-              "dist": -3.37,
+              "dist": -2.87,
               "conf": [],
-              "score": 51,
+              "score": 50,
               "grade": "B"
             }
           ]
         }
       },
       "cfd": {
-        "price": 4063.37,
-        "yahoo": 4076.9,
-        "offset": -13.53,
+        "price": 4042.72,
+        "yahoo": 4055.9,
+        "offset": -13.17,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1793147455
+        "ts": 1793161587
       },
       "cfd_sym": "GC=F"
     },
     "NASDAQ": {
-      "price": 29820.25,
+      "price": 29812.0,
       "tf": {
         "daily": {
-          "score": 0.4,
+          "score": 0.5,
           "label": "MODERATE BULLISH",
           "dir": "Bullish",
-          "pct": 65,
-          "agree": 0.9,
+          "pct": 69,
+          "agree": 0.92,
           "factors": 9,
           "asof": "2026-10-27",
           "period": "Outlook for Wed Oct 28 (built from the Tue Oct 27 close)",
-          "status": "upcoming",
+          "status": "active",
           "drivers": [
             {
               "key": "trend",
@@ -722,8 +722,8 @@
             {
               "key": "close",
               "name": "Close strength (position in day's range)",
-              "reading": "closed at 45% of the range",
-              "v": 0,
+              "reading": "closed at 88% of the range",
+              "v": 1,
               "w": 1
             },
             {
@@ -736,7 +736,7 @@
             {
               "key": "ma",
               "name": "Trend (price vs 20d / 50d avg)",
-              "reading": "-1.8% / -0.4%",
+              "reading": "-1.8% / -0.5%",
               "v": 0,
               "w": 1
             },
@@ -750,7 +750,7 @@
             {
               "key": "range",
               "name": "Position in 20-day range",
-              "reading": "32% of the 20d range",
+              "reading": "31% of the 20d range",
               "v": 0,
               "w": 1
             },
@@ -780,13 +780,8 @@
             "vs": "the previous day's outlook",
             "prev_label": "SLIGHT BULLISH",
             "prev_period": "Close of Mon Oct 26",
-            "score_delta": 0.05,
+            "score_delta": 0.15,
             "flips": [
-              {
-                "name": "Close strength (position in day's range)",
-                "from": 1,
-                "to": 0
-              },
               {
                 "name": "Position in 20-day range",
                 "from": -1,
@@ -852,7 +847,7 @@
               "y10"
             ]
           },
-          "ref_price": 29820.25
+          "ref_price": 29812.0
         },
         "weekly": {
           "score": -0.35,
@@ -1149,7 +1144,7 @@
         "Large speculators (CFTC, 2026-10-20) are net long 50,726 contracts in Nasdaq, -5,424 vs 4 weeks ago: cutting exposure.",
         "US10Y 4.99% (-0.25 in 1 month): falling yields support growth stocks.",
         "VIX 17.5: moderate risk appetite.",
-        "Tech vs S&P 500 over 1 month: -2.9% -> investors are rotating out of tech.",
+        "Tech vs S&P 500 over 1 month: -3.0% -> investors are rotating out of tech.",
         "US dollar +1.1% in 1 month: dollar moving, watch the reaction in risk assets."
       ],
       "source": "Yahoo NQ=F",
@@ -1157,23 +1152,23 @@
         "symbol": "NQ=F",
         "daily": {
           "tf": "1H",
-          "price": 29824.5,
+          "price": 29931.5,
           "supply": [
             {
               "top": 30059.25,
-              "bottom": 29965.75,
+              "bottom": 29965.0,
               "fresh": true,
-              "strength": 1.0,
+              "strength": 1.2,
               "kind": "base",
               "formed": "2026-10-21 22:00",
-              "rec": 0.81,
+              "rec": 0.8,
               "inside": false,
-              "dist": 0.47,
+              "dist": 0.11,
               "conf": [
                 "4H",
                 "1D"
               ],
-              "score": 72,
+              "score": 74,
               "grade": "A"
             },
             {
@@ -1185,7 +1180,7 @@
               "formed": "2026-10-21 17:00",
               "rec": 0.8,
               "inside": false,
-              "dist": 0.82,
+              "dist": 0.46,
               "conf": [
                 "4H",
                 "1D"
@@ -1195,14 +1190,14 @@
             },
             {
               "top": 30769.0,
-              "bottom": 30754.75,
+              "bottom": 30756.5,
               "fresh": true,
               "strength": 3.1,
               "kind": "base",
               "formed": "2026-10-14 12:00",
               "rec": 0.56,
               "inside": false,
-              "dist": 3.12,
+              "dist": 2.76,
               "conf": [
                 "4H"
               ],
@@ -1220,7 +1215,7 @@
               "formed": "2026-10-27 07:00",
               "rec": 0.96,
               "inside": false,
-              "dist": -1.71,
+              "dist": -2.07,
               "conf": [
                 "4H"
               ],
@@ -1236,7 +1231,7 @@
               "formed": "2026-10-26 14:00",
               "rec": 0.93,
               "inside": false,
-              "dist": -1.81,
+              "dist": -2.17,
               "conf": [
                 "4H"
               ],
@@ -1244,7 +1239,7 @@
               "grade": "A"
             },
             {
-              "top": 29080.75,
+              "top": 29080.25,
               "bottom": 29024.25,
               "fresh": false,
               "strength": 4.2,
@@ -1252,7 +1247,7 @@
               "formed": "2026-10-26 08:00",
               "rec": 0.92,
               "inside": false,
-              "dist": -2.49,
+              "dist": -2.84,
               "conf": [
                 "4H",
                 "1D"
@@ -1264,7 +1259,7 @@
         },
         "weekly": {
           "tf": "4H",
-          "price": 29824.5,
+          "price": 29931.5,
           "supply": [
             {
               "top": 30113.0,
@@ -1273,9 +1268,9 @@
               "strength": 4.8,
               "kind": "swing",
               "formed": "2026-10-21 16:00",
-              "rec": 0.91,
+              "rec": 0.9,
               "inside": false,
-              "dist": 0.73,
+              "dist": 0.37,
               "conf": [
                 "1H",
                 "1D"
@@ -1292,7 +1287,7 @@
               "formed": "2026-10-16 04:00",
               "rec": 0.83,
               "inside": false,
-              "dist": 1.16,
+              "dist": 0.8,
               "conf": [
                 "1H",
                 "1D"
@@ -1302,14 +1297,14 @@
             },
             {
               "top": 30861.75,
-              "bottom": 30762.0,
+              "bottom": 30762.25,
               "fresh": true,
               "strength": 2.9,
               "kind": "base",
               "formed": "2026-10-14 12:00",
               "rec": 0.8,
               "inside": false,
-              "dist": 3.14,
+              "dist": 2.78,
               "conf": [
                 "1H",
                 "1D"
@@ -1320,20 +1315,20 @@
           ],
           "demand": [
             {
-              "top": 29434.25,
+              "top": 29313.25,
               "bottom": 29288.0,
-              "fresh": true,
-              "strength": 1.1,
-              "kind": "base",
-              "formed": "2026-10-27 08:00",
+              "fresh": false,
+              "strength": 3.1,
+              "kind": "swing",
+              "formed": "2026-10-27 04:00",
               "rec": 0.98,
               "inside": false,
-              "dist": -1.31,
+              "dist": -2.07,
               "conf": [
                 "1H"
               ],
-              "score": 69,
-              "grade": "A"
+              "score": 64,
+              "grade": "B"
             },
             {
               "top": 29208.53,
@@ -1344,7 +1339,7 @@
               "formed": "2026-09-16 16:00",
               "rec": 0.39,
               "inside": false,
-              "dist": -2.07,
+              "dist": -2.42,
               "conf": [
                 "1H",
                 "1D"
@@ -1361,7 +1356,7 @@
               "formed": "2026-09-14 08:00",
               "rec": 0.34,
               "inside": false,
-              "dist": -3.03,
+              "dist": -3.38,
               "conf": [
                 "1D"
               ],
@@ -1372,7 +1367,7 @@
         },
         "monthly": {
           "tf": "1D",
-          "price": 29824.5,
+          "price": 29931.5,
           "supply": [
             {
               "top": 30113.0,
@@ -1383,7 +1378,7 @@
               "formed": "2026-10-22 04:00",
               "rec": 0.98,
               "inside": true,
-              "dist": -0.5,
+              "dist": -0.86,
               "conf": [
                 "1H",
                 "4H"
@@ -1400,7 +1395,7 @@
               "formed": "2026-10-16 04:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 1.07,
+              "dist": 0.71,
               "conf": [
                 "4H"
               ],
@@ -1416,7 +1411,7 @@
               "formed": "2026-10-14 04:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 3.24,
+              "dist": 2.87,
               "conf": [
                 "4H"
               ],
@@ -1434,7 +1429,7 @@
               "formed": "2026-09-02 04:00",
               "rec": 0.85,
               "inside": false,
-              "dist": -2.31,
+              "dist": -2.66,
               "conf": [
                 "1H",
                 "4H"
@@ -1451,7 +1446,7 @@
               "formed": "2026-09-16 04:00",
               "rec": 0.88,
               "inside": false,
-              "dist": -2.89,
+              "dist": -3.23,
               "conf": [
                 "4H"
               ],
@@ -1467,7 +1462,7 @@
               "formed": "2026-04-13 04:00",
               "rec": 0.47,
               "inside": false,
-              "dist": -16.24,
+              "dist": -16.54,
               "conf": [],
               "score": 65,
               "grade": "A"
