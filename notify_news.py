@@ -8,18 +8,21 @@ events are remembered in alerts.json).
 Setup: repo -> Settings -> Secrets and variables -> Actions -> New repository secret
   name: DISCORD_NEWS_WEBHOOK   value: the Discord webhook URL of the channel.
 Test:  Actions -> Update Market Calendar -> Run workflow -> tick "test_alert".
-Hourly runs => the alert lands roughly 25-75 minutes before the release.
+The alert is sent when the release is 0-45 minutes away. The workflow news-alert.yml runs every 15 minutes, and the site
+(index.html) sends the same alert when a member has it open. Both share a 'already sent' flag in Firebase so it is never posted twice.
 """
 import datetime as dt
 import json
 import math
 import os
 import sys
+import re
 import urllib.request
 from zoneinfo import ZoneInfo
 
 NEWS, CTX, SENT = "news.json", "context.json", "alerts.json"
-WINDOW_MIN = 75
+FB = "https://alpha-matrix-1d5c1-default-rtdb.firebaseio.com/alpha_bias_v1/newsAlerts/"
+WINDOW_MIN = 45
 IMPACTS = {"High"}
 SKIP_MODEL = ("FOMC", "Federal Funds", "Statement", "Minutes", "Speaks", "Press Conference")
 APP_NAME = {"Non-Farm": "Non-Farm Payrolls", "CPI": "CPI Inflation"}
@@ -68,7 +71,7 @@ def model(ctx, title, nas=False):
 def embed(ev, mins, ctx):
     ma = dt.timezone(dt.timedelta(hours=int(os.environ.get("MA_UTC_OFFSET", "0"))))  # Morocco = GMT, fixed on purpose
     when = dt.datetime.fromisoformat(ev["date"]).astimezone(ma)
-    desc = f"🕒 **{when:%H:%M}** (Morocco) · in ~{mins} min\nForecast: **{ev.get('forecast') or 'n/a'}** · Previous: **{ev.get('previous') or 'n/a'}**"
+    desc = f"**{when:%H:%M}** (Morocco) · in ~{mins} min\nForecast: **{ev.get('forecast') or 'n/a'}** · Previous: **{ev.get('previous') or 'n/a'}**"
     fields, color = [], 9807270
     if ev.get("forecast") and not any(k in ev["title"] for k in SKIP_MODEL):
         m = model(ctx, ev["title"])
@@ -81,9 +84,31 @@ def embed(ev, mins, ctx):
                 {"name": f"{label} bear case", "value": "\n".join("• " + x for x in mm["br"]) or "—", "inline": True},
                 {"name": f"{label} bull case", "value": "\n".join("• " + x for x in mm["bl"]) or "—", "inline": True},
             ]
-    return {"title": f"⚠️ {ev.get('impact', '').upper()} NEWS · {ev['title']}", "description": desc, "color": color, "fields": fields,
+    return {"title": f"{ev.get('impact', '').upper()} IMPACT NEWS · {ev['title']}", "description": desc, "color": color, "fields": fields,
             "footer": {"text": "Subjective model, not financial advice. Wait for the print and the first reaction."},
             "timestamp": dt.datetime.now(dt.timezone.utc).isoformat()}
+
+
+def fb_key(ev):
+    return re.sub(r"[^A-Za-z0-9]+", "_", f"{ev['title']}_{ev['date']}")
+
+
+def fb_sent(key):
+    """True if the site (or an earlier run) already sent this alert. Fails open (False) when Firebase is unreachable."""
+    try:
+        with urllib.request.urlopen(FB + key + ".json", timeout=10) as r:
+            return json.loads(r.read().decode("utf-8")) is not None
+    except Exception:
+        return False
+
+
+def fb_mark(key):
+    try:
+        req = urllib.request.Request(FB + key + ".json", data=json.dumps({"by": "github-action", "ts": int(dt.datetime.now().timestamp() * 1000)}).encode("utf-8"),
+                                     method="PUT", headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=10).read()
+    except Exception:
+        pass
 
 
 def post(url, emb):
@@ -102,7 +127,7 @@ def main():
     if os.environ.get("NEWS_ALERT_TEST") == "1":
         sample = next((e for e in news if e.get("impact") in IMPACTS), {"title": "Non-Farm Employment Change", "impact": "High", "date": now.isoformat(), "forecast": "73K", "previous": "38K"})
         emb = embed(sample, 60, ctx)
-        emb["title"] = "🧪 TEST · " + emb["title"]
+        emb["title"] = "TEST · " + emb["title"]
         post(url, emb)
         print("test alert sent")
         return
@@ -114,7 +139,14 @@ def main():
         mins = (dt.datetime.fromisoformat(ev["date"]) - now).total_seconds() / 60
         if key in sent or not (0 < mins <= WINDOW_MIN):
             continue
+        fk = fb_key(ev)
+        if fb_sent(fk):
+            sent[key] = now.strftime("%Y-%m-%d")
+            changed = True
+            print("already sent by the site:", key)
+            continue
         try:
+            fb_mark(fk)
             post(url, embed(ev, int(mins), ctx))
             sent[key] = now.strftime("%Y-%m-%d")
             changed = True

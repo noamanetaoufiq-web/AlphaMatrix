@@ -1,0 +1,42 @@
+name: News Alert
+
+"on":
+  schedule:
+    - cron: '*/15 6-21 * * 1-5'   # every 15 min on weekdays (GitHub can delay it a few minutes)
+  workflow_dispatch:
+    inputs:
+      test_alert:
+        description: 'Send a test Discord alert'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-alert
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Discord alert before high-impact news
+        run: python scripts/notify_news.py
+        env:
+          DISCORD_NEWS_WEBHOOK: ${{ secrets.DISCORD_NEWS_WEBHOOK }}
+          NEWS_ALERT_TEST: ${{ inputs.test_alert && '1' || '0' }}
+      - name: Save alerts.json if changed
+        run: |
+          if [ -f alerts.json ]; then git add alerts.json; fi
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: news alerts state [skip ci]"
+            git pull --rebase origin main
+            git push
+          fi
