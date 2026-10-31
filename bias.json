@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31 08:21 UTC",
+  "updated": "2026-10-31 15:09 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -372,7 +372,7 @@
         "symbol": "GC=F",
         "daily": {
           "tf": "1H",
-          "price": 3884.9,
+          "price": 3898.9,
           "supply": [
             {
               "top": 3980.1,
@@ -383,7 +383,7 @@
               "formed": "2026-10-30 13:00",
               "rec": 0.98,
               "inside": false,
-              "dist": 2.03,
+              "dist": 1.66,
               "conf": [
                 "4H"
               ],
@@ -399,7 +399,7 @@
               "formed": "2026-10-30 08:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 3.15,
+              "dist": 2.78,
               "conf": [
                 "4H"
               ],
@@ -415,7 +415,7 @@
               "formed": "2026-10-30 05:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 3.21,
+              "dist": 2.84,
               "conf": [],
               "score": 68,
               "grade": "A"
@@ -425,7 +425,7 @@
         },
         "weekly": {
           "tf": "4H",
-          "price": 3884.9,
+          "price": 3898.9,
           "supply": [
             {
               "top": 4009.2,
@@ -436,7 +436,7 @@
               "formed": "2026-10-30 12:00",
               "rec": 0.99,
               "inside": false,
-              "dist": 2.36,
+              "dist": 1.99,
               "conf": [
                 "1H"
               ],
@@ -452,7 +452,7 @@
               "formed": "2026-10-28 20:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 5.26,
+              "dist": 4.88,
               "conf": [
                 "1D"
               ],
@@ -468,7 +468,7 @@
               "formed": "2026-10-21 20:00",
               "rec": 0.85,
               "inside": false,
-              "dist": 6.89,
+              "dist": 6.51,
               "conf": [
                 "1D"
               ],
@@ -540,7 +540,7 @@
         "yahoo": 3898.9,
         "offset": -23.25,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1793434917
+        "ts": 1793459358
       },
       "cfd_sym": "GC=F"
     },
@@ -1053,7 +1053,7 @@
               "strength": 1.0,
               "kind": "base",
               "formed": "2026-10-29 17:00",
-              "rec": 0.95,
+              "rec": 0.94,
               "inside": false,
               "dist": 3.71,
               "conf": [
