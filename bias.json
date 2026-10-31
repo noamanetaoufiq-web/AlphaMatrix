@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31 15:09 UTC",
+  "updated": "2026-10-31 19:46 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -540,7 +540,7 @@
         "yahoo": 3898.9,
         "offset": -23.25,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1793459358
+        "ts": 1793476020
       },
       "cfd_sym": "GC=F"
     },
