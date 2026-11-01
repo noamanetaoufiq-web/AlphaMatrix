@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01 17:44 UTC",
+  "updated": "2026-11-01 21:47 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -377,9 +377,9 @@
           "supply": [
             {
               "top": 3980.1,
-              "bottom": 3963.6,
+              "bottom": 3963.8,
               "fresh": true,
-              "strength": 2.1,
+              "strength": 2.0,
               "kind": "base",
               "formed": "2026-10-30 13:00",
               "rec": 0.98,
@@ -388,14 +388,14 @@
               "conf": [
                 "4H"
               ],
-              "score": 78,
+              "score": 77,
               "grade": "A"
             },
             {
               "top": 4009.2,
               "bottom": 4007.2,
               "fresh": false,
-              "strength": 7.0,
+              "strength": 6.8,
               "kind": "swing",
               "formed": "2026-10-30 08:00",
               "rec": 0.97,
@@ -409,14 +409,14 @@
             },
             {
               "top": 4021.2,
-              "bottom": 4010.06,
+              "bottom": 4009.78,
               "fresh": true,
-              "strength": 3.4,
+              "strength": 3.3,
               "kind": "swing",
               "formed": "2026-10-30 05:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 2.85,
+              "dist": 2.84,
               "conf": [],
               "score": 68,
               "grade": "A"
@@ -446,14 +446,14 @@
             },
             {
               "top": 4097.2,
-              "bottom": 4089.5,
+              "bottom": 4089.1,
               "fresh": true,
               "strength": 3.2,
               "kind": "swing",
               "formed": "2026-10-28 20:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 4.89,
+              "dist": 4.88,
               "conf": [
                 "1D"
               ],
@@ -462,14 +462,14 @@
             },
             {
               "top": 4164.3,
-              "bottom": 4152.4,
+              "bottom": 4152.6,
               "fresh": true,
               "strength": 5.4,
               "kind": "swing",
               "formed": "2026-10-21 20:00",
               "rec": 0.85,
               "inside": false,
-              "dist": 6.5,
+              "dist": 6.51,
               "conf": [
                 "1D"
               ],
@@ -998,7 +998,7 @@
           "supply": [
             {
               "top": 29573.0,
-              "bottom": 29464.75,
+              "bottom": 29464.0,
               "fresh": false,
               "strength": 2.6,
               "kind": "base",
@@ -1015,7 +1015,7 @@
             },
             {
               "top": 29593.25,
-              "bottom": 29567.25,
+              "bottom": 29566.25,
               "fresh": true,
               "strength": 4.8,
               "kind": "swing",
@@ -1056,7 +1056,7 @@
           "supply": [
             {
               "top": 29707.25,
-              "bottom": 29566.25,
+              "bottom": 29566.0,
               "fresh": true,
               "strength": 2.1,
               "kind": "base",
@@ -1082,15 +1082,14 @@
               "inside": false,
               "dist": 5.18,
               "conf": [
-                "1H",
                 "1D"
               ],
-              "score": 94,
+              "score": 89,
               "grade": "A"
             },
             {
               "top": 30861.75,
-              "bottom": 30762.25,
+              "bottom": 30762.0,
               "fresh": true,
               "strength": 2.9,
               "kind": "base",
@@ -1129,20 +1128,19 @@
               "grade": "A"
             },
             {
-              "top": 30113.0,
-              "bottom": 30007.0,
+              "top": 30196.75,
+              "bottom": 30143.75,
               "fresh": false,
-              "strength": 2.1,
-              "kind": "swing",
-              "formed": "2026-10-21 04:00",
-              "rec": 0.97,
+              "strength": 1.5,
+              "kind": "base",
+              "formed": "2026-10-16 04:00",
+              "rec": 0.96,
               "inside": false,
-              "dist": 5.16,
+              "dist": 5.64,
               "conf": [
-                "1H",
                 "4H"
               ],
-              "score": 60,
+              "score": 56,
               "grade": "B"
             },
             {
