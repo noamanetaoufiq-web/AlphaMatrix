@@ -1,83 +1,92 @@
 [
   {
-    "title": "CB Consumer Confidence",
+    "title": "ISM Manufacturing PMI",
     "country": "USD",
-    "date": "2026-10-27T10:00:00-04:00",
+    "date": "2026-11-02T10:00:00-05:00",
     "impact": "Medium",
-    "forecast": "81.2",
-    "previous": "81.9",
+    "forecast": "54.7",
+    "previous": "54.5",
     "actual": ""
   },
   {
-    "title": "Federal Funds Rate",
+    "title": "JOLTS Job Openings",
     "country": "USD",
-    "date": "2026-10-28T14:00:00-04:00",
-    "impact": "High",
-    "forecast": "4.00%",
-    "previous": "4.00%",
+    "date": "2026-11-03T10:00:00-05:00",
+    "impact": "Medium",
+    "forecast": "7.11M",
+    "previous": "7.08M",
     "actual": ""
   },
   {
-    "title": "FOMC Statement",
+    "title": "Congressional Elections",
     "country": "USD",
-    "date": "2026-10-28T14:00:00-04:00",
+    "date": "2026-11-03T10:16:00-05:00",
     "impact": "High",
     "forecast": "",
     "previous": "",
     "actual": ""
   },
   {
-    "title": "FOMC Press Conference",
+    "title": "ISM Services PMI",
     "country": "USD",
-    "date": "2026-10-28T14:30:00-04:00",
-    "impact": "High",
-    "forecast": "",
-    "previous": "",
-    "actual": ""
-  },
-  {
-    "title": "Advance GDP q/q",
-    "country": "USD",
-    "date": "2026-10-29T08:30:00-04:00",
-    "impact": "High",
-    "forecast": "3.2%",
-    "previous": "1.5%",
-    "actual": ""
-  },
-  {
-    "title": "Core PCE Price Index m/m",
-    "country": "USD",
-    "date": "2026-10-29T08:30:00-04:00",
-    "impact": "High",
-    "forecast": "0.3%",
-    "previous": "0.2%",
-    "actual": ""
-  },
-  {
-    "title": "Advance GDP Price Index q/q",
-    "country": "USD",
-    "date": "2026-10-29T08:30:00-04:00",
+    "date": "2026-11-04T10:00:00-05:00",
     "impact": "Medium",
-    "forecast": "3.2%",
-    "previous": "6.2%",
+    "forecast": "54.9",
+    "previous": "54.9",
     "actual": ""
   },
   {
     "title": "Unemployment Claims",
     "country": "USD",
-    "date": "2026-10-29T08:30:00-04:00",
+    "date": "2026-11-05T08:30:00-05:00",
     "impact": "Medium",
-    "forecast": "198K",
+    "forecast": "197K",
     "previous": "194K",
     "actual": ""
   },
   {
-    "title": "Employment Cost Index q/q",
+    "title": "Average Hourly Earnings m/m",
     "country": "USD",
-    "date": "2026-10-30T08:30:00-04:00",
+    "date": "2026-11-06T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.3%",
+    "previous": "0.1%",
+    "actual": ""
+  },
+  {
+    "title": "Non-Farm Employment Change",
+    "country": "USD",
+    "date": "2026-11-06T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "63K",
+    "previous": "29K",
+    "actual": ""
+  },
+  {
+    "title": "Unemployment Rate",
+    "country": "USD",
+    "date": "2026-11-06T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "4.2%",
+    "previous": "4.2%",
+    "actual": ""
+  },
+  {
+    "title": "Prelim UoM Consumer Sentiment",
+    "country": "USD",
+    "date": "2026-11-06T10:00:00-05:00",
     "impact": "Medium",
-    "forecast": "0.8%",
-    "previous": "0.9%",
+    "forecast": "47.8",
+    "previous": "46.3",
+    "actual": ""
+  },
+  {
+    "title": "Prelim UoM Inflation Expectations",
+    "country": "USD",
+    "date": "2026-11-06T10:00:00-05:00",
+    "impact": "Medium",
+    "forecast": "",
+    "previous": "4.7%",
     "actual": ""
   }
 ]
