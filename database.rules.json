@@ -32,7 +32,8 @@
       "disciplineLog": {
         "$i": {
           ".write": "auth.token.email === 'amine@alphamatrix.app'"
-        }
+        },
+        ".write": "auth.token.email === 'amine@alphamatrix.app'"
       },
       "strikes": {
         "$m": {
