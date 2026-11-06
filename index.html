@@ -987,6 +987,7 @@ return `<h2>MISSIONS</h2><div class="mu sub-note">Optional bonus. Do the task, p
 /* ===== DELEGATION: NOAMANE can let AMINE add/remove retards & absences for the other members ===== */
 function canMod(n,type){if(isAdmin)return true;return currentUser==='AMINE'&&state.modAmine!==false&&n!==currentUser&&n!=='NOAMANE'&&(type==='absences'||type==='retards'||type==='strikes'||type==='pro');}
 function modPersist(n,keys,L0){if(isAdmin){save();return;}if(!(db&&dbReady)){liveToast('Not connected');return;}const u={};keys.forEach(k=>{const v=k.split('/').reduce((o,x)=>o==null?null:o[x],state);u[k]=v===undefined?null:v;});for(let i=L0;i<state.disciplineLog.length;i++)u['disciplineLog/'+i]=state.disciplineLog[i];u.updatedAt=Date.now();u.updatedBy=currentUser;db.ref('alpha_v16').update(u).catch(()=>liveToast('Could not save, try again'));}
+function amineMod(){return !isAdmin&&currentUser==='AMINE'&&state.modAmine!==false;}
 function modBanner(what){if(isAdmin)return '<div class="g mod-box"><span><b>AMINE</b> manages Strikes, Strike Pro, Absences and Retards for the other members (with the owner): <b class="'+(state.modAmine===false?'mg':'em')+'">'+(state.modAmine===false?'OFF':'ON')+'</b></span><button class="sb2" style="padding:8px 18px" onclick="toggleMod()">'+(state.modAmine===false?'TURN ON':'TURN OFF')+'</button></div>';if(amineMod())return '<div class="g mod-box mod-on"><span>You are a <b>moderator</b>: you manage Strikes, Strike Pro, Absences and Retards for the other members, together with NOAMANE.</span></div>';return '';}
 function toggleMod(){if(!isAdmin)return;ensure();state.modAmine=state.modAmine===false;save();renderAll();}
 /* ===== RETARDS: every 4 retards = 1 automatic absence ===== */
@@ -1176,4 +1177,3 @@ startParticles(document.getElementById('reveal-bg'),{count:40,colors:['#fff','#F
 (function(){const u=localStorage.getItem('alpha_user');if(u&&CRED[u]){currentUser=u;isAdmin=CRED[u].role==='admin';document.getElementById('login').style.display='none';document.getElementById('user-badge').textContent=u;document.getElementById('mode-badge').textContent=isAdmin?'ADMIN':'MEMBER';whenReady(()=>{renderNav();renderAll();grantDisc();team.forEach(checkStatus);checkSmart();});}else{document.getElementById('login').style.display='flex';}})();
 </script>
 </body></html>
-	
