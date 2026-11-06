@@ -1,0 +1,114 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "alpha_v16": {
+      ".read": "auth != null",
+      ".write": "auth.token.email === 'noamane@alphamatrix.app'",
+      "updatedAt": {
+        ".write": "auth != null"
+      },
+      "updatedBy": {
+        ".write": "auth != null"
+      },
+      "activity": {
+        "$m": {
+          ".write": "auth.token.email === $m.toLowerCase() + '@alphamatrix.app'",
+          "$d": {
+            "$k": {
+              ".validate": "newData.val() === 1"
+            }
+          }
+        }
+      },
+      "missionSubs": {
+        "$mid": {
+          "$m": {
+            ".write": "auth.token.email === $m.toLowerCase() + '@alphamatrix.app'",
+            ".validate": "auth.token.email === 'noamane@alphamatrix.app' || newData.child('status').val() === 'pending'"
+          }
+        }
+      },
+      "disciplineLog": {
+        "$i": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app'"
+        }
+      },
+      "strikes": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "absences": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "retards": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "retardTotal": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "retardConv": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "proStrikes": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "proTimeout": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "memberRanks": {
+        "$m": {
+          ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+        }
+      },
+      "memberMeta": {
+        "$m": {
+          "lost": {
+            ".write": "auth.token.email === 'amine@alphamatrix.app' && $m !== 'NOAMANE' && $m !== 'AMINE'"
+          }
+        }
+      }
+    },
+    "alpha_bias_v1": {
+      "meta": {
+        ".read": "auth != null",
+        "$tf": {
+          "$key": {
+            "$m": {
+              ".write": "auth.token.email === 'noamane@alphamatrix.app' || (auth.token.email === $m.toLowerCase() + '@alphamatrix.app' && !data.exists())"
+            }
+          }
+        }
+      },
+      "img": {
+        ".read": "auth != null",
+        "$tf": {
+          "$key": {
+            "$m": {
+              ".write": "auth.token.email === 'noamane@alphamatrix.app' || (auth.token.email === $m.toLowerCase() + '@alphamatrix.app' && !data.exists())"
+            }
+          }
+        }
+      },
+      "newsAlerts": {
+        ".read": true,
+        "$k": {
+          ".write": "!data.exists()"
+        }
+      }
+    }
+  }
+}
