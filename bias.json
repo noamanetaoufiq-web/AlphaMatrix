@@ -1,10 +1,6 @@
 {
-  "updated": "2026-11-06 23:42 UTC",
-  "events_today": [
-    "Average Hourly Earnings m/m at 13:30 (Morocco)",
-    "Non-Farm Employment Change at 13:30 (Morocco)",
-    "Unemployment Rate at 13:30 (Morocco)"
-  ],
+  "updated": "2026-11-07 00:56 UTC",
+  "events_today": [],
   "notes": [
     "ry: source unavailable",
     "be: source unavailable",
@@ -684,7 +680,7 @@
         "yahoo": 4079.5,
         "offset": -8.91,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1794008576
+        "ts": 1794012972
       },
       "cfd_sym": "GC=F"
     },
