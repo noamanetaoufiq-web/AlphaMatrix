@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-07 17:32 UTC",
+  "updated": "2026-11-07 21:33 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -393,7 +393,7 @@
           "supply": [
             {
               "top": 4116.2,
-              "bottom": 4101.4,
+              "bottom": 4101.5,
               "fresh": false,
               "strength": 2.9,
               "kind": "swing",
@@ -477,7 +477,7 @@
               "grade": "A"
             },
             {
-              "top": 3915.6,
+              "top": 3915.5,
               "bottom": 3908.4,
               "fresh": true,
               "strength": 5.1,
@@ -517,14 +517,14 @@
             },
             {
               "top": 4164.3,
-              "bottom": 4152.6,
+              "bottom": 4152.4,
               "fresh": false,
               "strength": 5.4,
               "kind": "swing",
               "formed": "2026-10-21 20:00",
               "rec": 0.75,
               "inside": false,
-              "dist": 1.91,
+              "dist": 1.9,
               "conf": [
                 "1H",
                 "1D"
@@ -534,7 +534,7 @@
             },
             {
               "top": 4211.2,
-              "bottom": 4201.2,
+              "bottom": 4201.4,
               "fresh": true,
               "strength": 3.1,
               "kind": "swing",
@@ -587,7 +587,7 @@
               "top": 3915.4,
               "bottom": 3904.1,
               "fresh": false,
-              "strength": 4.9,
+              "strength": 5.0,
               "kind": "swing",
               "formed": "2026-11-03 08:00",
               "rec": 0.93,
@@ -680,7 +680,7 @@
         "yahoo": 4074.9,
         "offset": -4.31,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1794072776
+        "ts": 1794087193
       },
       "cfd_sym": "GC=F"
     },
@@ -1153,7 +1153,7 @@
               "top": 28443.25,
               "bottom": 28308.0,
               "fresh": true,
-              "strength": 6.2,
+              "strength": 6.1,
               "kind": "base",
               "formed": "2026-11-05 14:00",
               "rec": 0.94,
@@ -1200,7 +1200,7 @@
           ],
           "demand": [
             {
-              "top": 27154.25,
+              "top": 27155.0,
               "bottom": 27037.75,
               "fresh": false,
               "strength": 2.0,
@@ -1208,7 +1208,7 @@
               "formed": "2026-11-06 14:00",
               "rec": 0.98,
               "inside": true,
-              "dist": 0.25,
+              "dist": 0.26,
               "conf": [
                 "1D"
               ],
@@ -1232,7 +1232,7 @@
               "grade": "B"
             },
             {
-              "top": 26623.23,
+              "top": 26621.25,
               "bottom": 26366.5,
               "fresh": false,
               "strength": 2.5,
@@ -1255,14 +1255,14 @@
           "supply": [
             {
               "top": 28465.0,
-              "bottom": 28297.5,
+              "bottom": 28291.5,
               "fresh": true,
-              "strength": 4.2,
+              "strength": 4.3,
               "kind": "base",
               "formed": "2026-11-05 12:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 4.48,
+              "dist": 4.45,
               "conf": [
                 "1H"
               ],
@@ -1287,7 +1287,7 @@
             },
             {
               "top": 29707.25,
-              "bottom": 29566.0,
+              "bottom": 29566.25,
               "fresh": true,
               "strength": 2.1,
               "kind": "base",
@@ -1304,7 +1304,7 @@
           ],
           "demand": [
             {
-              "top": 26625.5,
+              "top": 26621.25,
               "bottom": 26366.5,
               "fresh": false,
               "strength": 2.0,
@@ -1312,7 +1312,7 @@
               "formed": "2026-11-05 20:00",
               "rec": 0.98,
               "inside": false,
-              "dist": -1.7,
+              "dist": -1.71,
               "conf": [
                 "1H"
               ],
