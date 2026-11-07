@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-07 00:56 UTC",
+  "updated": "2026-11-07 04:59 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -398,7 +398,7 @@
               "strength": 2.9,
               "kind": "swing",
               "formed": "2026-11-06 00:00",
-              "rec": 0.95,
+              "rec": 0.96,
               "inside": false,
               "dist": 0.54,
               "conf": [
@@ -680,7 +680,7 @@
         "yahoo": 4079.5,
         "offset": -8.91,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1794012972
+        "ts": 1794027548
       },
       "cfd_sym": "GC=F"
     },
