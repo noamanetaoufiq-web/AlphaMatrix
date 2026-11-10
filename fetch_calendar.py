@@ -68,6 +68,17 @@ def main():
 
     merged.sort(key=lambda x: x["date"])
 
+    # the feed never carries the actual value: keep the ones fetch_actuals.py stored from the official source
+    try:
+        with open("actuals.json", encoding="utf-8") as f:
+            store = json.load(f)
+    except Exception:
+        store = {}
+    for it in merged:
+        k = "%s|%s" % (it["title"], it["date"])
+        if not (it.get("actual") or "").strip() and k in store:
+            it["actual"] = store[k]
+
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(merged, f, ensure_ascii=False, indent=2)
         f.write("\n")
