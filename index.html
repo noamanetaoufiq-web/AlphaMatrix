@@ -688,7 +688,7 @@ function newsDecisionData(e,asset){const nas=asset==='nas',b=computeBias(e),vg=n
 if(b.mode==='REACTION'&&b.dir){dir=b.dir;pct=b.pct;why=[b.note];phase='AFTER RELEASE';}
 else if(vg){phase='PRE-RELEASE';dir=vg.diff<6?null:(vg.dir==='BEARISH'?'Bearish':'Bullish');pct=Math.max(vg.bear,vg.bull);why=(dir==='Bearish'?vg.br:dir==='Bullish'?vg.bl:[]).slice(0,3);}
 else if(b.dir){dir=b.dir;pct=b.pct;why=[b.note];}
-const asName=nas?'NASDAQ':'GOLD',strong=pct>=70,ok=pct>=58&&dir;
+const asName=nas?'NASDAQ':'GOLD',pre=phase==='PRE-RELEASE',strong=pct>=(pre?65:70),ok=pct>=(pre?55:58)&&dir;/* pre-release: the scenario model tops out near 55-60% (40% of the odds are 'in line'), so a 55% lean = SLIGHT LEAN is tradable after confirmation */
 let act,cls,plan;
 if(!ok){act='WAIT · NO TRADE';cls='wait';plan=phase==='AFTER RELEASE'?'The reaction is not clear. Stay out and wait for a clean structure.':'No real edge before the news. Do not guess: wait for the print and the first reaction.';}
 else{const buy=dir==='Bullish';act=(buy?'BUY ':'SELL ')+asName+(strong?' · STRONG':' · LEAN');cls=buy?'buy':'sell';plan=phase==='AFTER RELEASE'?'Decision is made: look for '+(buy?'BUY':'SELL')+' setups only. Enter on a pullback to your zone, never chase the first spike.':'Lean is '+(buy?'BUY':'SELL')+'. Do not enter before the release: let the first 5–15 min candle close, then trade only if price confirms this direction.';}
