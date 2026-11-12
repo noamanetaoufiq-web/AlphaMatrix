@@ -43,7 +43,9 @@ jobs:
         continue-on-error: true
 
       - name: Pre-release evidence per release (gasoline, oil, claims, ADP) into context.json
-        run: python scripts/fetch_leading.py || echo "::warning::fetch_leading.py failed, see the log above"
+        run: |
+          s=scripts/fetch_leading.py; [ -f "$s" ] || s=fetch_leading.py
+          python "$s" || echo "::warning::fetch_leading.py failed, see the log above"
         continue-on-error: true
 
       - name: Fetch daily/weekly/monthly bias into bias.json
