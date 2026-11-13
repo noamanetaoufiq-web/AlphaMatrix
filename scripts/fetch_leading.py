@@ -18,6 +18,7 @@ import datetime as dt
 import io
 import json
 import sys
+import time
 import urllib.request
 
 CONTEXT = "context.json"
@@ -25,10 +26,22 @@ NEWS = "news.json"
 FRED = "https://fred.stlouisfed.org/graph/fredgraph.csv?id="
 
 
-def series(sid):
-    req = urllib.request.Request(FRED + sid, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=25) as r:
-        rows = list(csv.reader(io.StringIO(r.read().decode("utf-8"))))
+def series(sid, tries=3):
+    last = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request(
+                FRED + sid + "&cosd=2025-01-01",
+                headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36", "Accept": "text/csv,*/*"},
+            )
+            with urllib.request.urlopen(req, timeout=40) as r:
+                rows = list(csv.reader(io.StringIO(r.read().decode("utf-8"))))
+            break
+        except Exception as e:  # retry: FRED sometimes resets connections from CI machines
+            last = e
+            time.sleep(3 * (i + 1))
+    else:
+        raise last
     out = []
     for row in rows[1:]:
         if len(row) < 2 or row[1] in ("", "."):
@@ -76,13 +89,16 @@ def next_event(news, title, now):
 
 
 def build(news, now, get=series):
-    lead, notes = {}, []
+    lead, notes, dbg = {}, [], []
 
     def safe(sid):
         try:
-            return get(sid)
+            r = get(sid)
+            dbg.append("%s: %d obs, last %s" % (sid, len(r), r[-1][0].isoformat() if r else "-"))
+            return r
         except Exception as e:
             print("warning: FRED %s failed: %s" % (sid, e), file=sys.stderr)
+            dbg.append("%s: FAILED %s" % (sid, str(e)[:120]))
             return None
 
     gas = oil = claims = adp = None
@@ -101,6 +117,7 @@ def build(news, now, get=series):
         load()
         ref = prev_month(t.year, t.month)  # the release is about the month before the release date
         tag = "%d-%02d" % ref
+        dbg.append("event %s on %s -> reference month %s" % (name, t.date().isoformat(), tag))
         if name == "CPI m/m" and gas:
             g = pct_change(gas, ref)
             if g is not None:
@@ -138,7 +155,9 @@ def build(news, now, get=series):
                 tot = sum(sig) / len(sig)
                 lead[name] = 1 if tot > 0.25 else -1 if tot < -0.25 else 0
                 notes.append("NFP (%s): " % tag + ", ".join(txt) + " -> %s" % {1: "hot", -1: "soft", 0: "neutral"}[lead[name]])
-    return lead, notes
+    if not lead:
+        dbg.append("no evidence produced (missing data for the reference month, or no mapped event ahead)")
+    return lead, notes, dbg
 
 
 def main(now=None):
@@ -152,14 +171,15 @@ def main(now=None):
         news = json.load(open(NEWS, encoding="utf-8"))
     except Exception:
         news = []
-    lead, notes = build(news, now)
+    lead, notes, dbg = build(news, now)
     ctx["lead"] = lead
     ctx["lead_notes"] = notes
+    ctx["lead_debug"] = dbg  # why there is (no) evidence; readable in context.json
     with open(CONTEXT, "w", encoding="utf-8") as f:
         json.dump(ctx, f, ensure_ascii=False, indent=2)
         f.write("\n")
     print("lead:", lead)
-    for n in notes:
+    for n in notes + dbg:
         print(" -", n)
     return 0
 
