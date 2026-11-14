@@ -28,7 +28,7 @@ jobs:
           BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
       - name: Commit if changed
         run: |
-          for f in news.json actuals.json; do [ -f "$f" ] && git add "$f"; done
+          for f in news.json actuals.json actuals_status.json; do [ -f "$f" ] && git add "$f"; done
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
