@@ -88,6 +88,32 @@ def bls(series_ids, year):
     return out
 
 
+def fred(series_ids):
+    """Fallback source: FRED carries the same BLS series ids (updated some minutes to hours after the release)."""
+    import csv
+    import io
+
+    out = {}
+    for sid in sorted(series_ids):
+        try:
+            txt = _http("https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s&cosd=2024-01-01" % sid)
+        except Exception as e:
+            ERR["fred"] = "%s: %s" % (sid, str(e)[:100])
+            continue
+        d = {}
+        for row in list(csv.reader(io.StringIO(txt)))[1:]:
+            try:
+                y, m = int(row[0][:4]), int(row[0][5:7])
+                d[(y, m)] = float(row[1])
+            except Exception:
+                pass
+        out[sid] = d
+    return out
+
+
+ERR = {}
+
+
 def prev_month(y, m, k=1):
     m -= k
     while m < 1:
@@ -218,23 +244,46 @@ def main(now=None):
         print("ACTUAL %s = %s" % (it["title"], val))
         changed = True
     due = [d for d in due if d[2][0] != "fomc"]
+    status = []
     if due:
+        ids = {sid for _, _, (_, sid), _ in due}
         try:
-            data = bls({sid for _, _, (_, sid), _ in due}, now.year)
+            data = bls(ids, now.year)
         except Exception as e:
             print("warning: BLS request failed:", e, file=sys.stderr)
+            ERR["bls"] = str(e)[:160]
             data = {}
+        fred_data = None
         for it, key, (kind, sid), t in due:
             # the release is about the month before the release date (CPI, PPI, jobs: Oct data comes out in Nov)
             ref = prev_month(t.year, t.month)
             val = compute(kind, data.get(sid, {}), ref)
+            src = "BLS"
+            if val is None:  # BLS slow / limit reached -> same series from FRED
+                if fred_data is None:
+                    fred_data = fred(ids)
+                val = compute(kind, fred_data.get(sid, {}), ref)
+                src = "FRED"
             if val is None:
                 print("not published yet: %s (%s)" % (it["title"], it["date"]))
+                status.append("%s: not published yet" % it["title"])
                 continue
             it["actual"] = val
             store[key] = val
-            print("ACTUAL %s = %s" % (it["title"], val))
+            print("ACTUAL %s = %s (%s)" % (it["title"], val, src))
+            status.append("%s: %s from %s" % (it["title"], val, src))
             changed = True
+        if ERR:
+            status.append("errors: " + json.dumps(ERR))
+        # small diagnostic file, rewritten only when the text changes (no commit noise)
+        try:
+            old = json.load(open("actuals_status.json", encoding="utf-8")).get("status")
+        except Exception:
+            old = None
+        if old != status:
+            with open("actuals_status.json", "w", encoding="utf-8") as f:
+                json.dump({"checked": now.isoformat(), "status": status}, f, ensure_ascii=False, indent=2)
+                f.write("\n")
     # carry stored actuals into news.json even when BLS was not called this run
     for it in news:
         k = "%s|%s" % (it.get("title"), it.get("date"))
