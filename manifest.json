@@ -1,16 +1,30 @@
 {
-  "name": "Alpha Matrix",
-  "short_name": "AlphaMatrix",
-  "description": "Alpha Matrix team app",
+  "name": "The Eternal Palace",
+  "short_name": "Palace 👑",
+  "description": "A romantic palace for Ilham & Noamane - Our love story and memories",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#04060a",
-  "theme_color": "#04060a",
+  "background_color": "#ffe4e1",
+  "theme_color": "#8B2635",
   "icons": [
-    { "src": "pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "pwa/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

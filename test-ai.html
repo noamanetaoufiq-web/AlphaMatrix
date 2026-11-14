@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI test</title>
+<style>body{font-family:system-ui;background:#1a0a2e;color:#fff;padding:20px;max-width:800px;margin:auto}button{padding:12px 20px;border-radius:20px;border:0;background:#ff6b9d;color:#fff;font-size:1rem;cursor:pointer}pre{white-space:pre-wrap;background:#0005;padding:14px;border-radius:12px;font-size:.85rem}.ok{color:#4ade80}.bad{color:#ff8a8a}</style></head>
+<body>
+<h2>🛠 AI connection test</h2>
+<p>Click the button, wait ~10 seconds, then send a screenshot of the result.</p>
+<button id="go">Run test</button>
+<button id="tg" style="margin-left:8px;background:#7c3aed">Test Telegram</button>
+<pre id="out">Waiting...</pre>
+<script src="config.js"></script>
+<script>
+const out = document.getElementById('out');
+const line = (ok, t) => { out.innerHTML += `<span class="${ok ? 'ok' : 'bad'}">${ok ? '✅' : '❌'} ${t.replace(/</g, '&lt;')}</span>\n`; };
+async function probe(label, url, headers, body, pick) {
+  try {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
+    const txt = await r.text();
+    if (r.ok) { let a = ''; try { a = pick(JSON.parse(txt)); } catch {} line(true, `${label}: OK -> ${String(a).slice(0, 80)}`); }
+    else line(false, `${label}: HTTP ${r.status} -> ${txt.slice(0, 220)}`);
+  } catch (e) { line(false, `${label}: ${e.message} (blocked by browser/CORS or no internet)`); }
+}
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '';
+  const src = await (await fetch('script.js?' + Date.now())).text();
+  const gkey = (src.match(/GEMINI_API_KEY = '([^']+)'/) || [])[1] || '';
+  const K = window.AI_KEYS || {};
+  line(!!gkey, 'Gemini key found in script.js: ' + (gkey ? gkey.slice(0, 6) + '...' : 'NO'));
+  line(!!K.openrouter, 'OpenRouter key in config.js: ' + (K.openrouter ? K.openrouter.slice(0, 10) + '...' : 'NO (config.js not loaded?)'));
+  line(!!K.mistral, 'Mistral key in config.js: ' + (K.mistral ? 'yes' : 'empty'));
+  const g = { contents: [{ role: 'user', parts: [{ text: 'say hi in one word' }] }] };
+  const gp = (j) => j.candidates[0].content.parts[0].text;
+  const gem = gkey.startsWith('AQ.') ? ['aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash', 'aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash-lite'] : ['generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest', 'generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash'];
+  for (const m of gem) await probe('Gemini ' + m.split('/').pop(), `https://${m}:generateContent?key=${gkey}`, {}, g, gp);
+  if (gkey.startsWith('AQ.')) await probe('Gemini (AI Studio endpoint, same key)', `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${gkey}`, {}, g, gp);
+  const oa = (m) => ({ model: m, messages: [{ role: 'user', content: 'say hi in one word' }], max_tokens: 20 });
+  const op = (j) => j.choices[0].message.content;
+  if (K.openrouter) {
+    const h = { Authorization: 'Bearer ' + K.openrouter };
+    await probe('OpenRouter openrouter/free', 'https://openrouter.ai/api/v1/chat/completions', h, oa('openrouter/free'), op);
+    await probe('OpenRouter (with tools)', 'https://openrouter.ai/api/v1/chat/completions', h, { ...oa('openrouter/free'), tools: [{ type: 'function', function: { name: 'x', description: 'x', parameters: { type: 'object', properties: {} } } }] }, op);
+  }
+  if (K.mistral) for (const m of ['mistral-small-latest', 'codestral-latest']) await probe('Mistral ' + m, 'https://api.mistral.ai/v1/chat/completions', { Authorization: 'Bearer ' + K.mistral }, oa(m), op);
+  out.innerHTML += '\nDone.';
+};
+
+document.getElementById('tg').onclick = async () => {
+  out.innerHTML = '';
+  const src = await (await fetch('script.js?' + Date.now())).text();
+  const tok = (src.match(/TELEGRAM_BOT_TOKEN = '([^']+)'/) || [])[1];
+  const chat = (src.match(/TELEGRAM_CHAT_ID = '([^']+)'/) || [])[1];
+  line(!!tok, 'Token found in script.js: ' + (tok ? tok.split(':')[0] + ':...' : 'NO'));
+  line(!!chat, 'Chat id: ' + (chat || 'NO'));
+  if (!tok) return;
+  try {
+    const me = await (await fetch(`https://api.telegram.org/bot${tok}/getMe`)).json();
+    line(me.ok, me.ok ? 'getMe OK -> bot @' + me.result.username : 'getMe FAILED -> ' + me.description + '  (401 = token revoked/wrong)');
+    if (!me.ok) return;
+    const s = await (await fetch(`https://api.telegram.org/bot${tok}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chat, text: '✅ test-ai.html: Telegram works' }) })).json();
+    line(s.ok, s.ok ? 'sendMessage OK (check your Telegram)' : 'sendMessage FAILED -> ' + s.description + '  (chat not found = open the bot and press /start, or wrong chat id)');
+  } catch (e) { line(false, 'Network/CORS error: ' + e.message); }
+};
+</script></body></html>

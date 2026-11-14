@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>AI keys</title>
+<style>body{font-family:system-ui,sans-serif;background:#1a0a2e;color:#fff;max-width:560px;margin:30px auto;padding:0 16px}input,button{width:100%;padding:11px;margin:5px 0;border-radius:10px;border:1px solid #ff6b9d88;background:#2a1540;color:#fff;font-size:1rem;box-sizing:border-box}button{background:#ff6b9d;border:0;cursor:pointer}small{opacity:.7}#msg{margin-top:10px;white-space:pre-wrap}</style></head><body>
+<h2>🔑 AI keys (Noamane only)</h2>
+<div id="login"><input id="pw" type="password" placeholder="Password dyal noamane@palace.app"><button id="go">Login</button></div>
+<div id="form" hidden>
+<small>Khllih khawi ila ma-bghitich tbeddlo. Kat-t7fed f Firebase, machi f GitHub.</small>
+<input id="gemini" placeholder="Gemini key (AQ... / AIza...)"><input id="groq" placeholder="Groq key (gsk_...)"><input id="openrouter" placeholder="OpenRouter key (sk-or-...)"><input id="mistral" placeholder="Mistral key"><input id="youtube" placeholder="YouTube Data API key (optional)">
+<button id="save">Save 💾</button></div><div id="msg"></div>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyBHD7JLpAJAruH1eyhLqa6q3RLNzpQcuz4",authDomain:"eternal-palace.firebaseapp.com",databaseURL:"https://eternal-palace-default-rtdb.firebaseio.com",projectId:"eternal-palace"});
+const $=i=>document.getElementById(i),msg=t=>$('msg').textContent=t,F=['gemini','groq','openrouter','mistral','youtube'];
+$('go').onclick=async()=>{try{await firebase.auth().signInWithEmailAndPassword('noamane@palace.app',$('pw').value);}catch(e){msg('Login ghalat: '+e.code)}};
+firebase.auth().onAuthStateChanged(async u=>{if(!u)return;$('login').hidden=true;$('form').hidden=false;
+ try{const v=(await firebase.database().ref('config/ai').once('value')).val()||{};msg('Keys mselfin daba: '+(F.filter(k=>v[k]).join(', ')||'ma-kayn walo'))}catch(e){msg('Ma-9drtch n9ra: '+e.message)}});
+$('save').onclick=async()=>{const d={};F.forEach(k=>{const x=$(k).value.trim();if(x)d[k]=x});if(!Object.keys(d).length)return msg('Ma-ktebti 7ta key.');
+ try{await firebase.database().ref('config/ai').update(d);F.forEach(k=>$(k).value='');msg('✅ T7fdo: '+Object.keys(d).join(', '))}catch(e){msg('❌ '+e.message+'\n(t2akked beli publiti l-rules l-jdad)')}};
+</script></body></html>
