@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14 01:21 UTC",
+  "updated": "2026-11-14 01:27 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -390,7 +390,7 @@
               "top": 3954.2,
               "bottom": 3942.1,
               "fresh": true,
-              "strength": 2.8,
+              "strength": 2.7,
               "kind": "base",
               "formed": "2026-11-12 13:00",
               "rec": 0.93,
@@ -399,14 +399,14 @@
               "conf": [
                 "4H"
               ],
-              "score": 84,
+              "score": 83,
               "grade": "A"
             },
             {
               "top": 3961.1,
               "bottom": 3959.4,
               "fresh": true,
-              "strength": 6.2,
+              "strength": 6.1,
               "kind": "swing",
               "formed": "2026-11-12 11:00",
               "rec": 0.93,
@@ -422,14 +422,14 @@
               "top": 3978.0,
               "bottom": 3970.5,
               "fresh": true,
-              "strength": 2.8,
+              "strength": 2.7,
               "kind": "base",
               "formed": "2026-11-12 08:00",
               "rec": 0.92,
               "inside": false,
               "dist": 2.13,
               "conf": [],
-              "score": 69,
+              "score": 68,
               "grade": "A"
             }
           ],
@@ -452,7 +452,7 @@
               "grade": "B"
             },
             {
-              "top": 3873.6,
+              "top": 3873.4,
               "bottom": 3856.7,
               "fresh": false,
               "strength": 1.6,
@@ -460,7 +460,7 @@
               "formed": "2026-11-12 15:00",
               "rec": 0.94,
               "inside": false,
-              "dist": -0.36,
+              "dist": -0.37,
               "conf": [
                 "4H"
               ],
@@ -507,7 +507,7 @@
             },
             {
               "top": 4211.2,
-              "bottom": 4201.4,
+              "bottom": 4201.2,
               "fresh": true,
               "strength": 3.1,
               "kind": "swing",
@@ -544,7 +544,7 @@
               "top": 3874.6,
               "bottom": 3856.7,
               "fresh": false,
-              "strength": 2.0,
+              "strength": 1.9,
               "kind": "swing",
               "formed": "2026-11-12 12:00",
               "rec": 0.97,
@@ -553,7 +553,7 @@
               "conf": [
                 "1H"
               ],
-              "score": 54,
+              "score": 53,
               "grade": "B"
             }
           ]
@@ -635,7 +635,7 @@
         "yahoo": 3887.6,
         "offset": -2.92,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1794619271
+        "ts": 1794619657
       },
       "cfd_sym": "GC=F"
     },
@@ -1148,7 +1148,7 @@
             },
             {
               "top": 28697.0,
-              "bottom": 28662.25,
+              "bottom": 28661.5,
               "fresh": false,
               "strength": 5.1,
               "kind": "swing",
@@ -1164,26 +1164,26 @@
               "grade": "A"
             },
             {
-              "top": 29593.25,
-              "bottom": 29567.25,
-              "fresh": true,
-              "strength": 4.8,
+              "top": 28891.25,
+              "bottom": 28821.42,
+              "fresh": false,
+              "strength": 9.0,
               "kind": "swing",
-              "formed": "2026-10-29 20:00",
-              "rec": 0.49,
+              "formed": "2026-11-02 15:00",
+              "rec": 0.57,
               "inside": false,
-              "dist": 5.87,
+              "dist": 3.2,
               "conf": [
                 "4H",
                 "1D"
               ],
-              "score": 89,
+              "score": 73,
               "grade": "A"
             }
           ],
           "demand": [
             {
-              "top": 27651.5,
+              "top": 27651.75,
               "bottom": 27590.0,
               "fresh": false,
               "strength": 4.1,
@@ -1199,7 +1199,7 @@
               "grade": "A"
             },
             {
-              "top": 27349.5,
+              "top": 27348.75,
               "bottom": 27195.75,
               "fresh": true,
               "strength": 2.7,
@@ -1239,14 +1239,14 @@
           "supply": [
             {
               "top": 28577.5,
-              "bottom": 28291.5,
+              "bottom": 28297.5,
               "fresh": false,
               "strength": 4.0,
               "kind": "base",
               "formed": "2026-11-05 12:00",
               "rec": 0.87,
               "inside": false,
-              "dist": 1.3,
+              "dist": 1.33,
               "conf": [
                 "1H",
                 "1D"
@@ -1272,7 +1272,7 @@
             },
             {
               "top": 29707.25,
-              "bottom": 29566.25,
+              "bottom": 29566.0,
               "fresh": true,
               "strength": 2.1,
               "kind": "base",
@@ -1290,7 +1290,7 @@
           ],
           "demand": [
             {
-              "top": 27739.25,
+              "top": 27740.0,
               "bottom": 27516.0,
               "fresh": false,
               "strength": 3.4,
