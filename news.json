@@ -40,7 +40,7 @@
     "country": "USD",
     "date": "2026-11-19T08:30:00-05:00",
     "impact": "Medium",
-    "forecast": "19.2",
+    "forecast": "20.6",
     "previous": "20.9",
     "actual": ""
   },
@@ -49,7 +49,7 @@
     "country": "USD",
     "date": "2026-11-19T08:30:00-05:00",
     "impact": "Medium",
-    "forecast": "199K",
+    "forecast": "198K",
     "previous": "200K",
     "actual": ""
   },
@@ -58,7 +58,7 @@
     "country": "USD",
     "date": "2026-11-20T10:00:00-05:00",
     "impact": "Medium",
-    "forecast": "52.1",
+    "forecast": "51.7",
     "previous": "51.0",
     "actual": ""
   },
