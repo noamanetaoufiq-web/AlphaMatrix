@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-21 05:56 UTC",
+  "updated": "2026-11-21 14:21 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -378,7 +378,7 @@
         "symbol": "GC=F",
         "daily": {
           "tf": "1H",
-          "price": 3539.0,
+          "price": 3515.4,
           "supply": [
             {
               "top": 3674.6,
@@ -389,7 +389,7 @@
               "formed": "2026-11-19 21:00",
               "rec": 0.95,
               "inside": false,
-              "dist": 3.46,
+              "dist": 4.16,
               "conf": [
                 "4H"
               ],
@@ -405,7 +405,7 @@
               "formed": "2026-11-19 15:00",
               "rec": 0.94,
               "inside": false,
-              "dist": 4.83,
+              "dist": 5.53,
               "conf": [
                 "4H",
                 "1D"
@@ -422,7 +422,7 @@
               "formed": "2026-11-19 01:00",
               "rec": 0.91,
               "inside": false,
-              "dist": 6.12,
+              "dist": 6.84,
               "conf": [
                 "4H",
                 "1D"
@@ -440,8 +440,8 @@
               "kind": "swing",
               "formed": "2026-11-20 05:00",
               "rec": 0.97,
-              "inside": false,
-              "dist": -0.15,
+              "inside": true,
+              "dist": 0.52,
               "conf": [],
               "score": 45,
               "grade": "B"
@@ -450,7 +450,7 @@
         },
         "weekly": {
           "tf": "4H",
-          "price": 3539.0,
+          "price": 3515.4,
           "supply": [
             {
               "top": 3693.8,
@@ -461,7 +461,7 @@
               "formed": "2026-11-19 20:00",
               "rec": 0.98,
               "inside": false,
-              "dist": 3.68,
+              "dist": 4.37,
               "conf": [
                 "1H",
                 "1D"
@@ -478,7 +478,7 @@
               "formed": "2026-11-19 00:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 5.71,
+              "dist": 6.42,
               "conf": [
                 "1H",
                 "1D"
@@ -495,7 +495,7 @@
               "formed": "2026-11-18 00:00",
               "rec": 0.94,
               "inside": false,
-              "dist": 8.78,
+              "dist": 9.51,
               "conf": [
                 "1D"
               ],
@@ -565,7 +565,7 @@
         "yahoo": 3515.4,
         "offset": 22.79,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1795240603
+        "ts": 1795270912
       },
       "cfd_sym": "GC=F"
     },
@@ -1027,7 +1027,7 @@
         "symbol": "NQ=F",
         "daily": {
           "tf": "1H",
-          "price": 25291.0,
+          "price": 25126.5,
           "supply": [
             {
               "top": 26504.25,
@@ -1038,7 +1038,7 @@
               "formed": "2026-11-20 15:00",
               "rec": 0.99,
               "inside": false,
-              "dist": 4.54,
+              "dist": 5.22,
               "conf": [
                 "4H"
               ],
@@ -1054,7 +1054,7 @@
               "formed": "2026-11-19 14:00",
               "rec": 0.94,
               "inside": false,
-              "dist": 9.62,
+              "dist": 10.34,
               "conf": [
                 "4H",
                 "1D"
@@ -1071,7 +1071,7 @@
               "formed": "2026-11-13 13:00",
               "rec": 0.75,
               "inside": false,
-              "dist": 12.66,
+              "dist": 13.39,
               "conf": [
                 "4H",
                 "1D"
@@ -1084,7 +1084,7 @@
         },
         "weekly": {
           "tf": "4H",
-          "price": 25291.0,
+          "price": 25126.5,
           "supply": [
             {
               "top": 26506.75,
@@ -1095,7 +1095,7 @@
               "formed": "2026-11-20 16:00",
               "rec": 0.99,
               "inside": false,
-              "dist": 2.46,
+              "dist": 3.13,
               "conf": [
                 "1H"
               ],
@@ -1111,7 +1111,7 @@
               "formed": "2026-11-19 12:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 9.87,
+              "dist": 10.59,
               "conf": [
                 "1H",
                 "1D"
@@ -1128,7 +1128,7 @@
               "formed": "2026-11-05 12:00",
               "rec": 0.76,
               "inside": false,
-              "dist": 11.89,
+              "dist": 12.62,
               "conf": [
                 "1H",
                 "1D"
