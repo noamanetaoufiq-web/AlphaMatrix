@@ -22,7 +22,7 @@
     "country": "USD",
     "date": "2026-11-24T10:00:00-05:00",
     "impact": "Medium",
-    "forecast": "92.1",
+    "forecast": "92.4",
     "previous": "91.7",
     "actual": ""
   },
@@ -51,15 +51,6 @@
     "impact": "Medium",
     "forecast": "2.3%",
     "previous": "2.3%",
-    "actual": ""
-  },
-  {
-    "title": "Unemployment Claims",
-    "country": "USD",
-    "date": "2026-11-25T08:30:00-05:00",
-    "impact": "Medium",
-    "forecast": "201K",
-    "previous": "203K",
     "actual": ""
   }
 ]
