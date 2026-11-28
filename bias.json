@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-28 03:18 UTC",
+  "updated": "2026-11-28 09:54 UTC",
   "events_today": [],
   "notes": [
     "ry: source unavailable",
@@ -10,14 +10,14 @@
   ],
   "assets": {
     "XAUUSD": {
-      "price": 3668.5,
+      "price": 3639.6,
       "tf": {
         "daily": {
-          "score": 0.11,
+          "score": 0.0,
           "label": "NEUTRAL",
           "dir": "Neutral",
           "pct": 50,
-          "agree": 0.58,
+          "agree": 0.0,
           "factors": 8,
           "asof": "2026-11-27",
           "period": "Outlook for Mon Nov 30 (built from the Fri Nov 27 close)",
@@ -26,7 +26,7 @@
             {
               "key": "trend",
               "name": "Price trend",
-              "reading": "+3.8% since previous close",
+              "reading": "+2.9% since previous close",
               "v": 1,
               "w": 2
             },
@@ -40,7 +40,7 @@
             {
               "key": "ma",
               "name": "Trend (price vs 20d / 50d avg)",
-              "reading": "-4.8% / -9.4%",
+              "reading": "-5.5% / -10.1%",
               "v": -1,
               "w": 1
             },
@@ -54,14 +54,14 @@
             {
               "key": "range",
               "name": "Position in 20-day range",
-              "reading": "33% of the 20d range",
-              "v": 0,
+              "reading": "29% of the 20d range",
+              "v": -1,
               "w": 1
             },
             {
               "key": "mom",
               "name": "10-day momentum vs volatility",
-              "reading": "-0.5 sigma",
+              "reading": "-0.6 sigma",
               "v": 0,
               "w": 1
             },
@@ -84,7 +84,7 @@
             "vs": "the previous day's outlook",
             "prev_label": "MODERATE BEARISH",
             "prev_period": "Close of Wed Nov 25",
-            "score_delta": 0.74,
+            "score_delta": 0.63,
             "flips": [
               {
                 "name": "Price trend",
@@ -95,11 +95,6 @@
                 "name": "Structure (close vs yesterday's range)",
                 "from": -1,
                 "to": 1
-              },
-              {
-                "name": "Position in 20-day range",
-                "from": -1,
-                "to": 0
               },
               {
                 "name": "10-day momentum vs volatility",
@@ -161,13 +156,13 @@
               "close"
             ]
           },
-          "ref_price": 3668.5
+          "ref_price": 3639.6
         },
         "weekly": {
-          "score": -0.2,
-          "label": "SLIGHT BEARISH",
+          "score": -0.4,
+          "label": "MODERATE BEARISH",
           "dir": "Bearish",
-          "pct": 57,
+          "pct": 64,
           "agree": 1.0,
           "factors": 5,
           "asof": "2026-11-27",
@@ -177,21 +172,21 @@
             {
               "key": "range",
               "name": "Position in 20-day range",
-              "reading": "33% of the 20d range",
-              "v": 0,
+              "reading": "29% of the 20d range",
+              "v": -1,
               "w": 1
             },
             {
               "key": "mom",
               "name": "10-day momentum vs volatility",
-              "reading": "-0.5 sigma",
+              "reading": "-0.6 sigma",
               "v": 0,
               "w": 1
             },
             {
               "key": "ma",
               "name": "Trend structure (vs 20d avg)",
-              "reading": "-4.8%",
+              "reading": "-5.5%",
               "v": -1,
               "w": 1
             },
@@ -214,13 +209,8 @@
             "vs": "last week's outlook",
             "prev_label": "MODERATE BEARISH",
             "prev_period": "Week of Nov 16 (Sun to Fri) · day 5/5",
-            "score_delta": 0.3,
+            "score_delta": 0.1,
             "flips": [
-              {
-                "name": "Position in 20-day range",
-                "from": -1,
-                "to": 0
-              },
               {
                 "name": "10-day momentum vs volatility",
                 "from": -1,
@@ -263,7 +253,7 @@
               "cot"
             ]
           },
-          "ref_price": 3668.5
+          "ref_price": 3639.6
         },
         "monthly": {
           "score": -0.75,
@@ -589,7 +579,7 @@
         },
         "monthly": {
           "tf": "1D",
-          "price": 3668.5,
+          "price": 3639.6,
           "supply": [
             {
               "top": 3759.5,
@@ -600,7 +590,7 @@
               "formed": "2026-11-20 05:00",
               "rec": 0.98,
               "inside": false,
-              "dist": 0.46,
+              "dist": 1.26,
               "conf": [
                 "1H",
                 "4H"
@@ -617,7 +607,7 @@
               "formed": "2026-11-18 05:00",
               "rec": 0.97,
               "inside": false,
-              "dist": 5.21,
+              "dist": 6.04,
               "conf": [
                 "1H",
                 "4H"
@@ -634,7 +624,7 @@
               "formed": "2026-11-12 05:00",
               "rec": 0.96,
               "inside": false,
-              "dist": 9.05,
+              "dist": 9.92,
               "conf": [],
               "score": 54,
               "grade": "B"
@@ -648,7 +638,7 @@
         "yahoo": 3673.1,
         "offset": -20.78,
         "ticker": "OANDA:XAUUSD",
-        "ts": 1795835911
+        "ts": 1795859666
       },
       "cfd_sym": "GC=F"
     },
